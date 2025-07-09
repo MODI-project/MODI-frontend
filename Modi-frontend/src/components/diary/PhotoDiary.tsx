@@ -1,11 +1,23 @@
 import React from "react";
-import Diary, { DiaryProps } from "./Diary";
 import styles from "./PhotoDiary.module.css";
 
-const PhotoDiary: React.FC<DiaryProps> = ({ emotion, content, clicked }) => (
+export interface PhotoDiaryProps {
+    id: number;
+    photoUrl: string;
+    date: string;
+    emotion: string;
+    clicked: boolean;
+}
+
+const PhotoDiary: React.FC<PhotoDiaryProps> = ({ photoUrl, ...rest }) => (
   <div className={styles.card}>
-    <Diary emotion={emotion} content={content} clicked={clicked} />
+    {photoUrl ? (
+      <img src={photoUrl} className={styles.thumb} alt="" />
+    ) : (
+      <div className={styles.thumb} />
+    )}
   </div>
 );
 
 export default PhotoDiary;
+
