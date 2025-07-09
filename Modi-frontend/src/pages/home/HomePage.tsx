@@ -1,46 +1,24 @@
-import React, { useState } from "react";
 import style from "./HomePage.module.css";
-
 import Footer from "../../components/common/Footer";
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 0bbc57abb3d71c97efb98c50ec6387bdd751edb3
 import Header from "../../components/common/Header";
-import Diary from "../../components/diary/Diary";
->>>>>>> 0bbc57a ([feat] 홈화면 전체 파일 구조 생성)
 
-import HomeHeader from "./components/HomeHeader";
-import PolaroidView from "./components/PolaroidView";
-import PhotoView from "./components/PhotoView";
-
-import HomeHeader from "./components/HomeHeader";
-import PolaroidView from "./components/PolaroidView";
-import PhotoView from "./components/PhotoView";
+// import HomeHeader from "./components/HomeHeader";
+// import PolaroidView from "./components/PolaroidView";
+// import PhotoView from "./components/PhotoView";
 
 const HomePage = () => {
   return (
     <div className={style.home_wrapper}>
       <div className={style.home_container}>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 0bbc57abb3d71c97efb98c50ec6387bdd751edb3
         <Header />
-        <HomeHeader viewType={viewType} onChangeView={setViewType} />
+        {/* <HomeHeader viewType={viewType} onChangeView={setViewType} />
         <main className={style.mainContent}>
           {viewType === "polaroid" ? (
             <PolaroidView diary={todayDiary} />
           ) : (
             <PhotoView diaries={monthDiaries} />
           )}
-        </main>
-<<<<<<< HEAD
->>>>>>> 0bbc57a ([feat] 홈화면 전체 파일 구조 생성)
-=======
->>>>>>> 0bbc57abb3d71c97efb98c50ec6387bdd751edb3
+        </main> */}
         <Footer />
       </div>
     </div>

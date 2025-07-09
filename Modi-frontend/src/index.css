@@ -1,3 +1,28 @@
+@font-face {
+  font-family: "Onryuruu";
+  src: url("/fonts/Onryuruu.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "LeeSeoYoon";
+  src: url("/fonts/LeeSeoYoon.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "ParkDaHyun";
+  src: url("/fonts/ParkDaHyun.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Eujin";
+  src: url("/fonts/Eujin.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "MalgeunHyanggi";
+  src: url("/fonts/MalgeunHyanggi.ttf") format("truetype");
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -11,6 +36,40 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Font Families */
+  --font-nanum-square: "NanumSquareRoundBold", sans-serif;
+  --font-dm-sans: "DM Sans", sans-serif;
+  --font-eujin: "Eujin", sans-serif;
+  --font-leeseoyoon: "LeeSeoYoon", sans-serif;
+  --font-malgeun-hyanggi: "MalgeunHyanggi", sans-serif;
+  --font-onryuruu: "Onryuruu", sans-serif;
+  --font-parkdahyun: "ParkDaHyun", sans-serif;
+
+  /* Font Sizes */
+  --font-title: 20px;
+  --font-headline: 17px;
+  --font-subheadline: 15px;
+  --font-body: 15px;
+  --font-caption1: 12px;
+  --font-caption2: 11px;
+  --font-button: 17px;
+
+  /*  Colors  */
+  --color-color1: #fbfbfb;
+  --color-modal: #fbf9f3;
+  --color-background-color: #f7f0e6;
+
+  --color-gray1: #eeedeb;
+  --color-gray2: #cbcbc5;
+  --color-gray3: #9c9c9c;
+  --color-gray4: #5c5c5c;
+  --color-gray5: #2c2c2c;
+
+  --color-pink: #fbd7d5;
+  --color-yellow: #fee888;
+  --color-green: #a7e1b6;
+  --color-blue: #93d1e0;
 }
 
 #root {

@@ -14,3 +14,20 @@
   justify-content: center;
   background-image: url("/images/background/normal-bg.svg");
 }
+.main_container {
+  width: 100%;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 143px;
+  box-sizing: border-box;
+  padding-left: 32px;
+}
+
+.ask {
+  font-size: var(--font-title);
+  font-family: var(--font-nanum-square);
+  font-weight: 600;
+  line-height: 25px;
+  letter-spacing: -0.43px;
+}
