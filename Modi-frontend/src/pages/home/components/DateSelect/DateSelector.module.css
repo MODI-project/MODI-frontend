@@ -1,0 +1,59 @@
+.picker {
+  height: 140px;
+  align-self: stretch;
+  gap: 68px;
+}
+
+.column {
+  display: flex;
+  width: 22px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.option {
+  scroll-snap-align: center;
+  color: #9c9c9c;
+  text-align: center;
+  font-feature-settings: "liga" off, "clig" off;
+
+  font-family: NanumSquareRound;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+  cursor: pointer;
+}
+
+.option.selected {
+  color: #2c2c2c;
+  text-align: center;
+  font-feature-settings: "liga" off, "clig" off;
+  font-family: NanumSquareRoundOTF;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: -0.23px;
+}
+
+.picker::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+
+  width: 296px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: #fbd7d5;
+}

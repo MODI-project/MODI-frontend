@@ -2,26 +2,32 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .DiaryEmotionTag_container {
   display: flex;
   position: relative;
-  width: 360px;
-  height: 800px;
+  width: 100vw;
+  height: 100vh;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background-image: url("/images/background/normal-bg.svg");
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
 }
+
 .main_container {
-  width: 100%;
-  position: absolute;
+  width: 81.5%;
+  height: 100%;
+  padding-top: 40%;
   display: flex;
   flex-direction: column;
-  top: 143px;
   box-sizing: border-box;
-  padding-left: 32px;
 }
 
 .ask {
@@ -30,4 +36,35 @@
   font-weight: 600;
   line-height: 25px;
   letter-spacing: -0.43px;
+}
+
+.img_container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 15px;
+  margin-top: 13%;
+}
+
+.emotion_item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.emotion_image {
+  width: 62px;
+  height: 62px;
+  cursor: pointer;
+}
+
+.emotion_label {
+  margin-bottom: 5px;
+  font-family: var(--font-nanum-square);
+  font-weight: 400;
+  font-size: 10.87px;
+  line-height: 14.49px;
+  text-align: center;
 }

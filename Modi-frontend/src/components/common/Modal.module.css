@@ -1,0 +1,35 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  width: 360px;
+  height: 801px;
+  flex-shrink: 0;
+}
+
+.modal {
+  width: 360px;
+  height: 395px;
+  flex-shrink: 0;
+
+  border-radius: 15px 15px 0px 0px;
+  border-top: 1px solid #9c9c9c;
+  background: #fbf9f3;
+}
+
+.handle {
+  width: 42.137px;
+  height: 0px;
+  flex-shrink: 0;
+  margin: 14.2px auto 380.8px;
+
+  fill: #fbf9f3;
+  stroke-width: 3px;
+  stroke: #9c9c9c;
+}
