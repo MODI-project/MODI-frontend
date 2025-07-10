@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
+import styles from "./DateSelector.module.css";
 
 export interface DiaryItem {
   date: string;
@@ -71,35 +72,79 @@ const DateSelector: React.FC<Props> = ({
     onChange(`${year}-${month}-${d}`);
   };
 
+  const yearCol = useRef<HTMLDivElement>(null);
+  const monthCol = useRef<HTMLDivElement>(null);
+  const dayCol = useRef<HTMLDivElement>(null);
+
+  const centerOffset = 140 / 2;
+
+  const onScroll = (
+    el: HTMLDivElement,
+    options: string[],
+    setter: (v: string) => void
+  ) => {
+    const { scrollTop, clientHeight } = el;
+    // 옵션 높이가 모두 동일하다고 가정 (예: 40px)
+    const itemHeight = 40;
+    // 중앙 y좌표 = scrollTop + clientHeight/2
+    const centerY = scrollTop + clientHeight / 2;
+    // 인덱스 계산
+    const idx = Math.round(centerY / itemHeight) - 1;
+    const clamped = Math.min(Math.max(idx, 0), options.length - 1);
+    const value = options[clamped];
+    setter(value);
+  };
+
+  useEffect(() => {
+    const yC = yearCol.current,
+      mC = monthCol.current,
+      dC = dayCol.current;
+    if (yC) yC.addEventListener("scroll", () => onScroll(yC, years, setYear));
+    if (mC) mC.addEventListener("scroll", () => onScroll(mC, months, setMonth));
+    if (viewType === "polaroid" && dC)
+      dC.addEventListener("scroll", () => onScroll(dC, days, setDay));
+    // cleanup omitted for brevity
+  }, [years, months, days]);
+
+  // state가 바뀔 때 마다 onChange 호출
+  useEffect(() => {
+    if (viewType === "polaroid") onChange(`${year}-${month}-${day}`);
+    else onChange(`${year}-${month}`);
+  }, [year, month, day]);
+
   return (
-    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-      {/* 연도 */}
-      <select value={year} onChange={(e) => handleYear(e.target.value)}>
+    <div className={styles.picker}>
+      <div className={styles.column} ref={yearCol}>
         {years.map((y) => (
-          <option key={y} value={y}>
+          <div
+            key={y}
+            className={`${styles.option} ${y === year ? styles.selected : ""}`}
+          >
             {y}년
-          </option>
+          </div>
         ))}
-      </select>
-
-      {/* 월 */}
-      <select value={month} onChange={(e) => handleMonth(e.target.value)}>
+      </div>
+      <div className={styles.column} ref={monthCol}>
         {months.map((m) => (
-          <option key={m} value={m}>
+          <div
+            key={m}
+            className={`${styles.option} ${m === month ? styles.selected : ""}`}
+          >
             {m}월
-          </option>
+          </div>
         ))}
-      </select>
-
-      {/* 하루 단위 모드일 때만 일 */}
+      </div>
       {viewType === "polaroid" && (
-        <select value={day} onChange={(e) => handleDay(e.target.value)}>
+        <div className={styles.column} ref={dayCol}>
           {days.map((d) => (
-            <option key={d} value={d}>
+            <div
+              key={d}
+              className={`${styles.option} ${d === day ? styles.selected : ""}`}
+            >
               {d}일
-            </option>
+            </div>
           ))}
-        </select>
+        </div>
       )}
     </div>
   );
