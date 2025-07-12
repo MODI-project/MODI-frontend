@@ -11,9 +11,17 @@
   width: 360px;
   height: 801px;
   flex-shrink: 0;
+
+  z-index: 1000;
 }
 
 .modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+
   width: 360px;
   height: 395px;
   flex-shrink: 0;

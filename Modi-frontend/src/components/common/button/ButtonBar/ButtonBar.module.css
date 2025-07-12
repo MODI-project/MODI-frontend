@@ -46,3 +46,8 @@
   border-radius: 15px;
   background-color: #cbcbc5;
 }
+
+.next {
+  position: absolute;
+  bottom: 6%;
+}

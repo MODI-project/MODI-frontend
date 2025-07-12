@@ -1,0 +1,35 @@
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  padding: 16px;
+}
+
+.modalInner {
+  display: flex;
+  width: 296px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 0 32px;
+  margin: 0 auto;
+}
+
+.modalTitle {
+  align-self: stretch;
+  color: #2c2c2c;
+  font-feature-settings: "liga" off, "clig" off;
+
+  font-family: NanumSquareRoundOTF;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+}
+
+.footerWrapper {
+  padding: 0 16px;
+  margin-top: 48px;
+  margin-bottom: 16px;
+}

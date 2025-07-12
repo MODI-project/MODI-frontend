@@ -1,5 +1,9 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import styles from "./DateSelector.module.css";
+import {
+  CharacterType,
+  useCharacter,
+} from "../../../contexts/CharacterContext";
 
 export interface DiaryItem {
   date: string;
@@ -10,13 +14,22 @@ interface Props {
   items: DiaryItem[]; //모든 일기들의 날짜 데이터
   initialDate: string; //처음에 선택되어 있어야 할 날짜
   onChange: (date: string) => void;
+  userCharacter: CharacterType;
 }
+
+const colorMap: Record<NonNullable<CharacterType>, string> = {
+  momo: "#fbd7d5",
+  boro: "#FEE888",
+  lumi: "#A7E1B6",
+  zuni: "#93D1E0",
+};
 
 const DateSelector: React.FC<Props> = ({
   viewType,
   items,
   initialDate,
   onChange,
+  userCharacter,
 }) => {
   const [year, setYear] = useState(initialDate.slice(0, 4));
   const [month, setMonth] = useState(initialDate.slice(5, 7));
@@ -55,28 +68,9 @@ const DateSelector: React.FC<Props> = ({
     [items, viewType, year, month]
   );
 
-  const handleYear = (y: string) => {
-    setYear(y);
-    const newDate =
-      viewType === "polaroid" ? `${y}-${month}-${day}` : `${y}-${month}`;
-    onChange(newDate);
-  };
-  const handleMonth = (m: string) => {
-    setMonth(m);
-    const newDate =
-      viewType === "polaroid" ? `${year}-${m}-${day}` : `${year}-${m}`;
-    onChange(newDate);
-  };
-  const handleDay = (d: string) => {
-    setDay(d);
-    onChange(`${year}-${month}-${d}`);
-  };
-
   const yearCol = useRef<HTMLDivElement>(null);
   const monthCol = useRef<HTMLDivElement>(null);
   const dayCol = useRef<HTMLDivElement>(null);
-
-  const centerOffset = 140 / 2;
 
   const onScroll = (
     el: HTMLDivElement,
@@ -112,8 +106,14 @@ const DateSelector: React.FC<Props> = ({
     else onChange(`${year}-${month}`);
   }, [year, month, day]);
 
+  const highlight = userCharacter ? colorMap[userCharacter] : "#ccc";
+
+  const styleVars = {
+    "--picker-highlight": highlight,
+  } as React.CSSProperties;
+
   return (
-    <div className={styles.picker}>
+    <div className={styles.picker} style={styleVars}>
       <div className={styles.column} ref={yearCol}>
         {years.map((y) => (
           <div

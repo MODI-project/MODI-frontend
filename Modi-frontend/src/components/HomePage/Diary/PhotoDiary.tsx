@@ -2,14 +2,16 @@ import React from "react";
 import styles from "./PhotoDiary.module.css";
 
 export interface PhotoDiaryProps {
-    id: number;
-    photoUrl: string;
-    date: string;
-    emotion: string;
-    clicked: boolean;
+  id: number;
+  photoUrl: string;
+  date: string;
+  emotion: string;
+  clicked: boolean;
 }
 
-const PhotoDiary: React.FC<PhotoDiaryProps> = ({ photoUrl, ...rest }) => (
+const PhotoDiary: React.FC<PhotoDiaryProps> = ({
+  photoUrl /* , ...rest */,
+}) => (
   <div className={styles.card}>
     {photoUrl ? (
       <img src={photoUrl} className={styles.thumb} alt="" />
@@ -20,4 +22,3 @@ const PhotoDiary: React.FC<PhotoDiaryProps> = ({ photoUrl, ...rest }) => (
 );
 
 export default PhotoDiary;
-
