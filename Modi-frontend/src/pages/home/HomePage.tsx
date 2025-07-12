@@ -1,21 +1,24 @@
 import style from "./HomePage.module.css";
 import Footer from "../../components/common/Footer";
-import Diary from "../../components/diary/Diary";
+import Header from "../../components/common/Header";
+
+// import HomeHeader from "./components/HomeHeader";
+// import PolaroidView from "./components/PolaroidView";
+// import PhotoView from "./components/PhotoView";
 
 const HomePage = () => {
   return (
     <div className={style.home_wrapper}>
       <div className={style.home_container}>
-        <Diary
-          emotion="즐거움"
-          content="오늘은 벚꽃이 만개한 따뜻한 봄날, 산책도 하고 귀여운 강아지도 만나서 하루 종일 기분이 들떴다!"
-          clicked={false}
-        />
-        <Diary
-          emotion="즐거움"
-          content="오늘은 벚꽃이 만개한 따뜻한 봄날, 산책도 하고 귀여운 강아지도 만나서 하루 종일 기분이 들떴다!"
-          clicked={true}
-        />
+        <Header />
+        {/* <HomeHeader viewType={viewType} onChangeView={setViewType} />
+        <main className={style.mainContent}>
+          {viewType === "polaroid" ? (
+            <PolaroidView diary={todayDiary} />
+          ) : (
+            <PhotoView diaries={monthDiaries} />
+          )}
+        </main> */}
         <Footer />
       </div>
     </div>

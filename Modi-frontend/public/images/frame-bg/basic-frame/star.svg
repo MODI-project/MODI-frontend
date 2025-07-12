@@ -1,0 +1,14 @@
+<svg width="262" height="340" viewBox="0 0 262 340" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect x="0.525641" y="0.525641" width="260.949" height="338.949" rx="13.7564" fill="#FBFBFB"/>
+<rect x="0.525641" y="0.525641" width="260.949" height="338.949" rx="13.7564" fill="url(#pattern0_40002001_6262)" fill-opacity="0.8"/>
+<rect x="0.525641" y="0.525641" width="260.949" height="338.949" rx="13.7564" stroke="#9C9C9C" stroke-width="0.948718"/>
+<defs>
+<pattern id="pattern0_40002001_6262" patternUnits="userSpaceOnUse" viewBox="-2762 614.85 245.7 122.85" width="46.619997205443894%" height="17.930768155939962%" x="118.9" y="157.9" patternContentUnits="objectBoundingBox">
+<g id="pattern0_40002001_6262_inner">
+<path d="M-2739.5 492L-2732.23 504.488L-2718.1 507.547L-2727.73 518.324L-2726.27 532.703L-2739.5 526.875L-2752.73 532.703L-2751.27 518.324L-2760.9 507.547L-2746.77 504.488L-2739.5 492Z" fill="#FFF4C2"/>
+</g>
+<use xlink:href="#pattern0_40002001_6262_inner" transform="translate(0 122.85)"/>
+<use xlink:href="#pattern0_40002001_6262_inner" transform="translate(122.85 61.425)"/>
+<use xlink:href="#pattern0_40002001_6262_inner" transform="translate(122.85 184.275)"/>
+</pattern></defs>
+</svg>

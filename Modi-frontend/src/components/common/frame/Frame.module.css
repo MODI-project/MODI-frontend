@@ -1,17 +1,17 @@
 /* 전체 프레임 */
 
-.frame {
+.frame_container {
   display: flex;
   flex-direction: column;
   position: relative;
   box-sizing: border-box;
-  width: 259px;
-  height: 337px;
+  width: 260px;
+  height: 338px;
   padding: 16px;
   gap: 16px;
   justify-content: center;
   align-items: center;
-  background-image: url("./frame-bg/basic-frame/star.svg"); /* 테스트용... */
+  background-image: url("/images/frame-bg/basic-frame/star.svg"); /* 테스트용... */
   background-size: cover;
   background-position: center;
   border-radius: 13.3px;
@@ -21,8 +21,16 @@
   /*프레임이 기본적으로 같은 형태 but 배경색 차이 -> 배경색을 state로 뽑아 써야할듯... 그럼 어떻게 구분하면 좋을까? */
 }
 
-/* 이미지 + 날짜 포함하는 div */
-.image-frame {
+.frame_container:nth-child(1) {
+  display: block;
+}
+
+.frame_container:nth-child(2) {
+  display: none;
+}
+
+/* 프레임 전면부 : 이미지 + 날짜 + 한 줄 요약 */
+.front_frame {
   position: absolute;
   top: 20px;
   width: 227px;
@@ -37,10 +45,11 @@
   height: 100%;
   object-fit: cover; /* 이미지가 .image-frame 안에 꽉 차도록 */
   border-radius: 2.85px;
+  border: none;
 }
 
 /* 프레임 생성 날짜 -> state 로 추출 */
-.date {
+.front_date {
   z-index: 1000;
   right: 0;
   bottom: 1px;
@@ -62,7 +71,7 @@
   bottom: 20px;
   width: 227px;
   height: 20px;
-  color: #2c2c2c;
+  color: var(--gray5, #2c2c2c);
   text-align: center;
   font-family: "Ownglyph_ryurue-Rg", sans-serif; /* index.css 에서 선언해놓음 */
   font-size: 15px;
@@ -70,59 +79,151 @@
   background-color: none;
 }
 
+/* 프레임 뒷면부 */
+.back_frame {
+  display: flex;
+  width: 220px;
+  height: 290px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.frame_info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  align-self: stretch;
+}
+
+.back_date {
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* sudheadline */
+  font-family: "NanumSquareRoundOTF", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
+}
+
+.tags {
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* sudheadline */
+  font-family: "NanumSquareRoundOTF", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
+}
+
+.place_info {
+  flex: 1 0 0;
+  align-self: stretch;
+
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+  /* sudheadline */
+  font-family: "NanumSquareRoundOTF", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
+}
+
+.frame_description {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* body */
+  font-family: "NanumSquareRound", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px; /* 157.143% */
+  letter-spacing: -0.43px;
+}
+
+.description_content {
+  flex: 1 0 0;
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* body */
+  font-family: "NanumSquareRound", sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px; /* 157.143% */
+  letter-spacing: -0.43px;
+}
 /* 프레임 배경화면
 .bg-pink {
-  background-image: url("./frame-bg/basic-frame/pink.svg");
+  background-image: url("../../public/images/frame-bg/pink.svg");
 }
 
 .bg-yellow {
-  background-image: url("./frame-bg/basic-frame/yellow.svg");
+  background-image: url("../../public/images/frame-bg/yellow.svg");
 }
 
 .bg-mint {
-  background-image: url("./frame-bg/basic-frame/mint.svg");
+  background-image: url("../../public/images/frame-bg/basic-frame/mint.svg");
 }
 
 .bg-skyblue {
-  background-image: url("./frame-bg/basic-frame/skyblue.svg");
+  background-image: url("../../public/images/frame-bg/basic-frame/skyblue.svg");
 }
 
 .bg-star {
-  background-image: url("./frame-bg/basic-frame/star.svg");
+  background-image: url("../../public/images/frame-bg/basic-frame/star.svg");
   background-size: cover;
   background-position: center;
 }
 
 .bg-small-dot {
-  background-image: url("./frame-bg/basic-frame/small-dot.svg");
+  background-image: url("../../public/images/frame-bg/basic-frame/small-dot.svg");
   background-size: cover;
   background-position: center;
 }
 
 .bg-cream {
-  background-image: url("./frame-bg/basic-frame/cream.svg");
+  background-image: url("../../public/images/frame-bg/basic-frame/cream.svg");
 }
 
 .bg-big-dot {
-  background-image: url("./frame-bg/basic-frame/big-dot.svg");
+  background-image: url("../../public/images/frame-bg/basic-frame/big-dot.svg");
   background-size: cover;
   background-position: center;
 } 
 
 .bg-ch1 {
-  background-image: url("./frame-bg/basic-frame/pink.svg");
+  background-image: url("../../public/images/frame-bg/basic-frame/pink.svg");
 }
 
 .bg-ch2 {
-  background-image: url("./frame-bg/basic-frame/yellow.svg");
+  background-image: url("../../public/images/frame-bg/basic-frame/yellow.svg");
 }
 
 .bg-ch3 {
-  background-image: url("./frame-bg/basic-frame/skyblue.svg");
+  background-image: url("../../public/images/frame-bg/basic-frame/skyblue.svg");
 }
 
 .bg-ch4 {
-  background-image: url("./frame-bg/basic-frame/mint.svg");
+  background-image: url("../../public/images/frame-bg/basic-frame/mint.svg");
 }
-
 */

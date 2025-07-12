@@ -1,0 +1,41 @@
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 39px;
+  width: 100%;
+  padding: 0 16px;
+}
+
+.center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.frame {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label {
+  color: #404040;
+
+  text-align: center;
+  font-family: "DM Sans";
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20.884px;
+  letter-spacing: -0.949px;
+  text-transform: capitalize;
+}
+
+.modeSwitch {
+  margin-left: auto;
+}

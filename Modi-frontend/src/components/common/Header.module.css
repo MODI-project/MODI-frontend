@@ -1,0 +1,18 @@
+.header_wrapper {
+  position: absolute;
+  top: 0;
+  width: 360px;
+  box-sizing: border-box;
+  height: 140px;
+  background-color: #fbf9f3;
+  margin: 0 auto;
+  padding: 48px 16px 38px 16px;
+  box-sizing: border-box;
+  background-color: transparent;
+}
+
+.header_container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}

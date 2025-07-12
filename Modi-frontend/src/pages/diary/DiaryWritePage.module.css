@@ -1,0 +1,170 @@
+.DiaryWrite_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.DiaryWrite_container {
+  display: flex;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url("/images/background/normal-bg.svg");
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+}
+
+.main_container {
+  width: 83%;
+  height: 100%;
+  margin-top: 35%;
+  margin-bottom: 30%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-y: scroll;
+}
+
+.photo_upload_box {
+  width: 105px;
+  height: 105px;
+  border: 1px dashed var(--color-gray3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: var(--color-modal);
+  flex-shrink: 0;
+}
+
+.upload_placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.label {
+  font-family: var(--font-nanum-square);
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+  font-size: var(--font-headline);
+  color: var(--color-gray4);
+}
+
+.preview_image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.input_section {
+  width: 296px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.input_field1 {
+  height: 18px;
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-gray2);
+  font-family: var(--font-nanum-square);
+  font-size: var(--font-body);
+  background-color: var(--color-modal);
+}
+
+.input_field2 {
+  height: 20px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-gray2);
+  font-family: var(--font-nanum-square);
+  font-size: var(--font-body);
+  background-color: var(--color-modal);
+}
+
+.edit_button {
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-gray1);
+  border: 1px solid var(--color-gray2);
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.input_group {
+  width: 296px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 28px;
+  gap: 12px;
+}
+
+.input_label {
+  font-family: var(--font-nanum-square);
+  font-weight: 600;
+  font-size: var(--font-headline);
+  color: var(--color-gray5);
+  line-height: 22px;
+  letter-spacing: -0.43px;
+}
+
+.textarea {
+  width: 100%;
+  resize: none;
+  padding: 12px;
+  font-size: var(--font-body);
+  border-radius: 12px;
+  box-sizing: border-box;
+  border: 1px solid var(--color-gray2);
+  font-family: var(--font-nanum-square);
+  background-color: var(--color-modal);
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+}
+
+.autogen_button {
+  align-self: flex-end;
+  margin-top: 8px;
+  padding: 6px 13px;
+  font-size: 12px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--color-gray2);
+  background-color: var(--color-gray1);
+  color: var(--color-gray4);
+  cursor: pointer;
+}
+
+.input_field1::placeholder {
+  color: var(--color-gray3);
+  opacity: 1;
+}
+.input_field2::placeholder {
+  color: var(--color-gray3);
+  opacity: 1;
+}
+.textarea::placeholder {
+  color: var(--color-gray3);
+  opacity: 1;
+}

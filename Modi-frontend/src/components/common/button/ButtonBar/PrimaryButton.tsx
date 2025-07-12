@@ -1,6 +1,7 @@
 import styles from "./ButtonBar.module.css";
 
 interface ButtonBarProps {
+  location: string;
   label: string;
   onClick?: () => void;
   disabled?: boolean;
@@ -8,6 +9,7 @@ interface ButtonBarProps {
 }
 
 export default function ButtonBar({
+  location,
   label,
   onClick,
   disabled,
@@ -15,7 +17,7 @@ export default function ButtonBar({
 }: ButtonBarProps) {
   return (
     <button
-      className={`${styles.button} ${styles[size]}`}
+      className={`${styles.button} ${styles[size]} ${styles[location]}`}
       onClick={onClick}
       disabled={disabled}
     >

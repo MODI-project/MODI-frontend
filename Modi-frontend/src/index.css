@@ -1,16 +1,71 @@
+@font-face {
+  font-family: "Onryuruu";
+  src: url("/fonts/Onryuruu.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "LeeSeoYoon";
+  src: url("/fonts/LeeSeoYoon.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "ParkDaHyun";
+  src: url("/fonts/ParkDaHyun.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Eujin";
+  src: url("/fonts/Eujin.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "MalgeunHyanggi";
+  src: url("/fonts/MalgeunHyanggi.ttf") format("truetype");
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Font Families */
+  --font-nanum-square: "NanumSquareRoundBold", sans-serif;
+  --font-dm-sans: "DM Sans", sans-serif;
+  --font-eujin: "Eujin", sans-serif;
+  --font-leeseoyoon: "LeeSeoYoon", sans-serif;
+  --font-malgeun-hyanggi: "MalgeunHyanggi", sans-serif;
+  --font-onryuruu: "Onryuruu", sans-serif;
+  --font-parkdahyun: "ParkDaHyun", sans-serif;
+
+  /* Font Sizes */
+  --font-title: 20px;
+  --font-headline: 16px;
+  --font-subheadline: 14px;
+  --font-body: 14px;
+  --font-caption1: 12px;
+  --font-caption2: 11px;
+  --font-button: 15px;
+
+  /*  Colors  */
+  --color-color1: #fbfbfb;
+  --color-modal: #fbf9f3;
+  --color-background-color: #f7f0e6;
+
+  --color-gray1: #eeedeb;
+  --color-gray2: #cbcbc5;
+  --color-gray3: #9c9c9c;
+  --color-gray4: #5c5c5c;
+  --color-gray5: #2c2c2c;
+
+  --color-pink: #fbd7d5;
+  --color-yellow: #fee888;
+  --color-green: #a7e1b6;
+  --color-blue: #93d1e0;
 }
 
 #root {
@@ -18,13 +73,13 @@
   height: 100%;
 }
 
+*:focus-visible {
+  outline: none;
+}
+
 a {
   font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
 }
 
 body {
@@ -50,26 +105,6 @@ button {
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }
 
 @font-face {
