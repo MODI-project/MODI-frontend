@@ -55,5 +55,5 @@
   height: 28px;
   flex-shrink: 0;
   border-radius: 7px;
-  background: #fbd7d5;
+  background-color: var(--picker-highlight);
 }

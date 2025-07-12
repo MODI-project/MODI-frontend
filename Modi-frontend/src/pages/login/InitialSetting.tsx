@@ -1,17 +1,26 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/common/Header";
 import styles from "./InitialSetting.module.css";
+import { useCharacter } from "../../contexts/CharacterContext";
 
 const InitialSetting = () => {
+  const { setCharacter } = useCharacter();
+  const navigate = useNavigate();
   const [selectedCharacter, setSelectedCharacter] = useState<string>("");
   const completeBtnRef = useRef<HTMLButtonElement>(null);
 
   const handleCharacterSelect = (character: string) => {
     setSelectedCharacter(character);
+    setCharacter(character as any);
     // 완료 버튼을 enabled 상태로 만들고 포커스
     if (completeBtnRef.current) {
       completeBtnRef.current.focus();
     }
+  };
+
+  const handleComplete = () => {
+    navigate("/"); // 홈으로 이동
   };
 
   return (
@@ -89,6 +98,7 @@ const InitialSetting = () => {
         </div>
         <button
           ref={completeBtnRef}
+          onClick={handleComplete}
           className={`${styles.completeBtn} ${
             selectedCharacter ? styles.enabled : styles.completeBtn_disabled
           }`}
