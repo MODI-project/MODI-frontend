@@ -1,4 +1,4 @@
-import EmotionTag from "./EmotionTag";
+// import EmotionTag from "./EmotionTag";
 
 export default function EmotionTagList() {
   return (

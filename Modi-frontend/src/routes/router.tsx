@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "../pages/home/HomePage";
-import DiaryPage from "../pages/diary/DiaryPage";
 import DiaryWritePage from "../pages/diary/DiaryWritePage";
 import RecordDetailPage from "../pages/diary/RecordDetailPage";
 import LoginPage from "../pages/login/LoginPage";
@@ -10,6 +9,7 @@ import Frame from "../components/common/frame/Frame";
 import InitialSetting from "../pages/login/InitialSetting";
 import SearchPage from "../pages/search/SearchPage";
 import DiaryEmotionTag from "../pages/diary/DiaryEmotionTag";
+import DiaryKeywordPage from "../pages/diary/DiaryAddressPage";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -26,16 +26,16 @@ const Router = () => {
       element: <SearchPage />,
     },
     {
-      path: "/diary",
-      element: <DiaryPage />,
-    },
-    {
       path: "/emotion",
       element: <DiaryEmotionTag />,
     },
     {
-      path: "/diarywrite",
+      path: "/detail",
       element: <DiaryWritePage />,
+    },
+    {
+      path: "/keyword",
+      element: <DiaryKeywordPage />,
     },
     {
       path: "/recorddetail",
