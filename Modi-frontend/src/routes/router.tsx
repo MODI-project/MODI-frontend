@@ -9,6 +9,7 @@ import Frame from "../components/common/frame/Frame";
 import InitialSetting from "../pages/login/InitialSetting";
 import SearchPage from "../pages/search/SearchPage";
 import DiaryEmotionTag from "../pages/diary/DiaryEmotionTag";
+import DiaryKeywordPage from "../pages/diary/DiaryAddressPage";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -31,6 +32,10 @@ const Router = () => {
     {
       path: "/detail",
       element: <DiaryWritePage />,
+    },
+    {
+      path: "/keyword",
+      element: <DiaryKeywordPage />,
     },
     {
       path: "/recorddetail",

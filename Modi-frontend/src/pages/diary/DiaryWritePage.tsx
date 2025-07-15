@@ -3,6 +3,8 @@ import ExifReader from "exifreader";
 import styles from "./DiaryWritePage.module.css";
 import Header from "../../components/common/Header";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
+import AddressInput from "../../components/DiaryPage/AddressInput";
+import KeywordInput from "../../components/DiaryPage/KeywordInput";
 
 const DiaryWritePage = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -124,30 +126,10 @@ const DiaryWritePage = () => {
           />
 
           {/* 주소 입력 */}
-          <div className={styles.input_section}>
-            <input
-              type="text"
-              placeholder="주소는 자동으로 입력돼요"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className={styles.input_field1}
-            />
-            <button className={styles.edit_button}>
-              <img src="/icons/edit.svg" alt="편집" />
-            </button>
-          </div>
+          <AddressInput address={address} setAddress={setAddress} />
 
           {/* 키워드 */}
-          <div className={styles.input_group}>
-            <label className={styles.input_label}>키워드를 입력해주세요</label>
-            <input
-              type="text"
-              placeholder="키워드를 3개 이상 입력해주세요"
-              value={keywords}
-              onChange={(e) => setKeywords(e.target.value)}
-              className={styles.input_field2}
-            />
-          </div>
+          <KeywordInput keywords={keywords} setKeywords={setKeywords} />
 
           {/* 내용 */}
           <div className={styles.input_group}>

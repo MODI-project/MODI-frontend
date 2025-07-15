@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 declare module "exif-js" {
   export function getData(
     img: HTMLImageElement,
