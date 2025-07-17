@@ -1,13 +1,10 @@
 import styles from "./KeywordInput.module.css";
 import { useNavigate } from "react-router-dom";
+import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 
-interface KeywordInputType {
-  keywords: string;
-  setKeywords: React.Dispatch<React.SetStateAction<string>>;
-}
-
-const KeywordInput = ({ keywords, setKeywords }: KeywordInputType) => {
+const KeywordInput = () => {
   const navigate = useNavigate();
+  const { draft, setDraft } = useDiaryDraft();
 
   return (
     <div className={styles.input_group}>
@@ -15,8 +12,8 @@ const KeywordInput = ({ keywords, setKeywords }: KeywordInputType) => {
       <input
         type="text"
         placeholder="키워드를 3개 이상 입력해주세요"
-        value={keywords}
-        onChange={(e) => setKeywords(e.target.value)}
+        value={draft.keywords}
+        onChange={(e) => setDraft({ keywords: e.target.value })}
         className={styles.input_field2}
         onClick={() => navigate("/keyword")}
       />

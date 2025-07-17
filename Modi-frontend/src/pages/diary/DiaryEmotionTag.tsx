@@ -1,8 +1,8 @@
 import styles from "./DiaryEmotionTag.module.css";
 import Header from "../../components/common/Header";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 
 const emotionList = [
   { en: "happy", ko: "기쁨" },
@@ -20,7 +20,7 @@ const emotionList = [
 const characterName = "momo"; //캐릭터 momo로 임시 설정
 
 const DiaryEmotionTag = () => {
-  const [selectedEmotion, setSelectedEmotion] = useState<string | null>(null);
+  const { draft, setDraft } = useDiaryDraft();
   const navigate = useNavigate();
 
   return (
@@ -31,7 +31,7 @@ const DiaryEmotionTag = () => {
           <p className={styles.ask}>오늘은 어떤 하루였나요?</p>
           <div className={styles.img_container}>
             {emotionList.map((emotion) => {
-              const isSelected = selectedEmotion === emotion.en;
+              const isSelected = draft.emotion === emotion.en;
               const imageName = isSelected
                 ? `clicked_${characterName}-${emotion.en}.svg`
                 : `${characterName}-${emotion.en}.svg`;
@@ -41,7 +41,7 @@ const DiaryEmotionTag = () => {
                     src={`/emotion_tag/${characterName}/${imageName}`}
                     alt={emotion.ko}
                     className={styles.emotion_image}
-                    onClick={() => setSelectedEmotion(emotion.en)}
+                    onClick={() => setDraft({ emotion: emotion.en })}
                   />
                   <span className={styles.emotion_label}>{emotion.ko}</span>
                 </div>
@@ -53,7 +53,7 @@ const DiaryEmotionTag = () => {
           location="next"
           label="다음"
           onClick={() => navigate("/detail")}
-          disabled={!selectedEmotion}
+          disabled={!draft.emotion}
         />
       </div>
     </div>

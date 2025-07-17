@@ -10,7 +10,6 @@ const DiaryWritePage = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [address, setAddress] = useState<string>("");
-  const [keywords, setKeywords] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
 
@@ -126,10 +125,10 @@ const DiaryWritePage = () => {
           />
 
           {/* 주소 입력 */}
-          <AddressInput address={address} setAddress={setAddress} />
+          <AddressInput />
 
           {/* 키워드 */}
-          <KeywordInput keywords={keywords} setKeywords={setKeywords} />
+          <KeywordInput />
 
           {/* 내용 */}
           <div className={styles.input_group}>
@@ -142,7 +141,7 @@ const DiaryWritePage = () => {
               rows={4}
             />
             <button className={styles.autogen_button}>
-              <img src="/icons/rotate_gray.svg" /> 자동 생성{" "}
+              <img src="/icons/rotate_gray.svg" /> 자동 생성
               {/* 온클릭 이벤트 달아야 함 */}
             </button>
           </div>
@@ -154,7 +153,7 @@ const DiaryWritePage = () => {
           location="next"
           label="다음"
           onClick={() => {
-            console.log({ imagePreview, address, keywords, content });
+            console.log({ imagePreview, address, content });
           }}
           disabled={false}
         />
