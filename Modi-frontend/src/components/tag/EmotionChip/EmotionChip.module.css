@@ -1,13 +1,14 @@
 .chip {
   display: inline-flex;
-  height: 30px;
+  width: auto;
+  height: 23px;
   padding: 4px 12px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
   border: 1px solid;
-  border-radius: 15px;
+  border-radius: 30px;
 }
 
 .label {

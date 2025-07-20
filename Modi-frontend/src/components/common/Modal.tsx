@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import styles from "./Modal.module.css";
 
@@ -14,6 +14,16 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   const startY = useRef(0);
   const [deltaY, setDeltaY] = useState(0);
   const [dragging, setDragging] = useState(false);
+
+  const [backdropInteractive, setBackdropInteractive] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setBackdropInteractive(false);
+      const id = setTimeout(() => setBackdropInteractive(true), 0);
+      return () => clearTimeout(id);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -43,15 +53,18 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   };
 
   return ReactDOM.createPortal(
-    <div className={styles.backdrop} onClick={onClose}>
+    <div
+      className={styles.backdrop}
+      onMouseUp={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
         className={styles.modal}
         style={{ transform: `translateY(${deltaY}px)` }}
-        onClick={(e) => e.stopPropagation()}
-        // 마우스 이벤트
-        onMouseDown={(e) => handleDragStart(e.clientY)}
-        onMouseMove={(e) => handleDragMove(e.clientY)}
-        onMouseUp={handleDragEnd}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
         // 터치 이벤트
         onTouchStart={(e) => handleDragStart(e.touches[0].clientY)}
         onTouchMove={(e) => handleDragMove(e.touches[0].clientY)}

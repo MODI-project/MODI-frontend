@@ -1,0 +1,62 @@
+.container {
+  position: relative;
+  top: 80px;
+  width: 360px;
+  height: 580px;
+}
+
+.info {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  height: 162px;
+  width: 328px;
+  padding: 0;
+}
+
+.character {
+  position: absolute;
+  top: 6px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.info {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  padding: 0 16px;
+}
+
+.wrapper {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.wrapper > :nth-child(1) {
+  position: absolute;
+  top: 30px;
+  right: 42px;
+}
+
+.wrapper > :nth-child(2) {
+  position: absolute;
+  top: 78px;
+  right: 16px;
+}
+
+.wrapper > :nth-child(3) {
+  position: absolute;
+  top: 126px;
+  right: 57px;
+}

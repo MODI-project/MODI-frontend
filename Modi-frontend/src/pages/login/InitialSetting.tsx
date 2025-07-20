@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/common/Header";
 import styles from "./InitialSetting.module.css";
+import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import { useCharacter } from "../../contexts/CharacterContext";
 
 const InitialSetting = () => {
@@ -20,7 +21,7 @@ const InitialSetting = () => {
   };
 
   const handleComplete = () => {
-    navigate("/"); // 홈으로 이동
+    navigate("/home"); // 홈으로 이동
   };
 
   return (
@@ -96,16 +97,12 @@ const InitialSetting = () => {
             </label>
           </div>
         </div>
-        <button
-          ref={completeBtnRef}
+        <PrimaryButton
+          location="login"
+          label="완료"
           onClick={handleComplete}
-          className={`${styles.completeBtn} ${
-            selectedCharacter ? styles.enabled : styles.completeBtn_disabled
-          }`}
           disabled={!selectedCharacter}
-        >
-          <span>완료</span>
-        </button>
+        />
       </div>
     </div>
   );

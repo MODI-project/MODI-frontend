@@ -3,8 +3,11 @@ import react from "@vitejs/plugin-react-swc";
 import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
-  plugins: [react(), svgr() as import("vite").PluginOption],
+  plugins: [svgr({ exportAsDefault: true }), react()],
   server: {
     open: true,
+  },
+  define: {
+    global: "globalThis",
   },
 });

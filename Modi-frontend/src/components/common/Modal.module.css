@@ -8,19 +8,24 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  width: 360px;
-  height: 801px;
-  flex-shrink: 0;
+
+  z-index: 1000;
 }
 
 .modal {
-  width: 360px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  margin: 0 auto;
+  max-width: 360px;
   height: 395px;
-  flex-shrink: 0;
 
   border-radius: 15px 15px 0px 0px;
   border-top: 1px solid #9c9c9c;
   background: #fbf9f3;
+  z-index: 1001;
 }
 
 .handle {

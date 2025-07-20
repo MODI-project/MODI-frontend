@@ -1,6 +1,9 @@
 import styles from "./RecordDetailPage.module.css";
 import Frame from "../../components/common/frame/Frame";
 import { useState } from "react";
+import SaveButton from "../../components/common/button/ButtonIcon/SaveButton";
+import FavoriteButton from "../../components/common/button/ButtonIcon/FavoriteButton";
+import EditButton from "../../components/common/button/ButtonIcon/EditButton";
 
 const RecordDetailPage = () => {
   const [showMessage, setShowMessage] = useState(false);
@@ -24,35 +27,20 @@ const RecordDetailPage = () => {
     }, 3000);
   };
 
+  const handleEditClick = () => {
+    setMessageText("수정 버튼이 클릭되었습니다.");
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 3000);
+  };
+
   return (
     <div className={styles.RecordDetailPage}>
-      <div className={styles.TopBar}>뒤로가기 버튼 + 일기 기록하기</div>
       <div className={styles.btn_container}>
-        <button className={styles.btn} value="저장" onClick={handleSaveClick}>
-          <img
-            className={styles.btn_img}
-            src={"../../../public/icons/save.svg"}
-            alt="저장"
-          />
-        </button>
-        <button
-          className={styles.btn}
-          value="즐겨찾기"
-          onClick={handleFavoriteClick}
-        >
-          <img
-            className={styles.btn_img}
-            src={"../../../public/icons/favorite.svg"}
-            alt="즐겨찾기"
-          />
-        </button>
-        <button className={styles.btn} value="수정">
-          <img
-            className={styles.btn_img}
-            src={"../../../public/icons/edit.svg"}
-            alt="수정"
-          />
-        </button>
+        <SaveButton onClick={handleSaveClick} />
+        <FavoriteButton onClick={handleFavoriteClick} isFavorite={false} />
+        <EditButton onClick={handleEditClick} />
         <button className={styles.btn} value="삭제">
           <img
             className={styles.btn_img}

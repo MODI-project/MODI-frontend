@@ -186,7 +186,7 @@
 }
 
 /* 완료 버튼 - 캐릭터 선택 후 활성화 */
-.completeBtn.enabled {
+/* .completeBtn.enabled {
   background: #5c5c5c;
   cursor: pointer;
   opacity: 1;
@@ -205,4 +205,4 @@
   line-height: 22px;
   letter-spacing: -0.43px;
   text-align: center;
-}
+} */

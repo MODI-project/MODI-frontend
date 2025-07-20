@@ -1,11 +1,14 @@
 import "./App.css";
 import Router from "./routes/router";
 import { CharacterProvider } from "./contexts/CharacterContext";
+import { DiaryDraftProvider } from "./contexts/DiaryDraftContext";
 
 function App() {
   return (
     <CharacterProvider>
-      <Router />
+      <DiaryDraftProvider>
+        <Router />
+      </DiaryDraftProvider>
     </CharacterProvider>
   );
 }
