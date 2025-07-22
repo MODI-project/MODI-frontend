@@ -8,17 +8,17 @@
   align-items: center;
   gap: 9px;
   flex-shrink: 0;
-  border-radius: 5.647px;
+  border-radius: 7px;
   border: 0.941px solid var(--gray3, #9c9c9c);
   background: var(--color1, #fbfbfb);
 }
 
 .inner-border {
-  width: 115.765px;
-  height: 22.588px;
+  width: 117.765px;
+  height: 26.588px;
   flex-shrink: 0;
-  border-radius: 3.765px;
-  border: 0.941px solid;
+  border-radius: 5px;
+  border: 1px solid;
   background: var(--color1, #fbfbfb);
 
   display: flex;
@@ -28,10 +28,6 @@
 }
 
 .label {
-  position: absolute;
-  right: 45.882px;
-  top: 5px;
-
   color: #2c2c2c;
   text-align: center;
   font-feature-settings: "liga" off, "clig" off;

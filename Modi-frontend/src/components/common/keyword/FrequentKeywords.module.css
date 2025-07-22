@@ -1,0 +1,8 @@
+.title {
+  font-family: var(--font-nanum-square);
+  font-weight: 600;
+  font-size: var(--font-subheadline);
+  line-height: 20px;
+  letter-spacing: -0.23px;
+  margin-top: 32px;
+}

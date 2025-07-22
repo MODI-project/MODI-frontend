@@ -1,0 +1,49 @@
+.container {
+  position: relative;
+  top: 80px;
+  width: 360px;
+  height: 580px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.info {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+  padding: 0 16px;
+}
+
+.wrapper {
+  height: auto;
+  width: 100%;
+  max-width: 200px;
+  margin-right: 16px;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.wrapper > :nth-child(1) {
+  position: relative;
+  left: 5px;
+}
+
+.wrapper > :nth-child(2) {
+  position: relative;
+  left: 30px;
+}
+
+.wrapper > :nth-child(3) {
+  position: relative;
+  left: -10px;
+}

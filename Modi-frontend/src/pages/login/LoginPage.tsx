@@ -1,20 +1,21 @@
 import { useNavigate } from "react-router-dom";
+import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import styles from "./LoginPage.module.css";
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-
   const handleGoogleLogin = () => {
-    // 로그인 로직 여기서 구현!
-    navigate("/test-initialsetting");
+    window.location.href = "http://localhost:5173/api/oauth2/authorize/google";
+    // .env에 api 서버 주소를 저장하는 방법도 고려!
   };
 
   return (
     <div className={styles.loginPage_wrapper}>
       <div className={styles.loginPage}>
-        <button className={styles.googleLogin_btn} onClick={handleGoogleLogin}>
-          <span>구글로 시작하기</span>
-        </button>
+        <PrimaryButton
+          location="login"
+          label="구글로 시작하기"
+          onClick={handleGoogleLogin}
+        />
       </div>
     </div>
   );

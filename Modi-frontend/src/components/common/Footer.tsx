@@ -23,7 +23,7 @@ const Footer = () => {
               src={iconSrc}
               alt={icon}
               onClick={() => {
-                navigator(`/${icon === "add" ? "diary" : icon}`);
+                navigator(`/${icon === "add" ? "emotion" : icon}`);
               }}
             />
           );

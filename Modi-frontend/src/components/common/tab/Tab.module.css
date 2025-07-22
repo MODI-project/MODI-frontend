@@ -6,19 +6,20 @@
 }
 
 .selected {
-  color: #2c2c2c;
-  border-bottom: 1.5px solid #000;
+  color: #2c2c2c !important;
+  border-bottom: 1.5px solid #000 !important;
 }
 
 .unselected {
-  color: #9c9c9c;
+  color: #9c9c9c !important;
+  border-bottom: none !important;
 }
 
 .label {
   text-align: center;
   font-feature-settings: "liga" off, "clig" off;
 
-  font-family: NanumSquareRoundOTF;
+  font-family: "NanumSquareRound", sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;

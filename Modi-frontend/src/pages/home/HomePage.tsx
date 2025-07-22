@@ -1,28 +1,31 @@
+import React, { useState } from "react";
 import style from "./HomePage.module.css";
 import Footer from "../../components/common/Footer";
+
+import PolaroidView from "./PolaroidView";
+import PhotoView from "./PhotoView";
+
 import Header from "../../components/common/Header";
 
-// import HomeHeader from "./components/HomeHeader";
-// import PolaroidView from "./components/PolaroidView";
-// import PhotoView from "./components/PhotoView";
-
-const HomePage = () => {
+export default function HomePage() {
+  const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
   return (
     <div className={style.home_wrapper}>
       <div className={style.home_container}>
-        <Header />
-        {/* <HomeHeader viewType={viewType} onChangeView={setViewType} />
+        <Header
+          left="/images/logo/Modi.svg"
+          right="/icons/notification_O.svg"
+        />
+
         <main className={style.mainContent}>
-          {viewType === "polaroid" ? (
-            <PolaroidView diary={todayDiary} />
+          {viewType === "photo" ? (
+            <PhotoView onSwitchView={() => setViewType("polaroid")} />
           ) : (
-            <PhotoView diaries={monthDiaries} />
+            <PolaroidView onSwitchView={() => setViewType("photo")} />
           )}
-        </main> */}
+        </main>
         <Footer />
       </div>
     </div>
   );
-};
-
-export default HomePage;
+}

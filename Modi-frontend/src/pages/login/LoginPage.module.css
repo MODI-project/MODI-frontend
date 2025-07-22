@@ -1,7 +1,16 @@
+.loginPage_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .loginPage {
   position: relative;
   width: 360px;
   height: 800px;
+  /* width: 100vw;
+  height: 100vh;
+  max-width: 400px; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -13,13 +22,14 @@
   background-repeat: no-repeat;
 }
 
-.loginPage_wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.loginPage_wrapper > PrimaryButton {
+  position: absolute;
+  height: 58px;
+  box-sizing: border-box;
+  padding: 17px;
+  text-align: center;
 }
-
-.googleLogin_btn {
+/* .googleLogin_btn {
   position: absolute;
   bottom: 46px;
   width: 328px;
@@ -30,9 +40,9 @@
 
   border-radius: 15px;
   background: #5c5c5c;
-}
+} */
 
-.googleLogin_btn span {
+/* .googleLogin_btn span {
   color: #fff;
   font-feature-settings: "liga" off, "clig" off;
   font-family: "NanumSquareRound", sans-serif;
@@ -41,6 +51,6 @@
   font-weight: 400;
   width: 97px;
   height: 22px;
-  line-height: 22px; /* 146.667% */
+  line-height: 22px; 
   letter-spacing: -0.43px;
-}
+} */

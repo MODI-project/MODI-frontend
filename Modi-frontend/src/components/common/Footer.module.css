@@ -1,12 +1,15 @@
 .footer_wrapper {
-  position: fixed;
+  position: absolute;
   bottom: 0;
-  width: 360px;
+  width: 100%;
   box-sizing: border-box;
   height: 87px;
   background-color: #fbf9f3;
   margin: 0 auto;
   padding: 23px 33px 38px 33px;
+  z-index: 100;
+  border-radius: 13.74px 13.74px 0 0;
+  border-top: 1px solid var(--color-gray2);
 }
 
 .footer_container {

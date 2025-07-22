@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "./Tab.module.css";
 
 interface TabProps {
@@ -7,14 +8,23 @@ interface TabProps {
 }
 
 export default function Tab({ label, selected, onClick }: TabProps) {
+  console.log(
+    label,
+    "selected:",
+    selected,
+    "→ class:",
+    selected ? styles.selected : styles.unselected
+  );
   return (
-    <div
-      className={`${styles.container} ${
-        selected ? styles.selected : styles.unselected
-      }`}
-      onClick={onClick}
-    >
-      <span className={styles.label}>{label}</span>
+    <div className={styles.container}>
+      <span
+        className={`${styles.label} ${
+          selected ? styles.selected : styles.unselected
+        }`}
+        onClick={onClick}
+      >
+        {label}
+      </span>
     </div>
   );
 }

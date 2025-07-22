@@ -1,0 +1,32 @@
+.DiaryStyle_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.DiaryStyle_container {
+  display: flex;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 400px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url("/images/background/normal-bg.svg");
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+}
+
+.main_container {
+  width: 81.5%;
+  height: 100%;
+  padding-top: 40%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}

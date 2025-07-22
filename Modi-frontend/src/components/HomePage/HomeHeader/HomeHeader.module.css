@@ -1,0 +1,72 @@
+.header {
+  position: absolute;
+  top: 125px;
+  left: -50%;
+  transform: translateX(50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  height: 39px;
+  width: auto;
+  width: 100%;
+}
+
+.center {
+  position: relative;
+  left: -50%;
+  transform: translateX(50%);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+
+.frame {
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  gap: 8px;
+}
+
+.nav {
+  background-color: transparent;
+  width: 6px;
+  height: 12px;
+  aspect-ratio: 1/2;
+  padding: 0;
+}
+
+.label {
+  color: #404040;
+
+  width: auto;
+  height: auto;
+
+  white-space: "nowrap";
+  text-align: center;
+  font-family: "DM Sans";
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: -0.5px;
+  text-transform: capitalize;
+}
+
+.modeSwitch {
+  display: flex;
+
+  position: absolute;
+  right: 16px;
+
+  width: 40px;
+  height: 39px;
+  padding: 0px;
+  justify-content: center;
+  align-items: center;
+  gap: 11px;
+  flex-shrink: 0;
+}

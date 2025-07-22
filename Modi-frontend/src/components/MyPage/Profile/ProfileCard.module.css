@@ -1,0 +1,82 @@
+.card {
+  display: flex;
+  padding: 18px;
+  flex-direction: row;
+  gap: 36px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+
+  border-radius: 13.495px;
+  border: 0.9px solid var(--gray2, #cbcbc5);
+  background: var(--color2, #fbf9f3);
+}
+
+.frame {
+  height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+.frame_info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10.8px;
+}
+
+.profileImg {
+  width: 58px;
+  height: 58px;
+  aspect-ratio: 1/1;
+  border-radius: 58px;
+  background: url(../../../../public/icons/profile_img.svg) lightgray 50% /
+      cover no-repeat,
+    #d9d9d9;
+}
+
+.info {
+  display: flex;
+  width: auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3.599px;
+}
+
+.nickname {
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  font-family: "NanumSquareRound", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+}
+
+.email {
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  font-family: "NanumSquareRound";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.editBtn {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  padding: 7px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 20px;
+  border: 1px solid var(--gray2, #cbcbc5);
+  background: #eeedeb;
+}

@@ -1,0 +1,37 @@
+.toggle_container {
+  position: relative;
+  width: 41px;
+  height: 22px;
+  border-radius: 11px;
+  transition: background-color 0.3s;
+}
+
+.toggle_switch.on {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 8px;
+  background-color: var(--color-white, #fff);
+  transition: left 0.3s;
+}
+
+.toggle_container:has(.toggle_switch.on) {
+  background: #4fbe79;
+}
+
+.toggle_switch.off {
+  position: absolute;
+  top: 4px;
+  left: 24px;
+  width: 14px;
+  height: 14px;
+  border-radius: 8px;
+  background-color: var(--color-white, #fff);
+  transition: left 0.3s;
+}
+
+.toggle_container:has(.toggle_switch.off) {
+  background: var(--color-gray2, #cbcbc5);
+}

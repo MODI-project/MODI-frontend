@@ -1,4 +1,7 @@
 .button {
+  /* 버튼 위치 설정 - feat/jsh/2025-07-14 */
+  position: absolute; /* position 속성 추가 */
+  bottom: 46px; /* 현재 로그인, 초기세팅 화면에서는 둘 다 같은 bottom 값을 가지고 있어서 이렇게 해둘게요 ! */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -6,25 +9,23 @@
   flex-shrink: 0;
 
   border-radius: 15px;
-  background-color: #5c5c5c;
 }
 
 .primary {
   width: 329px;
   height: 58px;
-  padding: 17px 133px;
+  padding: 0;
 }
 
 .small {
   width: 124px;
   height: 44px;
-  padding: 17px 133px;
+  padding: 0;
 }
 
 .label {
   color: #fff;
   font-feature-settings: "liga" off, "clig" off;
-
   font-family: NanumSquareRound;
   font-size: 15px;
   font-style: normal;
@@ -34,15 +35,20 @@
 }
 
 .button:disabled {
-  display: flex;
-  width: 329px;
-  height: 58px;
-  padding: 17px 133px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
+  filter: grayscale(100%);
+  cursor: not-allowed;
+  background-color: #cbcbc5;
+}
 
-  border-radius: 15px;
+.next {
+  position: absolute;
+  bottom: 6%;
+}
+
+.enabled {
+  background-color: #5c5c5c;
+}
+
+.completeBtn_disabled {
   background-color: #cbcbc5;
 }
