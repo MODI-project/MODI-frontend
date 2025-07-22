@@ -1,6 +1,7 @@
 export interface DiaryDraft {
   emotion: string | null;
   address: string;
+  dong: string;
   keywords: string[];
   content: string;
   image: string | null;
@@ -18,6 +19,7 @@ export interface DiaryDraftContextType {
 export const defaultDraft: DiaryDraft = {
   emotion: null,
   address: "",
+  dong: "",
   keywords: [],
   content: "",
   image: null,

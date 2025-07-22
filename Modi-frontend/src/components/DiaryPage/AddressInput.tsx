@@ -2,22 +2,31 @@ import { useState } from "react";
 import styles from "./AddressInput.module.css";
 import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 import BottomSheet from "../common/BottomSheet";
-const mockAddresses = [
-  "서울시 어쩌구 어쩌구",
-  "서울시 어쩌구",
-  "경기도 어쩌구",
-  "경기도 수원시 어쩌구",
-  "경기도",
-  "경기도 화성",
-  "경기도 ㅇㅇㅇ",
-];
+import { searchKakaoAddress } from "../../utils/searchAddress";
+import type { AddressResult } from "../../utils/searchAddress";
 
 const AddressInput = () => {
   const { draft, setDraft } = useDiaryDraft();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
+  const [results, setResults] = useState<AddressResult[]>([]);
 
-  const filtered = mockAddresses.filter((addr) => addr.includes(search.trim()));
+  const handleSearch = () => {
+    setHasSearched(true);
+    const trimmed = search.trim();
+    setResults([]);
+    if (!trimmed) return;
+
+    searchKakaoAddress(trimmed)
+      .then((data) => setResults(data))
+      .catch((err) => console.error(err));
+  };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <>
@@ -32,7 +41,12 @@ const AddressInput = () => {
         <button
           type="button"
           className={styles.edit_button}
-          onClick={() => setIsSheetOpen(true)}
+          onClick={() => {
+            setIsSheetOpen(true);
+            setSearch("");
+            setResults([]);
+            setHasSearched(false);
+          }}
         >
           <img src="/icons/edit.svg" alt="편집" />
         </button>
@@ -45,24 +59,39 @@ const AddressInput = () => {
             placeholder="주소 검색"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
             className={styles.search_input}
           />
-          <img className={styles.search_icon} src="/icons/black_search.svg" />
+          <img
+            className={styles.search_icon}
+            src="/icons/black_search.svg"
+            alt="검색"
+            onClick={handleSearch}
+            style={{ cursor: "pointer" }}
+          />
         </div>
 
         <ul className={styles.address_list}>
-          {filtered.map((addr, i) => (
-            <li
-              key={i}
-              className={styles.address_item}
-              onClick={() => {
-                setDraft({ address: addr });
-                setIsSheetOpen(false);
-              }}
-            >
-              {addr}
-            </li>
-          ))}
+          {hasSearched && results.length === 0 ? (
+            <li className={styles.address_item}>🔍 검색 결과가 없습니다.</li>
+          ) : (
+            results.map((addr, i) => (
+              <li
+                key={i}
+                className={styles.address_item}
+                onClick={() => {
+                  setDraft({
+                    address: addr.fullAddress,
+                    dong: addr.dong,
+                  });
+                  setIsSheetOpen(false);
+                  setHasSearched(false);
+                }}
+              >
+                {addr.fullAddress} ({addr.dong})
+              </li>
+            ))
+          )}
         </ul>
       </BottomSheet>
     </>

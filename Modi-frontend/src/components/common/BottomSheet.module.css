@@ -10,7 +10,6 @@
 .sheet {
   width: 100%;
   max-width: 400px;
-  height: 704px;
   background-color: var(--color-modal);
   border-radius: 16px 16px 0 0;
   border-top: 1.5px solid var(--color-gray3);

@@ -2,6 +2,7 @@
   position: absolute;
   top: 0;
   width: 100%;
+  max-width: 400px;
   box-sizing: border-box;
   height: 140px;
   background-color: #fbf9f3;
@@ -34,10 +35,10 @@
 
 .left {
   position: absolute;
-  left: 12%;
+  left: 0px;
 }
 
 .right {
   position: absolute;
-  right: 12%;
+  right: 0px;
 }

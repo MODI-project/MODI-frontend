@@ -30,6 +30,7 @@ const DiaryEmotionTag = () => {
           left="/icons/back.svg"
           middle="일기 기록하기"
           right="/icons/X.svg"
+          write={true}
         />
         <div className={styles.main_container}>
           <p className={styles.ask}>오늘은 어떤 하루였나요?</p>

@@ -22,6 +22,12 @@
   background-repeat: no-repeat;
 }
 
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .photoGrid {
   position: relative;
   top: -16px;
@@ -67,21 +73,28 @@
 }
 
 .content {
-  position: relative;
-  top: 80px;
-  width: 360px;
-  height: 580px;
+  flex: 1 0 auto;
+  padding-top: 190px;
+  width: 100%;
+  max-width: 400px; /* 최대 크기는 모바일 기준 */
+  height: auto; /* 내용물에 맞게 */
+  margin: 0 auto; /* 가운데 정렬 */
+  box-sizing: border-box;
+  gap: clamp(1rem, 5vw, 2rem);
+  display: flex;
+  flex-direction: column;
 }
 
 .carousel {
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   gap: 0px;
   overflow: hidden;
-  padding: 0 80px;
   height: 338px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .slot1 {
@@ -120,7 +133,21 @@
 .staticInfo {
   position: relative;
   display: flex;
-  justify-content: center;
-  gap: 160px;
-  padding: 0 16px;
+  justify-content: space-between;
+
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  margin: 0 auto;
+  padding: 0 0px;
+}
+
+.character {
+  margin-left: 16px;
 }

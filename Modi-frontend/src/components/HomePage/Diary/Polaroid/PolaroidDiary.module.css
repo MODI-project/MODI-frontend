@@ -5,21 +5,6 @@
   height: 580px;
 }
 
-.info {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-
-  height: 162px;
-  width: 328px;
-  padding: 0;
-}
-
-.character {
-  position: absolute;
-  top: 6px;
-}
-
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -37,26 +22,28 @@
 }
 
 .wrapper {
+  height: auto;
+  width: 100%;
+  max-width: 200px;
+  margin-right: 16px;
+
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 0.5rem;
 }
 
 .wrapper > :nth-child(1) {
-  position: absolute;
-  top: 30px;
-  right: 42px;
+  position: relative;
+  left: 5px;
 }
 
 .wrapper > :nth-child(2) {
-  position: absolute;
-  top: 78px;
-  right: 16px;
+  position: relative;
+  left: 30px;
 }
 
 .wrapper > :nth-child(3) {
-  position: absolute;
-  top: 126px;
-  right: 57px;
+  position: relative;
+  left: -10px;
 }
