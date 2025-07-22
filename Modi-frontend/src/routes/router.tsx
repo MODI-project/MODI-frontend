@@ -5,12 +5,12 @@ import RecordDetailPage from "../pages/diary/RecordDetailPage";
 import LoginPage from "../pages/login/LoginPage";
 import MapPage from "../pages/map/MapPage";
 import MyPage from "../pages/mypage/MyPage";
-import Frame from "../components/common/frame/Frame";
-import InitialSetting from "../pages/login/InitialSetting";
+import InfoSetting from "../pages/login/InfoSetting";
 import SearchPage from "../pages/search/SearchPage";
 import DiaryEmotionTag from "../pages/diary/DiaryEmotionTag";
 import DiaryKeywordPage from "../pages/diary/DiaryKeywordPage";
 import DiaryStylePage from "../pages/diary/DiaryStylePage";
+import OAuthCallbackPage from "../pages/oauth/OAuthCallbakPage";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -58,18 +58,13 @@ const Router = () => {
       path: "/mypage",
       element: <MyPage />,
     },
-    // test-frame, test-initialsetting 은 테스트용 라우터
     {
-      path: "/test-frame",
-      element: <Frame />,
+      path: "/information-setting",
+      element: <InfoSetting />,
     },
     {
-      path: "/test-initialsetting",
-      element: <InitialSetting />,
-    },
-    {
-      path: "/test-recorddetail",
-      element: <RecordDetailPage />,
+      path: "/oauth/callback",
+      element: <OAuthCallbackPage />,
     },
   ]);
   return <RouterProvider router={router} />;
