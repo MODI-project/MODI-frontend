@@ -39,7 +39,7 @@
   font-feature-settings: "liga" off, "clig" off;
 
   /* headline */
-  font-family: var(--font-nanum-square, "NanumSquareRound");
+  font-family: var(--font-nanum-squareB);
   font-size: 16px;
   font-style: bold;
   font-weight: 700;
@@ -53,7 +53,7 @@
   font-feature-settings: "liga" off, "clig" off;
 
   /* headline */
-  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-family: var(--font-nanum-squareB);
   font-size: 16px;
   font-style: normal;
   font-weight: 700;

@@ -150,8 +150,8 @@
   font-feature-settings: "liga" off, "clig" off;
 
   /* sudheadline */
-  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
-  font-size: 14px;
+  font-family: var(--font-nanum-squareB);
+  font-size: var(--subheadline);
   font-style: normal;
   font-weight: 700;
   line-height: 20px; /* 142.857% */
@@ -170,7 +170,7 @@
   font-feature-settings: "liga" off, "clig" off;
 
   /* sudheadline */
-  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-family: var(--font-nanum-squareB);
   font-size: 14px;
   font-style: normal;
   font-weight: 700;
@@ -198,7 +198,7 @@
   font-feature-settings: "liga" off, "clig" off;
 
   /* sudheadline */
-  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-family: var(--font-nanum-squareB);
   font-size: 14px;
   font-style: normal;
   font-weight: 700;

@@ -52,7 +52,7 @@
   box-sizing: border-box;
 
   border: none;
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   font-size: var(--font-body);
 }
 .search_icon {

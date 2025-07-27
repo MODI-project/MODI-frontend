@@ -1,7 +1,5 @@
 import styles from "./RecordDetailPage.module.css";
-import { useNavigate } from "react-router-dom";
 import Header from "../../components/common/Header";
-import Footer from "../../components/common/Footer";
 import Frame from "../../components/common/frame/Frame";
 import { useState } from "react";
 import SaveButton from "../../components/common/button/ButtonIcon/SaveButton";

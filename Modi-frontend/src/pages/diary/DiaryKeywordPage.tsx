@@ -2,7 +2,7 @@ import styles from "./DiaryKeywordPage.module.css";
 import Header from "../../components/common/Header";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import { useNavigate } from "react-router-dom";
-import KeywordInput from "../../components/DiaryPage/KeywordInput";
+import KeywordInput from "../../components/DiaryPage/DetailPage/KeywordInput";
 import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 import FrequentKeywords from "../../components/common/keyword/FrequentKeywords";
 

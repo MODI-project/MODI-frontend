@@ -21,7 +21,7 @@
   position: relative;
 }
 .func {
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   font-weight: 600;
   font-size: var(--font-headline);
   line-height: 22px;

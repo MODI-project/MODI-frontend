@@ -1,9 +1,9 @@
 import { useState } from "react";
 import styles from "./AddressInput.module.css";
-import { useDiaryDraft } from "../../hooks/useDiaryDraft";
-import BottomSheet from "../common/BottomSheet";
-import { searchKakaoAddress } from "../../utils/searchAddress";
-import type { AddressResult } from "../../utils/searchAddress";
+import { useDiaryDraft } from "../../../hooks/useDiaryDraft";
+import BottomSheet from "../../common/BottomSheet";
+import { searchKakaoAddress } from "../../../utils/searchAddress";
+import type { AddressResult } from "../../../utils/searchAddress";
 
 const AddressInput = () => {
   const { draft, setDraft } = useDiaryDraft();

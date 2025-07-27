@@ -21,7 +21,7 @@
   font-feature-settings: "liga" off, "clig" off;
 
   /* sudheadline */
-  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-family: var(--font-nanum-squareB);
   font-size: 14px;
   font-style: normal;
   font-weight: 700;
