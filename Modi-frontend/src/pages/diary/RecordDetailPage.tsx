@@ -8,10 +8,52 @@ import SaveButton from "../../components/common/button/ButtonIcon/SaveButton";
 import FavoriteButton from "../../components/common/button/ButtonIcon/FavoriteButton";
 import EditButton from "../../components/common/button/ButtonIcon/EditButton";
 import DeleteButton from "../../components/common/button/ButtonIcon/DeleteButton";
+import { useFrameTemplate } from "../../contexts/FrameTemplate";
+
+const pageBackgrounds = {
+  basic: {
+    none: "",
+    pink: "/images/background/recordDetailPage/basicDetail/pink-detail.svg",
+    yellow: "/images/background/recordDetailPage/basicDetail/yellow-detail.svg",
+    green: "/images/background/recordDetailPage/basicDetail/green-detail.svg",
+    blue: "/images/background/recordDetailPage/basicDetail/blue-detail.svg",
+    cream: "/images/background/recordDetailPage/basicDetail/cream-detail.svg",
+    star: "/images/background/recordDetailPage/basicDetail/star-detail.svg",
+    smallDot:
+      "/images/background/recordDetailPage/basicDetail/smallDot-detail.svg",
+    bigDot: "/images/background/recordDetailPage/basicDetail/bigDot-detail.svg",
+  },
+  character: {
+    none: "",
+    momo: "/images/background/recordDetailPage/characterDetail/momo-detail.svg",
+    boro: "/images/background/recordDetailPage/characterDetail/boro-detail.svg",
+    lumi: "/images/background/recordDetailPage/characterDetail/lumi-detail.svg",
+    zuni: "/images/background/recordDetailPage/characterDetail/zuni-detail.svg",
+  },
+};
 
 const RecordDetailPage = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
+
+  const {
+    frameType,
+    setFrameType,
+    basicFrameId,
+    setBasicFrameId,
+    characterFrameId,
+    setCharacterFrameId,
+  } = useFrameTemplate();
+
+  // Frame.tsx에서 사용하는 값들을 콘솔에 출력
+  console.log(
+    "RecordDetailPage - frameType:",
+    frameType,
+    "basicFrameId:",
+    basicFrameId,
+    "characterFrameId:",
+    characterFrameId
+  );
 
   const handleSaveClick = () => {
     setMessageText("사진이 갤러리에 저장되었습니다.");
@@ -49,6 +91,15 @@ const RecordDetailPage = () => {
 
   return (
     <div className={styles.RecordDetailPage}>
+      <div
+        className={styles.page_detail_container}
+        style={{
+          backgroundImage:
+            frameType === "basic"
+              ? `url(${pageBackgrounds.basic[basicFrameId]})`
+              : `url(${pageBackgrounds.character[characterFrameId]})`,
+        }}
+      ></div>
       <Header
         left="/icons/arrow_left.svg"
         middle="일기 상세보기"
@@ -68,7 +119,6 @@ const RecordDetailPage = () => {
           <span className={styles.message_text}>{messageText}</span>
         </div>
       )}
-      <Footer />
     </div>
   );
 };
