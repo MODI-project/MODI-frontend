@@ -1,16 +1,23 @@
-/* 
-    <div className={styles.frame_wrapper}>
-      <div className={styles.frame_front}></div>
-      <div className={styles.frame_back}></div>
-      <div className={styles.image_container}></div>
-    </div>
- */
-
 .frame_wrapper {
   position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 247px;
+  max-height: 346px;
+  cursor: pointer;
+}
+
+/* 프레임 전면부 - 일기 사진 + 한 줄 요약 표시 */
+
+.fore_frame {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: flex;
-  width: 247px;
-  height: 346px;
+  width: 100%;
+  max-width: 247px;
+  height: 100%;
+  max-height: 346px;
   box-sizing: border-box;
   padding: 16px 16px 12px 16px;
   flex-direction: column;
@@ -21,14 +28,25 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  opacity: 1;
+  visibility: visible;
+  z-index: 2;
+}
+
+.fore_frame.flipped {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .frame_front {
   position: absolute;
   top: 0;
   left: 0;
-  width: 245px;
-  height: 344px;
+  width: 100%;
+  max-width: 246px;
+  height: 100%;
+  max-height: 344px;
   border-radius: 15px;
   border: 1px solid var(--gray3, #9c9c9c);
   background-size: cover;
@@ -41,8 +59,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 245px;
-  height: 344px;
+  width: 100%;
+  height: 100%;
   border-radius: 15px;
   background-size: cover;
   background-repeat: no-repeat;
@@ -51,8 +69,8 @@
 }
 
 .image_container {
-  width: 215px;
-  height: 286px;
+  width: 100%;
+  height: 100%;
   border-radius: 15px;
   border: none;
   background: none;
@@ -60,18 +78,15 @@
 }
 
 .image {
-  width: 215px;
-  height: 286px;
+  width: 100%;
+  height: 100%;
   flex-shrink: 0;
   border-radius: 5px;
 }
 
 .comment_container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  width: 247px;
-  height: 346px;
   border-radius: 15px;
   border: none;
   z-index: 2;
@@ -85,4 +100,144 @@
   font-style: normal;
   font-weight: 400;
   line-height: 19.303px; /* 113.546% */
+}
+
+/* 프레임 후면부 - 일기 내용 표시 */
+
+.back_frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 24px 20px;
+  align-items: flex-start;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 15px;
+  border: 1px solid var(--gray3, #9c9c9c);
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1;
+}
+
+.back_frame.flipped {
+  opacity: 1;
+  visibility: visible;
+}
+
+.diary_comment_container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.diary_info_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.diary_date {
+  flex: 1 0 0;
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* sudheadline */
+  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
+}
+
+.tag_container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tag {
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* sudheadline */
+  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
+}
+
+.more_tag {
+  color: var(--gray3, #9c9c9c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* Caption2 */
+  font-family: NanumSquareRound;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 13px;
+  letter-spacing: 0.06px;
+}
+
+.place_info {
+  flex: 1 0 0;
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* sudheadline */
+  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
+}
+
+.diary_detail_container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.diary_detail_title {
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* body */
+  font-family: NanumSquareRound;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px; /* 157.143% */
+  letter-spacing: -0.43px;
+}
+
+.diary_detail_content {
+  flex: 1 0 0;
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* body */
+  font-family: NanumSquareRound;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px; /* 157.143% */
+  letter-spacing: -0.43px;
 }

@@ -1,6 +1,6 @@
 import { useFrameTemplate } from "../../../contexts/FrameTemplate";
 import styles from "./Frame.module.css";
-
+import { useState } from "react";
 // 프레임별 background 이미지 경로 예시
 const frameWrapperBackgrounds = {
   basic: {
@@ -66,6 +66,12 @@ const frameFrontBackgrounds = {
 };
 
 const Frame = () => {
+  const [isFlipped, setIsFlipped] = useState(false); // 프레임 클릭 시 앞뒤 전환
+
+  const handleFrameClick = () => {
+    setIsFlipped(!isFlipped);
+  };
+
   const { frameType, basicFrameId, characterFrameId } = useFrameTemplate();
   console.log(
     "frameType:",
@@ -93,7 +99,6 @@ const Frame = () => {
 
   const isColor = wrapperBg?.startsWith("var(") || wrapperBg?.startsWith("#");
 
-  // background 스타일을 올바르게 적용
   const wrapperStyle = isColor
     ? { background: wrapperBg }
     : { backgroundImage: `url(${wrapperBg})` };
@@ -102,14 +107,44 @@ const Frame = () => {
   const frontStyle = frontBg ? { backgroundImage: `url(${frontBg})` } : {};
 
   return (
-    <div className={styles.frame_wrapper} style={wrapperStyle}>
-      <div className={styles.frame_back} style={backStyle}></div>
-      <div className={styles.frame_front} style={frontStyle}></div>
-      <div className={styles.image_container}>
-        <img className={styles.image} src="https://placehold.co/215x286" />
+    <div
+      className={styles.frame_wrapper}
+      style={wrapperStyle}
+      onClick={handleFrameClick}
+    >
+      <div
+        className={`${styles.fore_frame} ${isFlipped ? styles.flipped : ""}`}
+      >
+        <div className={styles.frame_back} style={backStyle}></div>
+        <div className={styles.frame_front} style={frontStyle}></div>
+        <div className={styles.image_container}>
+          <img className={styles.image} src="https://placehold.co/215x286" />
+        </div>
+        <div className={styles.comment_container}>
+          <span className={styles.comment}>일기 내용 한 줄 요약</span>
+        </div>
       </div>
-      <div className={styles.comment_container}>
-        <span className={styles.comment}>일기 내용 한 줄 요약</span>
+      <div
+        className={`${styles.back_frame} ${isFlipped ? styles.flipped : ""}`}
+      >
+        <div className={styles.diary_comment_container}>
+          <div className={styles.diary_info_container}>
+            <span className={styles.diary_date}>2000/00/00</span>
+            <div className={styles.tag_container}>
+              <span className={styles.tag}>#태그</span>
+              <span className={styles.tag}>#태그</span>
+              <span className={styles.tag}>#태그</span>
+              <span className={styles.more_tag}>더보기</span>
+            </div>
+            <span className={styles.place_info}>장소 정보</span>
+          </div>
+          <div className={styles.diary_detail_container}>
+            <span className={styles.diary_detail_title}>세부 내용</span>
+            <span className={styles.diary_detail_content}>
+              어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
