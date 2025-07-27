@@ -11,7 +11,7 @@ const mockValue: FrameTemplateContextProps = {
   setFrameType: () => {},
   basicFrameId: "none",
   setBasicFrameId: () => {},
-  characterFrameId: "momo",
+  characterFrameId: "lumi",
   setCharacterFrameId: () => {},
 };
 
