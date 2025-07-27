@@ -6,60 +6,24 @@
   justify-content: center;
   width: 360px;
   height: 800px;
-  background-image: url("/images/background.svg");
-}
-
-.TopBar {
-  /* 헤더 나중에 추가하면 해당 css는 수정 필요 */
-  position: absolute;
-  top: 0;
-  box-sizing: border-box;
-  width: 360px;
-  height: 140px;
-  padding-top: 49px;
-  color: #2c2c2c;
-  text-align: center;
-  font-feature-settings: "liga" off, "clig" off;
-  /* headline */
-  font-family: "NanumSquareRoundOTF", sans-serif;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 22px; /* 137.5% */
-  letter-spacing: -0.43px;
+  background-image: url("/images/background/normal-bg.svg");
 }
 
 .btn_container {
   position: absolute;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
   top: 140px;
-  right: 32px;
+  right: 16px;
   width: 184px;
   height: 39px;
 }
 
-.btn {
-  display: flex;
-  width: 40px;
-  height: 39px;
-  padding: 6px;
-  justify-content: center;
-  align-items: center;
-  gap: 11px;
-  border-radius: 20px;
-  border: 1px solid #cbcbc5;
-  cursor: pointer;
-  outline: none;
-  background: #fbfbfb;
-}
-
 .frame_container {
   position: absolute;
-  top: 199px;
-  right: 50px;
-  border: none;
+  top: 227px;
+
   background: none;
 }
 
@@ -76,34 +40,5 @@
   padding: 16px;
   border-radius: 15px;
   border: 1px solid #cbcbc5;
-  background: #fbf9f3;
-}
-
-.message_text {
-  color: #2c2c2c;
-  font-feature-settings: "liga" off, "clig" off;
-  /* Caption1 */
-  font-family: "NanumSquareRound", sans-serif;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 16px; /* 133.333% */
-}
-
-.BottomBar {
-  position: absolute;
-  bottom: 0;
-  display: flex;
-  box-sizing: border-box;
-  width: 360px;
-  height: 104px;
-  padding: 21px 30px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 9px;
-  flex-shrink: 0;
-
-  border-radius: 13.74px 13.74px 0px 0px;
-  border-top: 1px solid #cbcbc5;
   background: #fbf9f3;
 }
