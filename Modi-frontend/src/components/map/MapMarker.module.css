@@ -1,0 +1,30 @@
+.mapMarker_container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 83.489px;
+  max-height: 102.885px;
+  padding: 2px 3.51px 8.69px 3px;
+  flex-shrink: 0;
+  background-image: url("/images/map-marker/momo-marker/happy-momo-marker.svg");
+}
+
+.post_counts_container {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.post_counts {
+  color: var(--gray5, #2c2c2c);
+  text-align: center;
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* sudheadline */
+  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
+}

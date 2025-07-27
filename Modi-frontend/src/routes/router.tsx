@@ -12,7 +12,9 @@ import DiaryKeywordPage from "../pages/diary/DiaryKeywordPage";
 import DiaryStylePage from "../pages/diary/DiaryStylePage";
 import NotificationPage from "../pages/notification/NotificationPage";
 import Setting from "../pages/setting/Setting";
-import Frame from "../components/common/frame/Frame";
+import MapMarker from "../components/map/MapMarker";
+import Popup from "../components/common/Popup";
+import MapSearchBar from "../components/map/MapSearchBar";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -69,8 +71,30 @@ const Router = () => {
       element: <Setting />,
     },
     {
-      path: "/frame",
-      element: <Frame />,
+      path: "/map-marker",
+      element: <MapMarker />,
+    },
+    {
+      path: "/popup",
+      element: (
+        <Popup
+          title=""
+          description="37일만에 경희대에 왔어요!이전 기록을 살펴볼까요?"
+          imageUrl="/images/pop-up/popUp-momo.svg"
+          showCloseButton={true}
+          onClose={() => {}}
+          buttons={[
+            {
+              label: "바로가기",
+              onClick: () => {},
+            },
+          ]}
+        />
+      ),
+    },
+    {
+      path: "/map-search-bar",
+      element: <MapSearchBar />,
     },
   ]);
   return <RouterProvider router={router} />;
