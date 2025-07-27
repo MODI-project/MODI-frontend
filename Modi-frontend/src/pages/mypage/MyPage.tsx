@@ -21,12 +21,15 @@ const MyPage = () => {
           middle="마이페이지"
           right="/icons/notification_O.svg"
         />
-        <div className={style.content}>
-          <ProfileCard nickname="닉네임" email="user123@email.com" />
+        <div className={style.fixedHeader}>
+          <div className={style.content}>
+            <ProfileCard nickname="닉네임" email="user123@email.com" />
+          </div>
+          <div className={style.tab_bar}>
+            <TabBar selected={selectedTab} onSelect={setSelectedTab} />
+          </div>
         </div>
-        <div className={style.tab_bar}>
-          <TabBar selected={selectedTab} onSelect={setSelectedTab} />
-        </div>
+
         {selectedTab === "즐겨찾기" ? <FavoriteView /> : <StatsView />}
         <Footer />
       </div>
