@@ -8,6 +8,7 @@ export interface DiaryDraft {
   summary: string;
   tone: string;
   templateId: number;
+  font: string;
 }
 
 export interface DiaryDraftContextType {
@@ -26,4 +27,5 @@ export const defaultDraft: DiaryDraft = {
   summary: "",
   tone: "",
   templateId: 0,
+  font: "온글맆 류류체",
 };

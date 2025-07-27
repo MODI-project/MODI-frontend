@@ -3,9 +3,9 @@ import Header from "../../components/common/Header";
 import BottomSheet from "../../components/common/BottomSheet";
 import Tab from "../../components/common/tab/Tab";
 import { useState } from "react";
-import Summary from "../../components/DiaryPage/Summary";
-import LanguageStyle from "../../components/DiaryPage/LanguageStyle";
-import Template from "../../components/DiaryPage/Template";
+import Summary from "../../components/DiaryPage/LanguageStyle/Summary";
+import LanguageStyle from "../../components/DiaryPage/LanguageStyle/LanguageStyle";
+import Template from "../../components/DiaryPage/LanguageStyle/Template";
 
 const DiaryStylePage = () => {
   const [selectedTab, setSelectedTab] = useState("한줄요약");
