@@ -1,10 +1,15 @@
+import React, { useEffect } from "react";
 import StyleBar from "./StyleStatsBar";
 import style from "./StyleStatsBar.module.css";
 import { useCharacter } from "../../../../contexts/CharacterContext";
 
 const MAX_BAR_HEIGHT = 70;
 
-export default function StyleBarList() {
+interface StyleBarListProps {
+  onMaxLabelChange?: (label: string) => void;
+}
+
+export default function StyleBarList({ onMaxLabelChange }: StyleBarListProps) {
   const { character } = useCharacter();
 
   if (!character) return null;
@@ -19,6 +24,14 @@ export default function StyleBarList() {
   ];
 
   const max = Math.max(...styleData.map((d) => d.value));
+  const maxLabel = styleData.find((d) => d.value === max)?.label;
+
+  // maxLabel이 변경되면 부모에 알림
+  useEffect(() => {
+    if (onMaxLabelChange && maxLabel) {
+      onMaxLabelChange(maxLabel);
+    }
+  }, [onMaxLabelChange, maxLabel]);
 
   const maxBarColorMap: Record<string, string> = {
     momo: "#FBD7D5",
