@@ -5,7 +5,7 @@
   border: none;
   outline: none;
   font-size: var(--font-body);
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   background-color: transparent;
   padding: 0;
   padding-left: 9px;
@@ -18,7 +18,7 @@
 }
 
 .input_label {
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   font-weight: 600;
   font-size: var(--font-headline);
   color: var(--color-gray5);
@@ -53,7 +53,7 @@
   align-items: center;
   justify-content: center;
   background-color: var(--color-pink);
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   padding: 7px 9px 7px 12px;
   border-radius: 15px;
   height: 30px;

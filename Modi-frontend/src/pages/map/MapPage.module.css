@@ -70,7 +70,7 @@
   font-size: 16px;
   color: #666;
   margin: 0;
-  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-family: var(--font-nanum-squareB);
 }
 
 /* 오류 상태 스타일 */
@@ -90,7 +90,7 @@
   color: #dc3545;
   margin: 0 0 16px 0;
   text-align: center;
-  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-family: var(--font-nanum-squareB);
 }
 
 .retry_button {
@@ -103,7 +103,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-  font-family: var(--font-nanum-square, "NanumSquareRoundBold");
+  font-family: var(--font-nanum-squareB);
 }
 
 .retry_button:hover {

@@ -33,7 +33,7 @@
 
 .caution {
   color: #ff5757;
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   font-weight: 400;
   font-size: var(--font-caption2);
   line-height: 13px;

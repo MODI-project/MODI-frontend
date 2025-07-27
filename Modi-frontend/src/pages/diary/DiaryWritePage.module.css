@@ -54,7 +54,7 @@
 }
 
 .label {
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   font-weight: 600;
   line-height: 22px;
   letter-spacing: -0.43px;
@@ -83,7 +83,7 @@
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid var(--color-gray2);
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   font-size: var(--font-body);
   background-color: var(--color-modal);
 }
@@ -93,7 +93,7 @@
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid var(--color-gray2);
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   font-size: var(--font-body);
   background-color: var(--color-modal);
 }
@@ -117,7 +117,7 @@
 }
 
 .input_label {
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   font-weight: 600;
   font-size: var(--font-headline);
   color: var(--color-gray5);
@@ -133,7 +133,7 @@
   border-radius: 12px;
   box-sizing: border-box;
   border: 1px solid var(--color-gray2);
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   background-color: var(--color-modal);
   font-weight: 400;
   line-height: 22px;
