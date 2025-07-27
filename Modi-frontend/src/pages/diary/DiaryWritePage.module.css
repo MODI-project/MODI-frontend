@@ -24,6 +24,8 @@
 
 .main_container {
   height: 100%;
+  width: 80%;
+
   margin-top: 40%;
   margin-bottom: 30%;
   display: flex;
@@ -70,7 +72,6 @@
 }
 
 .input_section {
-  width: 296px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -109,7 +110,6 @@
 }
 
 .input_group {
-  width: 296px;
   display: flex;
   flex-direction: column;
   margin-top: 28px;

@@ -11,6 +11,7 @@
   font-size: var(--font-subheadline);
   line-height: 20px;
   letter-spacing: -0.23px;
+  align-items: center;
 }
 
 .content {
