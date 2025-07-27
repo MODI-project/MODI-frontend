@@ -113,7 +113,7 @@ const MapPage = () => {
 
             {/* 검색바 오버레이 - mapInstance가 있을 때만 렌더링 */}
             {mapInstance && (
-              <div className={styles.search_overlay}>
+              <div className={styles.search_bar_container}>
                 <MapSearchBar
                   map={mapInstance}
                   onPlaceSelect={handlePlaceSelect}

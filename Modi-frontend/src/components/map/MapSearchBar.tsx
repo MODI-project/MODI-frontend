@@ -1,15 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./MapSearchBar.module.css";
 
-// 카카오맵 API 타입 정의
-declare global {
-  interface Window {
-    kakao: any;
-  }
-}
-
-const kakao = window.kakao;
-
 // 타입 정의
 interface Place {
   place_name: string;
@@ -45,6 +36,26 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
 
   // API 초기화
   const initializeApi = () => {
+    console.log("MapSearchBar API 초기화 시작");
+
+    if (!map) {
+      console.log("map prop이 없습니다.");
+      return false;
+    }
+
+    // map 객체를 통해 kakao API에 접근
+    const kakao = (window as any).kakao;
+
+    console.log(
+      "kakao 확인:",
+      typeof kakao !== "undefined" ? "존재함" : "존재하지 않음"
+    );
+    console.log("kakao.maps 확인:", kakao?.maps ? "존재함" : "존재하지 않음");
+    console.log(
+      "kakao.maps.services 확인:",
+      kakao?.maps?.services ? "존재함" : "존재하지 않음"
+    );
+
     if (typeof kakao !== "undefined" && kakao.maps && kakao.maps.services) {
       try {
         // 장소 검색 객체 생성
@@ -69,12 +80,24 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
   };
 
   useEffect(() => {
-    // map prop이 있고 카카오맵 API가 사용 가능할 때만 초기화
-    if (map && typeof kakao !== "undefined" && kakao.maps) {
-      const initSuccess = initializeApi();
-      if (!initSuccess) {
-        console.warn("Kakao Maps API initialization failed");
-      }
+    console.log("MapSearchBar useEffect 실행");
+    console.log("map prop 확인:", map ? "존재함" : "존재하지 않음");
+
+    // map prop이 있을 때만 초기화 시도
+    if (map) {
+      console.log("map prop 존재, API 초기화 시도");
+
+      // 약간의 지연을 두고 초기화 시도 (카카오맵 API가 완전히 로드될 시간을 줌)
+      const timer = setTimeout(() => {
+        const initSuccess = initializeApi();
+        if (!initSuccess) {
+          console.warn("Kakao Maps API initialization failed");
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    } else {
+      console.log("map prop이 없어서 초기화하지 않음");
     }
   }, [map]);
 
@@ -89,6 +112,8 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
 
     if (!psRef.current || !isInitialized) {
       console.error("Places service is not initialized");
+      console.error("psRef.current:", psRef.current);
+      console.error("isInitialized:", isInitialized);
       alert("지도 서비스를 초기화하는 중입니다. 잠시 후 다시 시도해주세요.");
       return false;
     }
@@ -113,6 +138,8 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
   ) => {
     setIsLoading(false);
 
+    const kakao = (window as any).kakao;
+
     if (status === kakao.maps.services.Status.OK) {
       // 정상적으로 검색이 완료됐으면 검색 목록과 마커를 표출
       setPlaces(data);
@@ -135,7 +162,10 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
 
   // 검색 결과 목록과 마커를 표출하는 함수
   const displayPlaces = (placesData: Place[]) => {
-    if (!map || typeof kakao === "undefined" || !kakao.maps) return;
+    if (!map) return;
+
+    const kakao = (window as any).kakao;
+    if (typeof kakao === "undefined" || !kakao.maps) return;
 
     // 지도에 표시되고 있는 마커를 제거
     removeMarker();
@@ -178,8 +208,13 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
 
   // 마커를 생성하고 지도 위에 마커를 표시하는 함수
   const addMarker = (position: any, idx: number, title: string): any => {
-    if (!map || typeof kakao === "undefined" || !kakao.maps) {
-      throw new Error("Map or API is not available");
+    if (!map) {
+      throw new Error("Map is not available");
+    }
+
+    const kakao = (window as any).kakao;
+    if (typeof kakao === "undefined" || !kakao.maps) {
+      throw new Error("Kakao Maps API is not available");
     }
 
     const imageSrc =
@@ -217,13 +252,10 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
 
   // 검색결과 목록 또는 마커를 클릭했을 때 호출되는 함수
   const displayInfowindow = (marker: any, title: string) => {
-    if (
-      !infowindowRef.current ||
-      !map ||
-      typeof kakao === "undefined" ||
-      !kakao.maps
-    )
-      return;
+    if (!infowindowRef.current || !map) return;
+
+    const kakao = (window as any).kakao;
+    if (typeof kakao === "undefined" || !kakao.maps) return;
 
     const content = `<div style="padding:5px;z-index:1;">${title}</div>`;
     infowindowRef.current.setContent(content);
@@ -252,6 +284,15 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
   };
 
   const isApiReady = isInitialized && psRef.current;
+
+  console.log(
+    "MapSearchBar 렌더링 - isApiReady:",
+    isApiReady,
+    "isInitialized:",
+    isInitialized,
+    "psRef.current:",
+    !!psRef.current
+  );
 
   return (
     <div className={styles.map_search_bar_container}>

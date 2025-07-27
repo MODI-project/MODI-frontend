@@ -116,7 +116,6 @@ const KakaoMap = ({
         style={{
           width: "100%",
           height: "100%",
-
           minHeight: "400px", // 최소 높이 보장
         }}
       />
