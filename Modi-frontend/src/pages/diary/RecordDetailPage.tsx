@@ -1,9 +1,13 @@
 import styles from "./RecordDetailPage.module.css";
+import { useNavigate } from "react-router-dom";
+import Header from "../../components/common/Header";
+import Footer from "../../components/common/Footer";
 import Frame from "../../components/common/frame/Frame";
 import { useState } from "react";
 import SaveButton from "../../components/common/button/ButtonIcon/SaveButton";
 import FavoriteButton from "../../components/common/button/ButtonIcon/FavoriteButton";
 import EditButton from "../../components/common/button/ButtonIcon/EditButton";
+import DeleteButton from "../../components/common/button/ButtonIcon/DeleteButton";
 
 const RecordDetailPage = () => {
   const [showMessage, setShowMessage] = useState(false);
@@ -35,19 +39,26 @@ const RecordDetailPage = () => {
     }, 3000);
   };
 
+  const handleDeleteClick = () => {
+    setMessageText("삭제 버튼이 클릭되었습니다.");
+    setShowMessage(true);
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 3000);
+  };
+
   return (
     <div className={styles.RecordDetailPage}>
+      <Header
+        left="/icons/arrow_left.svg"
+        middle="일기 상세보기"
+        right="/icons/home.svg"
+      />
       <div className={styles.btn_container}>
         <SaveButton onClick={handleSaveClick} />
         <FavoriteButton onClick={handleFavoriteClick} isFavorite={false} />
         <EditButton onClick={handleEditClick} />
-        <button className={styles.btn} value="삭제">
-          <img
-            className={styles.btn_img}
-            src={"../../../public/icons/delete.svg"}
-            alt="삭제"
-          />
-        </button>
+        <DeleteButton onClick={handleDeleteClick} />
       </div>
       <div className={styles.frame_container}>
         <Frame />
@@ -57,7 +68,7 @@ const RecordDetailPage = () => {
           <span className={styles.message_text}>{messageText}</span>
         </div>
       )}
-      <div className={styles.BottomBar}>하단 탭 바 들어갈 자리</div>
+      <Footer />
     </div>
   );
 };

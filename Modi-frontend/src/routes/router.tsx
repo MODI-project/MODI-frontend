@@ -12,6 +12,7 @@ import DiaryKeywordPage from "../pages/diary/DiaryKeywordPage";
 import DiaryStylePage from "../pages/diary/DiaryStylePage";
 import NotificationPage from "../pages/notification/NotificationPage";
 import Setting from "../pages/setting/Setting";
+import Frame from "../components/common/frame/Frame";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -66,6 +67,10 @@ const Router = () => {
     {
       path: "/setting",
       element: <Setting />,
+    },
+    {
+      path: "/frame",
+      element: <Frame />,
     },
   ]);
   return <RouterProvider router={router} />;
