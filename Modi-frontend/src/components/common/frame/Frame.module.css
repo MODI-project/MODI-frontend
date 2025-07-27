@@ -30,6 +30,7 @@
   width: 245px;
   height: 344px;
   border-radius: 15px;
+  border: 1px solid var(--gray3, #9c9c9c);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
