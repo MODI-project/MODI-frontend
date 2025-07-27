@@ -7,7 +7,7 @@ export interface DiaryDraft {
   image: string | null;
   summary: string;
   tone: string;
-  templateId: number;
+  templateId: number | null;
   font: string;
 }
 
@@ -26,6 +26,6 @@ export const defaultDraft: DiaryDraft = {
   image: null,
   summary: "",
   tone: "",
-  templateId: 0,
+  templateId: null,
   font: "온글맆 류류체",
 };
