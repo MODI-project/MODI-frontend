@@ -101,6 +101,15 @@
   max-width: 400px;
 }
 
+.carouselInner {
+  display: flex;
+  position: absolute;
+  top: 0px;
+
+  width: fit-content;
+  transition: transform 0.5s ease-in-out;
+}
+
 .slot1 {
   position: absolute;
   left: 50%;
