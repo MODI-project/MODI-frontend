@@ -86,22 +86,6 @@ const KakaoMap = ({
     }
   }, [latitude, longitude, level]); // onMapReady 제거
 
-  const handlePlaceSelect = (place: any) => {
-    if (onPlaceSelect) {
-      onPlaceSelect(place);
-    }
-
-    // 선택된 장소로 지도 중심 이동
-    if (mapInstance && place.x && place.y) {
-      const newCenter = new window.kakao.maps.LatLng(
-        parseFloat(place.y),
-        parseFloat(place.x)
-      );
-      mapInstance.setCenter(newCenter);
-      mapInstance.setLevel(2); // 확대 레벨 조정
-    }
-  };
-
   return (
     <div
       style={{
@@ -129,7 +113,7 @@ const KakaoMap = ({
             width: "300px",
           }}
         >
-          <MapSearchBar map={mapInstance} onPlaceSelect={handlePlaceSelect} />
+          <MapSearchBar map={mapInstance} onPlaceSelect={onPlaceSelect} />
         </div>
       )}
     </div>

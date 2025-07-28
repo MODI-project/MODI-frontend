@@ -29,6 +29,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
+  const [showResults, setShowResults] = useState<boolean>(false);
 
   const markersRef = useRef<any[]>([]);
   const infowindowRef = useRef<any>(null);
@@ -145,14 +146,17 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
       setPlaces(data);
       setPagination(pagination);
       setCurrentPage(pagination.current);
+      setShowResults(true); // 검색 결과 표시
     } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
       alert("검색 결과가 존재하지 않습니다.");
       setPlaces([]);
       setPagination(null);
+      setShowResults(false);
     } else if (status === kakao.maps.services.Status.ERROR) {
       alert("검색 결과 중 오류가 발생했습니다.");
       setPlaces([]);
       setPagination(null);
+      setShowResults(false);
     }
   };
 
@@ -169,6 +173,8 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
     if (onPlaceSelect) {
       onPlaceSelect(place);
     }
+    // 검색 결과 숨기기 (검색바 입력값은 유지)
+    setShowResults(false);
   };
 
   // 검색 입력 처리
@@ -213,7 +219,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
       </form>
 
       {/* 검색 결과 목록 - 마커 없이 텍스트만 */}
-      {places.length > 0 && (
+      {showResults && places.length > 0 && (
         <div className={styles.search_results}>
           <ul className={styles.places_list}>
             {places.map((place, index) => (

@@ -46,10 +46,39 @@ const MapPage = () => {
     loadMap();
   }, []);
 
-  const handlePlaceSelect = useCallback((place: any) => {
-    console.log("선택된 장소:", place);
-    // 선택된 장소 정보 처리
-  }, []);
+  const handlePlaceSelect = useCallback(
+    (place: any) => {
+      console.log("선택된 장소:", place);
+
+      // 선택된 장소로 지도 이동
+      if (mapInstance && place.x && place.y) {
+        try {
+          const kakao = (window as any).kakao;
+          if (kakao && kakao.maps) {
+            const newCenter = new kakao.maps.LatLng(
+              parseFloat(place.y),
+              parseFloat(place.x)
+            );
+
+            // 지도 중심 이동
+            mapInstance.setCenter(newCenter);
+
+            // 적절한 확대 레벨로 설정 (상세한 뷰)
+            mapInstance.setLevel(3);
+
+            console.log("지도 이동 완료:", {
+              place: place.place_name,
+              lat: place.y,
+              lng: place.x,
+            });
+          }
+        } catch (error) {
+          console.error("지도 이동 중 오류 발생:", error);
+        }
+      }
+    },
+    [mapInstance]
+  );
 
   const handleRetry = useCallback(() => {
     loadMap();
