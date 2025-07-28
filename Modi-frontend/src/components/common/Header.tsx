@@ -1,6 +1,6 @@
 import styles from "./Header.module.css";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Popup from "./Popup";
 
 interface HeaderProps {
@@ -14,10 +14,13 @@ interface HeaderProps {
 const Header = ({ left, middle, right, write, edit }: HeaderProps) => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {}, [location.pathname]);
 
   const handleLeftClick = () => {
     if (left === "/icons/back.svg") {
-      if (write || edit) {
+      if ((write && location.pathname.includes("emotion")) || edit) {
         setShowModal(true);
       } else {
         navigate(-1);

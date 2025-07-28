@@ -39,7 +39,8 @@
   -moz-osx-font-smoothing: grayscale;
 
   /* Font Families */
-  --font-nanum-square: "NanumSquareRoundBold", sans-serif;
+  --font-nanum-squareB: "NanumSquareRoundBold", sans-serif;
+  --font-nanum-square: "NanumSquareRound", sans-serif;
   --font-dm-sans: "DM Sans", sans-serif;
   --font-eujin: "Eujin", sans-serif;
   --font-leeseoyoon: "LeeSeoYoon", sans-serif;
@@ -107,6 +108,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
+  color: black;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;

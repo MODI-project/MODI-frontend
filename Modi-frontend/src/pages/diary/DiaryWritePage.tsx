@@ -5,8 +5,8 @@ import styles from "./DiaryWritePage.module.css";
 import Header from "../../components/common/Header";
 import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
-import AddressInput from "../../components/DiaryPage/AddressInput";
-import KeywordInput from "../../components/DiaryPage/KeywordInput";
+import AddressInput from "../../components/DiaryPage/DetailPage/AddressInput";
+import KeywordInput from "../../components/DiaryPage/DetailPage/KeywordInput";
 
 const DiaryWritePage = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);

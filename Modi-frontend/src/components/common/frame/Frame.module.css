@@ -1,129 +1,243 @@
-/* 전체 프레임 */
-
-.frame {
-  display: flex;
-  flex-direction: column;
+.frame_wrapper {
   position: relative;
-  box-sizing: border-box;
-  width: 260px;
-  height: 338px;
-  padding: 16px;
-  gap: 16px;
-  justify-content: center;
-  align-items: center;
-  background-image: url("/images/frame-bg/basic-frame/star.svg"); /* 테스트용... */
-  background-size: cover;
-  background-position: center;
-  border-radius: 13.3px;
-  border: 0.95px solid var (--gray3, #9c9c9c);
-  /* 배경색은 state로 추출해서 사용해야 할 것 같음 -> 이미지로 떼우는 게 나을듯? 
-    일기 내용 한 줄 요약을 입력요소로 받는 경우엔 취소해야겠지만... */
-  /*프레임이 기본적으로 같은 형태 but 배경색 차이 -> 배경색을 state로 뽑아 써야할듯... 그럼 어떻게 구분하면 좋을까? */
+  width: 100vw;
+  height: 100vh;
+  max-width: 247px;
+  max-height: 346px;
+  cursor: pointer;
 }
 
-/* 이미지 + 날짜 포함하는 div */
-.image-frame {
+/* 프레임 전면부 - 일기 사진 + 한 줄 요약 표시 */
+
+.fore_frame {
   position: absolute;
-  top: 20px;
-  width: 227px;
-  height: 262px;
-  border-radius: 2.85px;
-  border: none;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  max-width: 247px;
+  height: 100%;
+  max-height: 346px;
+  box-sizing: border-box;
+  padding: 16px 16px 12px 16px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border-radius: 15px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  opacity: 1;
+  visibility: visible;
+  z-index: 2;
 }
 
-/* 이미지 -> state로 추출 */
+.fore_frame.flipped {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.frame_front {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-width: 246px;
+  height: 100%;
+  max-height: 344px;
+  border-radius: 15px;
+  border: 1px solid var(--gray3, #9c9c9c);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 3;
+}
+
+.frame_back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 1;
+}
+
+.image_container {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  border: none;
+  background: none;
+  z-index: 2;
+}
+
 .image {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 이미지가 .image-frame 안에 꽉 차도록 */
-  border-radius: 2.85px;
-  border: none;
+  flex-shrink: 0;
+  border-radius: 5px;
 }
 
-/* 프레임 생성 날짜 -> state 로 추출 */
-.date {
-  z-index: 1000;
-  right: 0;
-  bottom: 1px;
-  position: absolute;
-  color: var(--color1, #fbfbfb);
+.comment_container {
+  display: flex;
+  justify-content: center;
+  border-radius: 15px;
+  border: none;
+  z-index: 2;
+}
+
+.comment {
+  color: var(--gray5, #2c2c2c);
   text-align: center;
-  font-feature-settings: "liga" off, "clig" off;
-  font-family: NanumSquareRound;
-  font-size: 10.436px;
+  font-family: var(--font-onryuruu, "Onryuruu");
+  font-size: 17px;
   font-style: normal;
   font-weight: 400;
-  letter-spacing: 0.057px;
-  width: 74px;
-  height: 20px;
-}
-
-.summary {
-  position: absolute;
-  bottom: 20px;
-  width: 227px;
-  height: 20px;
-  color: #2c2c2c;
-  text-align: center;
-  font-family: "Ownglyph_ryurue-Rg", sans-serif; /* index.css 에서 선언해놓음 */
-  font-size: 15px;
   line-height: 19.303px; /* 113.546% */
-  background-color: none;
 }
 
-/* 프레임 배경화면
-.bg-pink {
-  background-image: url("../../public/images/frame-bg/pink.svg");
+/* 프레임 후면부 - 일기 내용 표시 */
+
+.back_frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 24px 20px;
+  align-items: flex-start;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 15px;
+  border: 1px solid var(--gray3, #9c9c9c);
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1;
 }
 
-.bg-yellow {
-  background-image: url("../../public/images/frame-bg/yellow.svg");
+.back_frame.flipped {
+  opacity: 1;
+  visibility: visible;
 }
 
-.bg-mint {
-  background-image: url("../../public/images/frame-bg/basic-frame/mint.svg");
+.diary_comment_container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
 }
 
-.bg-skyblue {
-  background-image: url("../../public/images/frame-bg/basic-frame/skyblue.svg");
+.diary_info_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
-.bg-star {
-  background-image: url("../../public/images/frame-bg/basic-frame/star.svg");
-  background-size: cover;
-  background-position: center;
+.diary_date {
+  flex: 1 0 0;
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* sudheadline */
+  font-family: var(--font-nanum-squareB);
+  font-size: var(--subheadline);
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
 }
 
-.bg-small-dot {
-  background-image: url("../../public/images/frame-bg/basic-frame/small-dot.svg");
-  background-size: cover;
-  background-position: center;
+.tag_container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.bg-cream {
-  background-image: url("../../public/images/frame-bg/basic-frame/cream.svg");
+.tag {
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* sudheadline */
+  font-family: var(--font-nanum-squareB);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
 }
 
-.bg-big-dot {
-  background-image: url("../../public/images/frame-bg/basic-frame/big-dot.svg");
-  background-size: cover;
-  background-position: center;
-} 
+.more_tag {
+  color: var(--gray3, #9c9c9c);
+  font-feature-settings: "liga" off, "clig" off;
 
-.bg-ch1 {
-  background-image: url("../../public/images/frame-bg/basic-frame/pink.svg");
+  /* Caption2 */
+  font-family: NanumSquareRound;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 13px;
+  letter-spacing: 0.06px;
 }
 
-.bg-ch2 {
-  background-image: url("../../public/images/frame-bg/basic-frame/yellow.svg");
+.place_info {
+  flex: 1 0 0;
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* sudheadline */
+  font-family: var(--font-nanum-squareB);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
 }
 
-.bg-ch3 {
-  background-image: url("../../public/images/frame-bg/basic-frame/skyblue.svg");
+.diary_detail_container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
-.bg-ch4 {
-  background-image: url("../../public/images/frame-bg/basic-frame/mint.svg");
+.diary_detail_title {
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* body */
+  font-family: NanumSquareRound;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px; /* 157.143% */
+  letter-spacing: -0.43px;
 }
 
-*/
+.diary_detail_content {
+  flex: 1 0 0;
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* body */
+  font-family: NanumSquareRound;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px; /* 157.143% */
+  letter-spacing: -0.43px;
+}

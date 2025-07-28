@@ -30,3 +30,8 @@
   flex-direction: column;
   box-sizing: border-box;
 }
+.tab_container {
+  display: flex;
+  gap: 16px;
+  margin-top: 22px;
+}

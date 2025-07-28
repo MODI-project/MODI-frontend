@@ -2,12 +2,15 @@ import "./App.css";
 import Router from "./routes/router";
 import { CharacterProvider } from "./contexts/CharacterContext";
 import { DiaryDraftProvider } from "./contexts/DiaryDraftContext";
+import { FrameTemplateMockProvider } from "./contexts/FrameTemplateMockProvider";
 
 function App() {
   return (
     <CharacterProvider>
       <DiaryDraftProvider>
-        <Router />
+        <FrameTemplateMockProvider>
+          <Router />
+        </FrameTemplateMockProvider>
       </DiaryDraftProvider>
     </CharacterProvider>
   );
