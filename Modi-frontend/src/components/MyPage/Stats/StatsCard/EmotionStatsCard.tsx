@@ -42,9 +42,7 @@ export default function EmotionStatsCard() {
 
   return (
     <div className={styles.card}>
-      <h3 className={styles.title}>
-        한달 중 {maxEmotion} 감정을 가장 많이 느꼈어요
-      </h3>
+      <h3 className={styles.title}>6월은 {maxEmotion}을 가장 많이 느꼈어요</h3>
       <EmotionCircleList data={sortedData} />
     </div>
   );
