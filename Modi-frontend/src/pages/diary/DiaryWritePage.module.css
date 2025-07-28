@@ -20,6 +20,8 @@
   background-size: cover;
   background-position: top center;
   background-repeat: no-repeat;
+  padding: 0 32px;
+  box-sizing: border-box;
 }
 
 .main_container {
