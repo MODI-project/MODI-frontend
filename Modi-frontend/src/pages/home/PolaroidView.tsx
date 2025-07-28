@@ -25,8 +25,8 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     () => allDiaries.map((d) => d.date).sort((a, b) => a.localeCompare(b)),
     []
   );
-  const [viewDate, setViewDate] = useState(() => allDates.at(-1)!);
-
+  const [currentIndex, setCurrentIndex] = useState(allDates.length - 1);
+  const viewDate = allDates[currentIndex];
   // 현재 인덱스
   const currentIdx = allDates.indexOf(viewDate);
   // 보여줄 날짜: 이전, 현재, 다음
@@ -43,12 +43,15 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const currentDiary = allDiaries.find((d) => d.date === viewDate)!;
 
   const handlePrev = () => {
-    const idx = allDates.indexOf(viewDate);
-    if (idx > 0) setViewDate(allDates[idx - 1]);
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
   };
+
   const handleNext = () => {
-    const idx = allDates.indexOf(viewDate);
-    if (idx < allDates.length - 1) setViewDate(allDates[idx + 1]);
+    if (currentIndex < allDates.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
   };
 
   // 모달 열릴 때마다 초기화
@@ -59,13 +62,45 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   }, [isSheetOpen]);
 
   const handleChange = (newDate: string) => {
-    setViewDate(newDate);
+    const newIndex = allDates.indexOf(newDate);
+    if (newIndex !== -1) {
+      setCurrentIndex(newIndex);
+    }
 
     if (hasOpened.current) {
       setIsSheetOpen(false); // 두 번째 이후부터 닫힘
     } else {
       hasOpened.current = true; // 첫 호출은 무시
     }
+  };
+
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    handleSwipeGesture();
+  };
+
+  const handleSwipeGesture = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const distance = touchStartX.current - touchEndX.current;
+
+    if (distance > 50) {
+      // 왼쪽으로 스와이프 → 다음
+      handleNext();
+    } else if (distance < -50) {
+      // 오른쪽으로 스와이프 → 이전
+      handlePrev();
+    }
+
+    // 초기화
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   return (
@@ -81,21 +116,32 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       />
       {/* ← 프레임만 캐러셀로 감싸기 */}
       <div className={pageStyles.content}>
-        <div className={pageStyles.carousel}>
-          {slots.map((d, i) => (
-            <div key={i} className={pageStyles[`slot${i + 1}`]}>
-              {d ? (
-                <PolaroidFrame
-                  photoUrl={d.photoUrl}
-                  date={d.date}
-                  emotion={d.emotion}
-                  summary={d.summary}
-                />
-              ) : (
-                <div className={pageStyles.emptySlot} />
-              )}
-            </div>
-          ))}
+        <div
+          className={pageStyles.carousel}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div
+            className={pageStyles.carouselInner}
+            style={{
+              transform: `translateX(-${currentIndex * 100}%)`,
+            }}
+          >
+            {slots.map((d, i) => (
+              <div key={i} className={pageStyles[`slot${i + 1}`]}>
+                {d ? (
+                  <PolaroidFrame
+                    photoUrl={d.photoUrl}
+                    date={d.date}
+                    emotion={d.emotion}
+                    summary={d.summary}
+                  />
+                ) : (
+                  <div className={pageStyles.emptySlot} />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
         {/* ← 이 아래는 “항상 현재 일기” 것만 고정으로 보여줍니다 */}
         <div className={pageStyles.staticInfo}>

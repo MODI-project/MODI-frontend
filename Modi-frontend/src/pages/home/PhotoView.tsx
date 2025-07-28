@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import pageStyles from "./HomePage.module.css";
 import { useNavigate } from "react-router-dom";
 import HomeHeader from "../../components/HomePage/HomeHeader/HomeHeader";
@@ -14,6 +14,7 @@ import PhotoDiary from "../../components/HomePage/Diary/Photo/PhotoDiary";
 import { useCharacter } from "../../contexts/CharacterContext";
 import { allDiaries, Diary } from "../../data/diaries";
 import Search from "../../components/HomePage/Diary/Photo/Search";
+import BottomSheet from "../../components/common/BottomSheet";
 
 interface PhotoViewProps {
   onSwitchView: () => void;
@@ -21,6 +22,8 @@ interface PhotoViewProps {
 
 export default function PhotoView({ onSwitchView }: PhotoViewProps) {
   const navigate = useNavigate();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const hasOpened = useRef(false);
   const { character } = useCharacter();
 
   const availableMonths = useMemo(() => {
@@ -70,6 +73,22 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
     ? monthDiaries.filter((d) => d.emotion === selectedEmotion)
     : monthDiaries;
 
+  useEffect(() => {
+    if (isSheetOpen) {
+      hasOpened.current = false;
+    }
+  }, [isSheetOpen]);
+
+  const handleChange = (newDate: string) => {
+    setViewDate(newDate);
+
+    if (hasOpened.current) {
+      setIsSheetOpen(false); // 두 번째 이후부터 닫힘
+    } else {
+      hasOpened.current = true; // 첫 호출은 무시
+    }
+  };
+
   return (
     <div className={pageStyles.wrapper}>
       {/* HomeHeader 에 props 로 상태·핸들러 내려주기 */}
@@ -78,7 +97,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
         currentDate={viewDate}
         onPrev={handlePrev}
         onNext={handleNext}
-        onOpenModal={() => setIsModalOpen(true)}
+        onOpenModal={() => setIsSheetOpen(true)}
         onSwitchView={onSwitchView}
       />
       <div className={pageStyles.content}>
@@ -111,7 +130,11 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
         )}
 
         {/* 날짜 선택 모달 */}
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <BottomSheet
+          isOpen={isSheetOpen}
+          onClose={() => setIsSheetOpen(false)}
+          minimizeOnDrag={true}
+        >
           <div className={pageStyles.modalInner}>
             <h3 className={pageStyles.modalTitle}>다른 날짜 일기 보기</h3>
 
@@ -130,12 +153,12 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
             <ButtonBar
               location="modal"
               label="확인"
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => setIsSheetOpen(false)}
               size="primary"
               disabled={false}
             />
           </div>
-        </Modal>
+        </BottomSheet>
       </div>
     </div>
   );
