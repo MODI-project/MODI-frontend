@@ -29,6 +29,14 @@
   font-weight: 700;
   line-height: 20px; /* 142.857% */
   letter-spacing: -0.23px;
+  transition: all 0.2s ease;
+}
+
+.map_search_bar:disabled {
+  background: var(--gray1, #f0f0f0);
+  color: var(--gray3, #9c9c9c);
+  cursor: not-allowed;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .map_search_bar::placeholder {
@@ -55,6 +63,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: opacity 0.2s ease;
+}
+
+.search_button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .search_icon {
@@ -62,107 +76,66 @@
   height: 24px;
 }
 
-.search_info {
-  width: 100vw;
-  height: 100vh;
-  max-width: 328px;
-  max-height: 349.054px;
-  flex-shrink: 0;
-  border-radius: 15px;
-  border: 1px solid var(--gray2, #cbcbc5);
-  background: var(--white, #fff);
-}
-
-/* 검색 결과 스타일 */
+/* 검색 결과 스타일 - 텍스트만 표시 */
 .search_results {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
   background: white;
-  border-radius: 15px;
-  border: 1px solid var(--gray2, #cbcbc5);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-height: 400px;
+  border-radius: 12px;
+  border: 1px solid var(--gray2, #e0e0e0);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-height: 300px;
   overflow-y: auto;
   z-index: 1000;
   margin-top: 8px;
+  padding: 8px 0;
 }
 
 .places_list {
-  list-style: none;
+  list-style: 0.5px solid var(--gray5, #eeedeb);
   margin: 0;
   padding: 0;
 }
 
 .place_item {
   display: flex;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--gray1, #f0f0f0);
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--gray1, #f5f5f5);
   cursor: pointer;
-  transition: background-color 0.2s;
 }
 
 .place_item:hover {
-  background-color: var(--gray1, #f0f0f0);
+  background-color: var(--gray1, #f8f9fa);
 }
 
 .place_item:last-child {
   border-bottom: none;
 }
 
-.marker_bg {
-  display: inline-block;
-  width: 36px;
-  height: 37px;
-  margin-right: 12px;
-  background-image: url("https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png");
-  background-size: 36px 691px;
-  background-repeat: no-repeat;
+.place_item:active {
+  background-color: var(--gray2, #e9ecef);
 }
 
-.marker_1 {
-  background-position: 0 -10px;
-}
-.marker_2 {
-  background-position: 0 -56px;
-}
-.marker_3 {
-  background-position: 0 -102px;
-}
-.marker_4 {
-  background-position: 0 -148px;
-}
-.marker_5 {
-  background-position: 0 -194px;
+.place_name {
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* body */
+  font-family: NanumSquareRound;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px; /* 157.143% */
+  letter-spacing: -0.43px;
 }
 
 .place_info {
-  flex: 1;
-}
-
-.place_info h5 {
-  margin: 0 0 4px 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--gray5, #2c2c2c);
-}
-
-.place_info span {
-  display: block;
-  font-size: 12px;
-  color: var(--gray4, #666);
-  margin-bottom: 2px;
-}
-
-.place_info .jibun {
-  color: var(--gray3, #9c9c9c);
-  font-size: 11px;
-}
-
-.place_info .phone {
-  color: var(--gray3, #9c9c9c);
-  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* 페이지네이션 스타일 */
@@ -201,12 +174,13 @@
   left: 0;
   right: 0;
   background: white;
-  border-radius: 15px;
-  border: 1px solid var(--gray2, #cbcbc5);
+  border-radius: 12px;
+  border: 1px solid var(--gray2, #e0e0e0);
   padding: 16px;
   text-align: center;
   color: var(--gray4, #666);
   font-size: 14px;
   z-index: 1000;
   margin-top: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }

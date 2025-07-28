@@ -141,14 +141,10 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
     const kakao = (window as any).kakao;
 
     if (status === kakao.maps.services.Status.OK) {
-      // 정상적으로 검색이 완료됐으면 검색 목록과 마커를 표출
+      // 정상적으로 검색이 완료됐으면 검색 목록만 표출 (마커 없이)
       setPlaces(data);
       setPagination(pagination);
       setCurrentPage(pagination.current);
-
-      if (map) {
-        displayPlaces(data);
-      }
     } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
       alert("검색 결과가 존재하지 않습니다.");
       setPlaces([]);
@@ -158,108 +154,6 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
       setPlaces([]);
       setPagination(null);
     }
-  };
-
-  // 검색 결과 목록과 마커를 표출하는 함수
-  const displayPlaces = (placesData: Place[]) => {
-    if (!map) return;
-
-    const kakao = (window as any).kakao;
-    if (typeof kakao === "undefined" || !kakao.maps) return;
-
-    // 지도에 표시되고 있는 마커를 제거
-    removeMarker();
-
-    const bounds = new kakao.maps.LatLngBounds();
-
-    placesData.forEach((place, index) => {
-      // 마커를 생성하고 지도에 표시
-      const placePosition = new kakao.maps.LatLng(
-        parseFloat(place.y),
-        parseFloat(place.x)
-      );
-      const marker = addMarker(placePosition, index, place.place_name);
-
-      // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
-      // LatLngBounds 객체에 좌표를 추가
-      bounds.extend(placePosition);
-
-      // 마커에 이벤트 리스너 추가
-      kakao.maps.event.addListener(marker, "mouseover", () => {
-        displayInfowindow(marker, place.place_name);
-      });
-
-      kakao.maps.event.addListener(marker, "mouseout", () => {
-        if (infowindowRef.current) {
-          infowindowRef.current.close();
-        }
-      });
-
-      kakao.maps.event.addListener(marker, "click", () => {
-        if (onPlaceSelect) {
-          onPlaceSelect(place);
-        }
-      });
-    });
-
-    // 검색된 장소 위치를 기준으로 지도 범위를 재설정
-    map.setBounds(bounds);
-  };
-
-  // 마커를 생성하고 지도 위에 마커를 표시하는 함수
-  const addMarker = (position: any, idx: number, title: string): any => {
-    if (!map) {
-      throw new Error("Map is not available");
-    }
-
-    const kakao = (window as any).kakao;
-    if (typeof kakao === "undefined" || !kakao.maps) {
-      throw new Error("Kakao Maps API is not available");
-    }
-
-    const imageSrc =
-      "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png";
-    const imageSize = new kakao.maps.Size(36, 37);
-    const imgOptions = {
-      spriteSize: new kakao.maps.Size(36, 691),
-      spriteOrigin: new kakao.maps.Point(0, idx * 46 + 10),
-      offset: new kakao.maps.Point(13, 37),
-    };
-
-    const markerImage = new kakao.maps.MarkerImage(
-      imageSrc,
-      imageSize,
-      imgOptions
-    );
-    const marker = new kakao.maps.Marker({
-      position: position,
-      image: markerImage,
-    });
-
-    marker.setMap(map);
-    markersRef.current.push(marker);
-
-    return marker;
-  };
-
-  // 지도 위에 표시되고 있는 마커를 모두 제거합니다
-  const removeMarker = () => {
-    markersRef.current.forEach((marker) => {
-      marker.setMap(null);
-    });
-    markersRef.current = [];
-  };
-
-  // 검색결과 목록 또는 마커를 클릭했을 때 호출되는 함수
-  const displayInfowindow = (marker: any, title: string) => {
-    if (!infowindowRef.current || !map) return;
-
-    const kakao = (window as any).kakao;
-    if (typeof kakao === "undefined" || !kakao.maps) return;
-
-    const content = `<div style="padding:5px;z-index:1;">${title}</div>`;
-    infowindowRef.current.setContent(content);
-    infowindowRef.current.open(map, marker);
   };
 
   // 페이지 변경 처리
@@ -318,7 +212,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
         </button>
       </form>
 
-      {/* 검색 결과 목록 */}
+      {/* 검색 결과 목록 - 마커 없이 텍스트만 */}
       {places.length > 0 && (
         <div className={styles.search_results}>
           <ul className={styles.places_list}>
@@ -327,36 +221,9 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
                 key={`${place.place_name}-${index}`}
                 className={styles.place_item}
                 onClick={() => handlePlaceSelect(place)}
-                onMouseOver={() => {
-                  if (map && markersRef.current[index]) {
-                    displayInfowindow(
-                      markersRef.current[index],
-                      place.place_name
-                    );
-                  }
-                }}
-                onMouseOut={() => {
-                  if (infowindowRef.current) {
-                    infowindowRef.current.close();
-                  }
-                }}
               >
-                <span
-                  className={`${styles.marker_bg} ${
-                    styles[`marker_${index + 1}`]
-                  }`}
-                ></span>
                 <div className={styles.place_info}>
-                  <h5>{place.place_name}</h5>
-                  {place.road_address_name ? (
-                    <>
-                      <span>{place.road_address_name}</span>
-                      <span className={styles.jibun}>{place.address_name}</span>
-                    </>
-                  ) : (
-                    <span>{place.address_name}</span>
-                  )}
-                  <span className={styles.phone}>{place.phone}</span>
+                  <span className={styles.place_name}>{place.place_name}</span>
                 </div>
               </li>
             ))}
