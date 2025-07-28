@@ -38,8 +38,10 @@ export default function StatsDateSelect({
     "Dec.",
   ];
   const label = MONTH_NAMES[monthNum];
+  const [viewDate, setViewDate] = useState(initialMonth);
   const [selYear, setSelYear] = useState(initialMonth.slice(0, 4));
   const [selMonth, setSelMonth] = useState(initialMonth.slice(5, 7));
+  const { character } = useCharacter();
 
   const years = useMemo(
     () => Array.from(new Set(months.map((m) => m.slice(0, 4)))).sort(),
@@ -83,70 +85,40 @@ export default function StatsDateSelect({
           <img src={downArrowIcon} alt="▼" className={styles.downArrow} />
         </div>
       </div>
+      <div className={styles.wrapper}>
+        {" "}
+        <BottomSheet
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          minimizeOnDrag={false}
+        >
+          <div className={styles.modalInner}>
+            <h3 className={styles.modalTitle}>다른 월간 일기 보기</h3>
 
-      <BottomSheet
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        minimizeOnDrag={false}
-      >
-        {/* 상단 타이틀 */}
-        <div className={styles.sheetHeader}>다른 월간 일기 보기</div>
-        <div className={styles.picker}>
-          {/* 연도 스크롤 칼럼 */}
-          <div
-            className={styles.column}
-            ref={yearRef}
-            onScroll={(e) => onScroll(e, years, setSelYear)}
-          >
-            {years.map((y) => (
-              <div
-                key={y}
-                className={
-                  y === selYear
-                    ? `${styles.option} ${styles.selected}`
-                    : styles.option
-                }
-              >
-                {y}년
-              </div>
-            ))}
+            <DateSelector
+              viewType="photo"
+              items={months.map((m) => ({ date: m }))}
+              initialDate={viewDate}
+              onChange={(newDate) => {
+                setViewDate(newDate);
+              }}
+              userCharacter={character!}
+            />
           </div>
-
-          {/* 월 스크롤 칼럼 */}
-          <div
-            className={styles.column}
-            ref={monRef}
-            onScroll={(e) => onScroll(e, monthsOfYear, setSelMonth)}
-          >
-            {monthsOfYear.map((m) => (
-              <div
-                key={m}
-                className={
-                  m === selMonth
-                    ? `${styles.option} ${styles.selected}`
-                    : styles.option
-                }
-              >
-                {Number(m)}월
-              </div>
-            ))}
+          <div className={styles.footerWrapper}>
+            <ButtonBar
+              location="modal"
+              label="확인"
+              onClick={() => {
+                onMonthChange(viewDate);
+                setOpen(false);
+              }}
+              size="primary"
+              disabled={false}
+            />
           </div>
-        </div>
-
-        {/* 확인 버튼 (선택 즉시 닫히므로 옵션) */}
-        <div className={styles.footerWrapper}>
-          <ButtonBar
-            location="modal"
-            label="확인"
-            onClick={() => {
-              onMonthChange(`${selYear}-${selMonth}`);
-              setOpen(false);
-            }}
-            size="primary"
-            disabled={false}
-          />
-        </div>
-      </BottomSheet>
+        </BottomSheet>
+      </div>
     </>
   );
 }
