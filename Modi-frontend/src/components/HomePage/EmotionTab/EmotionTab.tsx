@@ -90,6 +90,7 @@ export default function EmotionTab({
           }
         />
       ))}
+      <div style={{ minWidth: "16px" }} />
     </div>
   );
 }
