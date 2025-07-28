@@ -15,6 +15,7 @@ export default function StyleBarList({ onMaxLabelChange }: StyleBarListProps) {
   if (!character) return null;
 
   const iconPath = `/images/character-statsbar/${character}/${character}_head.svg`;
+  const coloredIcon = `/images/character-statsbar/${character}/${character}_head_color.svg`;
 
   const styleData = [
     { label: "즐거움", value: 15, icon: iconPath },
@@ -57,7 +58,7 @@ export default function StyleBarList({ onMaxLabelChange }: StyleBarListProps) {
           label={label}
           value={value}
           height={height}
-          icon={icon}
+          icon={isMax ? coloredIcon : icon}
           isMax={isMax}
           maxColor={maxBarColorMap[character]}
         />

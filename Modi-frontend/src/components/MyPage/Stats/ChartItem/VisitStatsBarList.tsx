@@ -17,6 +17,7 @@ export default function VisitStatsBarList({
   if (!character) return null;
 
   const iconPath = `/images/character-statsbar/${character}/${character}_head.svg`;
+  const coloredIcon = `/images/character-statsbar/${character}/${character}_head_color.svg`;
 
   const styleData = [
     { label: "영통동", value: 15, icon: iconPath },
@@ -58,7 +59,7 @@ export default function VisitStatsBarList({
           label={label}
           value={value}
           height={height}
-          icon={icon}
+          icon={isMax ? coloredIcon : icon}
           isMax={isMax}
           maxColor={maxBarColorMap[character]}
         />
