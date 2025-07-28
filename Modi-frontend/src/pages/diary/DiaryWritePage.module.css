@@ -26,6 +26,8 @@
 
 .main_container {
   height: 100%;
+  max-width: 310px;
+  min-width: 250px;
   margin-top: 40%;
   margin-bottom: 30%;
   display: flex;
@@ -126,7 +128,6 @@
 }
 
 .textarea {
-  width: 100%;
   resize: none;
   padding: 12px;
   font-size: var(--font-body);
