@@ -21,22 +21,13 @@ export default function ProfileCard({ nickname, email }: ProfileCardProps) {
       replace: false, // 원하는 옵션
     });
   };
-  const iconMap: Record<string, string> = {
-    momo: "/icons/profile_momo.svg",
-    boro: "/icons/profile_boro.svg",
-    lumi: "/icons/profile_lumi.svg",
-    zuni: "/icons/profile_zuni.svg",
-  };
-
-  const profileSrc =
-    character && iconMap[character] ? iconMap[character] : undefined;
 
   return (
     <div className={styles.card}>
       <div className={styles.frame}>
         <div className={styles.frame_info}>
           <img
-            src={profileSrc}
+            src={`/icons/profile_${character}.svg`}
             alt="기본 프로필 사진"
             className={styles.profileImg}
           />

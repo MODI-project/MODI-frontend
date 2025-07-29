@@ -161,7 +161,7 @@
   padding: 0 0px;
 }
 
-.character {
+.polaroidCharacter {
   margin-left: 16px;
 }
 
@@ -172,4 +172,62 @@
   left: 50%;
   transform: translateX(-50%);
   top: 330px;
+}
+
+.emptyWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  position: relative;
+  top: 220px;
+}
+
+.bubbleImg {
+  display: flex;
+  width: 296px;
+  height: 93px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1000;
+}
+
+.emptycharacter {
+  display: flex;
+}
+
+.character {
+  position: relative;
+  bottom: 150px;
+  margin-left: 0px;
+}
+
+.characterBgContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.characterBgIcon {
+  position: absolute;
+  width: 100%;
+  height: 67px;
+}
+
+.bg1 {
+  top: -140px;
+  right: 110px;
+}
+
+.bg2 {
+  left: 190px;
+}
+
+.bg3 {
+  top: 290px;
+  right: 190px;
 }
