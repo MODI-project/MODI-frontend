@@ -12,6 +12,16 @@ const Footer = ({ showBalloon = false }: FooterProps) => {
 
   return (
     <div className={style.footer_wrapper}>
+      {showBalloon && (
+        <div className={style.bubbleWrapper}>
+          <img
+            src={`/images/nodiary_home/Union.svg`}
+            alt="말풍선"
+            className={style.bubbleImage}
+          ></img>
+          <div className={style.bubble}>일기 기록하기</div>
+        </div>
+      )}
       <div className={style.footer_container}>
         {Object.values(FooterIcon).map((icon, index) => {
           const isCurrent = location.pathname.includes(
@@ -21,18 +31,6 @@ const Footer = ({ showBalloon = false }: FooterProps) => {
             ? `/icons/clicked_${icon}.svg`
             : `/icons/${icon}.svg`;
 
-          {
-            showBalloon && (
-              <div className={style.bubbleWrapper}>
-                <img
-                  src={`/assets/nodiary_home/Union.svg`}
-                  alt="말풍선"
-                  className={style.bubbleImage}
-                ></img>
-                <div className={style.bubble}>일기 기록하기</div>
-              </div>
-            );
-          }
           return (
             <img
               className={style.footer_button}

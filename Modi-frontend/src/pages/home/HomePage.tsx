@@ -28,7 +28,7 @@ export default function HomePage() {
             <PolaroidView onSwitchView={() => setViewType("photo")} />
           )}
         </main>
-        <Footer />
+        <Footer showBalloon={allDiaries.length === 0} />
       </div>
     </div>
   );
