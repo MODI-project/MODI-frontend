@@ -145,7 +145,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
         </div>
         {/* ← 이 아래는 “항상 현재 일기” 것만 고정으로 보여줍니다 */}
         <div className={pageStyles.staticInfo}>
-          <div className={pageStyles.character}>
+          <div className={pageStyles.polaroidCharacter}>
             <EmotionCharacter emotion={currentDiary.emotion} />
           </div>
 
