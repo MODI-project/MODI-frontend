@@ -2,7 +2,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import style from "./Footer.module.css";
 import FooterIcon from "./instance/footer";
 
-const Footer = () => {
+interface FooterProps {
+  showBalloon?: boolean;
+}
+
+const Footer = ({ showBalloon = false }: FooterProps) => {
   const navigator = useNavigate();
   const location = useLocation();
 
@@ -16,6 +20,19 @@ const Footer = () => {
           const iconSrc = isCurrent
             ? `/icons/clicked_${icon}.svg`
             : `/icons/${icon}.svg`;
+
+          {
+            showBalloon && (
+              <div className={style.bubbleWrapper}>
+                <img
+                  src={`/assets/nodiary_home/Union.svg`}
+                  alt="말풍선"
+                  className={style.bubbleImage}
+                ></img>
+                <div className={style.bubble}>일기 기록하기</div>
+              </div>
+            );
+          }
           return (
             <img
               className={style.footer_button}

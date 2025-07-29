@@ -6,6 +6,8 @@ import PolaroidView from "./PolaroidView";
 import PhotoView from "./PhotoView";
 
 import Header from "../../components/common/Header";
+import { allDiaries } from "../../data/diaries"; // 또는 상태 관리 데이터
+import EmptyDiaryView from "./EmptyDiaryView";
 
 export default function HomePage() {
   const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
@@ -18,7 +20,9 @@ export default function HomePage() {
         />
 
         <main className={style.mainContent}>
-          {viewType === "photo" ? (
+          {allDiaries.length === 0 ? (
+            <EmptyDiaryView />
+          ) : viewType === "photo" ? (
             <PhotoView onSwitchView={() => setViewType("polaroid")} />
           ) : (
             <PolaroidView onSwitchView={() => setViewType("photo")} />

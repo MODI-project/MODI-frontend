@@ -21,7 +21,7 @@ export interface Diary {
 
 // 임시 더미 데이터
 export const allDiaries: Diary[] = [
-  {
+  /*{
     id: 1,
     date: "2025-07-10",
     photoUrl: "/img/1.jpg",
@@ -44,7 +44,7 @@ export const allDiaries: Diary[] = [
     summary: "일기 내용 한 줄 요약",
     emotion: "보통",
     tags: ["#태그1", "#태그1", "#태그1"],
-  },
+  },*/
   // …필요한 만큼 추가
 ];
 
