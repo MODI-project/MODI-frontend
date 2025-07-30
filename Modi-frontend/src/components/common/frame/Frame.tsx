@@ -1,6 +1,10 @@
-import { useFrameTemplate } from "../../../contexts/FrameTemplate";
+import {
+  useFrameTemplate,
+  frameIdMapping,
+} from "../../../contexts/FrameTemplate";
 import styles from "./Frame.module.css";
 import { useState } from "react";
+
 // 프레임별 background 이미지 경로 예시
 const frameWrapperBackgrounds = {
   basic: {
@@ -65,7 +69,6 @@ const frameFrontBackgrounds = {
   },
 };
 
-const frameId = {};
 const Frame = () => {
   const [isFlipped, setIsFlipped] = useState(false); // 프레임 클릭 시 앞뒤 전환
 
@@ -73,32 +76,45 @@ const Frame = () => {
     setIsFlipped(!isFlipped);
   };
 
-  const { frameType, basicFrameId, characterFrameId } = useFrameTemplate();
+  const { frameId } = useFrameTemplate();
+
+  // frameId에 따라 프레임 정보 결정
+  const frameMapping = frameIdMapping[frameId];
+  const frameType = frameMapping.type;
+  const frameTypeId = frameMapping.id;
+
   console.log(
+    "frameId:",
+    frameId,
     "frameType:",
     frameType,
-    "basicFrameId:",
-    basicFrameId,
-    "characterFrameId:",
-    characterFrameId,
-    "frameId:",
-    frameId
+    "frameTypeId:",
+    frameTypeId
   );
 
+  // frameId에 따라 배경 이미지 결정
   const wrapperBg =
     frameType === "basic"
-      ? frameWrapperBackgrounds.basic[basicFrameId]
-      : frameWrapperBackgrounds.character[characterFrameId];
+      ? frameWrapperBackgrounds.basic[
+          frameTypeId as keyof typeof frameWrapperBackgrounds.basic
+        ]
+      : frameWrapperBackgrounds.character[
+          frameTypeId as keyof typeof frameWrapperBackgrounds.character
+        ];
 
   const backBg =
     frameType === "basic"
       ? ""
-      : frameBackBackgrounds.character[characterFrameId];
+      : frameBackBackgrounds.character[
+          frameTypeId as keyof typeof frameBackBackgrounds.character
+        ];
 
   const frontBg =
     frameType === "basic"
       ? ""
-      : frameFrontBackgrounds.character[characterFrameId];
+      : frameFrontBackgrounds.character[
+          frameTypeId as keyof typeof frameFrontBackgrounds.character
+        ];
 
   const isColor = wrapperBg?.startsWith("var(") || wrapperBg?.startsWith("#");
 
@@ -144,7 +160,7 @@ const Frame = () => {
           <div className={styles.diary_detail_container}>
             <span className={styles.diary_detail_title}>세부 내용</span>
             <span className={styles.diary_detail_content}>
-              어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구
+              어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구
             </span>
           </div>
         </div>

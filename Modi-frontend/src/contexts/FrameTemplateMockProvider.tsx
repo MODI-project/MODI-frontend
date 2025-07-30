@@ -7,14 +7,19 @@ import {
 // useFrameTemplate import하지 마세요!
 
 const mockValue: FrameTemplateContextProps = {
-  frameType: "character",
-  setFrameType: () => {},
-  basicFrameId: "none",
-  setBasicFrameId: () => {},
-  characterFrameId: "lumi",
-  setCharacterFrameId: () => {},
-  frameId: "1",
+  frameId: "11",
   setFrameId: () => {},
+  // 계산된 값들 (getter 함수)
+  getFrameType: () => "character",
+  getBasicFrameId: () => "none",
+  getCharacterFrameId: () => "lumi",
+  // 새로 추가된 서버 연동 함수들
+  saveFrameToServer: async () => {
+    console.log("Mock: 프레임 데이터를 서버에 저장");
+  },
+  loadFrameFromServer: async () => {
+    console.log("Mock: 서버에서 프레임 데이터 로드");
+  },
 };
 
 export const FrameTemplateMockProvider = ({
