@@ -11,6 +11,7 @@ import { useContext } from "react";
 import { DiaryDraftContext } from "../../contexts/DiaryDraftContext";
 import { useNavigate } from "react-router-dom";
 import Popup from "../../components/common/Popup";
+import Preview from "../../components/DiaryPage/StylePage/Preview";
 
 const DiaryStylePage = () => {
   const [selectedTab, setSelectedTab] = useState("한줄요약");
@@ -50,6 +51,7 @@ const DiaryStylePage = () => {
           RightClick={() => setIsPopupOpen(true)}
         />
         <div className={styles.main_container}>
+          <Preview />
           <BottomSheet isOpen={true} onClose={() => {}} minimizeOnDrag={true}>
             <div className={styles.tab_container}>
               <Tab
