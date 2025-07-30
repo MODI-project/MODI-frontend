@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import styles from "./LanguageStyle.module.css";
 import LanguageStyleSelector from "./LanguageStyleSelector";
 import { DiaryDraftContext } from "../../../contexts/DiaryDraftContext";
@@ -31,9 +31,21 @@ const dummyData = [
 ];
 
 const LanguageStyle = () => {
+  const { draft, setDraft } = useContext(DiaryDraftContext);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [previewedIndexes, setPreviewedIndexes] = useState<number[]>([]);
-  const { setDraft } = useContext(DiaryDraftContext);
+
+  useEffect(() => {
+    const foundIndex = dummyData.findIndex(
+      (item) => item.emotion === draft.emotion && item.content === draft.summary
+    );
+    if (foundIndex !== -1) {
+      setSelectedIndex(foundIndex);
+      setPreviewedIndexes((prev) =>
+        prev.includes(foundIndex) ? prev : [...prev, foundIndex]
+      );
+    }
+  }, [draft]);
 
   const handlePreviewClick = (index: number) => {
     if (!previewedIndexes.includes(index)) {
@@ -43,7 +55,6 @@ const LanguageStyle = () => {
 
   const handleSelect = (index: number) => {
     setSelectedIndex(index);
-
     const selected = dummyData[index];
     setDraft({
       emotion: selected.emotion,

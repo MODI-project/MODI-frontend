@@ -27,7 +27,7 @@
 .main_container {
   height: 100%;
   max-width: 310px;
-  min-width: 250px;
+  min-width: 270px;
   margin-top: 40%;
   margin-bottom: 30%;
   display: flex;
@@ -168,4 +168,28 @@
 .textarea::placeholder {
   color: var(--color-gray3);
   opacity: 1;
+}
+
+.warning {
+  color: #ff5757;
+  font-family: var(--font-nanum-squareB);
+  font-weight: 400;
+  font-size: var(--font-caption2);
+  line-height: 13px;
+  letter-spacing: 0.06px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  gap: 2px;
+}
+
+.autogen_container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.only_autogen_container {
+  display: flex;
+  justify-content: end;
 }

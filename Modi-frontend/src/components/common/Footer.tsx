@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import style from "./Footer.module.css";
 import FooterIcon from "./instance/footer";
+import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 
 interface FooterProps {
   showBalloon?: boolean;
@@ -9,6 +10,7 @@ interface FooterProps {
 const Footer = ({ showBalloon = false }: FooterProps) => {
   const navigator = useNavigate();
   const location = useLocation();
+  const { resetDraft } = useDiaryDraft();
 
   return (
     <div className={style.footer_wrapper}>
@@ -38,7 +40,12 @@ const Footer = ({ showBalloon = false }: FooterProps) => {
               src={iconSrc}
               alt={icon}
               onClick={() => {
-                navigator(`/${icon === "add" ? "emotion" : icon}`);
+                if (icon === "add") {
+                  resetDraft();
+                  navigator("/emotion");
+                } else {
+                  navigator(`/${icon}`);
+                }
               }}
             />
           );

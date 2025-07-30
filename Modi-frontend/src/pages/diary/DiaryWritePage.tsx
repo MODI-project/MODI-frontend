@@ -13,6 +13,7 @@ const DiaryWritePage = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
   const navigate = useNavigate();
+  const [showEmptyContentPopup, setShowEmptyContentPopup] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handlePopupConfirm = () => {
@@ -159,7 +160,27 @@ const DiaryWritePage = () => {
               className={styles.textarea}
               rows={4}
             />
-            <button className={styles.autogen_button}>
+          </div>
+          <div
+            className={`${
+              draft.keywords.length < 3
+                ? styles.autogen_container
+                : styles.only_autogen_container
+            }`}
+          >
+            {draft.keywords.length < 3 && (
+              <p className={styles.warning}>
+                <img src="/icons/danger.svg" className={styles.warning_icon} />
+                생성하려면 키워드가 필요해요
+              </p>
+            )}
+            <button
+              className={styles.autogen_button}
+              onClick={() => {
+                if (draft.keywords.length < 3) return;
+                // 자동 생성 로직 추가
+              }}
+            >
               <img src="/icons/rotate_gray.svg" /> 자동 생성
               {/* 온클릭 이벤트 달아야 함 */}
             </button>
@@ -172,7 +193,11 @@ const DiaryWritePage = () => {
           location="next"
           label="다음"
           onClick={() => {
-            navigate("/style");
+            if (draft.content.trim() === "") {
+              setShowEmptyContentPopup(true);
+            } else {
+              navigate("/style");
+            }
           }}
           disabled={!isReadyToSubmit}
         />
@@ -190,6 +215,27 @@ const DiaryWritePage = () => {
             {
               label: "예",
               onClick: handlePopupConfirm,
+            },
+          ]}
+        />
+      )}
+
+      {/* 팝업 */}
+      {showEmptyContentPopup && (
+        <Popup
+          title={["내용이 입력되지 않았어요!", "넘어가시겠어요?"]}
+          description="입력되지 않은 내용은 자동으로 생성돼요"
+          buttons={[
+            {
+              label: "아니요",
+              onClick: () => setShowEmptyContentPopup(false),
+            },
+            {
+              label: "예",
+              onClick: () => {
+                setShowEmptyContentPopup(false);
+                navigate("/style");
+              },
             },
           ]}
         />
