@@ -1,5 +1,6 @@
 import styles from "./SearchPage.module.css";
 import Header from "../../components/common/Header";
+import Footer from "../../components/common/Footer";
 
 const SearchPage = () => {
   return (
@@ -21,6 +22,7 @@ const SearchPage = () => {
             />
           </div>
         </div>
+        <Footer />
       </div>
     </div>
   );
