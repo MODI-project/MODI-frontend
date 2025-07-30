@@ -27,5 +27,5 @@ export const defaultDraft: DiaryDraft = {
   summary: "",
   tone: "",
   templateId: null,
-  font: "온글맆 류류체",
+  font: "",
 };
