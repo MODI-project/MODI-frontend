@@ -1,8 +1,10 @@
 import styles from "./DiaryEmotionTag.module.css";
 import Header from "../../components/common/Header";
+import Popup from "../../components/common/Popup";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import { useNavigate } from "react-router-dom";
 import { useDiaryDraft } from "../../hooks/useDiaryDraft";
+import { useState } from "react";
 
 const emotionList = [
   { en: "happy", ko: "기쁨" },
@@ -21,16 +23,23 @@ const characterName = "momo"; //캐릭터 momo로 임시 설정
 
 const DiaryEmotionTag = () => {
   const { draft, setDraft } = useDiaryDraft();
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const navigate = useNavigate();
+
+  const handlePopupConfirm = () => {
+    setIsPopupOpen(false);
+    navigate("/home");
+  };
 
   return (
     <div className={styles.DiaryEmotionTag_wrapper}>
       <div className={styles.DiaryEmotionTag_container}>
         <Header
           left="/icons/back.svg"
+          LeftClick={() => setIsPopupOpen(true)} // ✅ 팝업 열기
           middle="일기 기록하기"
           right="/icons/X.svg"
-          write={true}
+          RightClick={() => setIsPopupOpen(true)} // ✅ 팝업 열기
         />
         <div className={styles.main_container}>
           <p className={styles.ask}>오늘은 어떤 하루였나요?</p>
@@ -61,6 +70,23 @@ const DiaryEmotionTag = () => {
           disabled={!draft.emotion}
         />
       </div>
+
+      {/* 팝업 */}
+      {isPopupOpen && (
+        <Popup
+          title={["작성한 일기가 저장되지 않아요!", "화면을 닫을까요?"]}
+          buttons={[
+            {
+              label: "아니오",
+              onClick: () => setIsPopupOpen(false),
+            },
+            {
+              label: "예",
+              onClick: handlePopupConfirm,
+            },
+          ]}
+        />
+      )}
     </div>
   );
 };
