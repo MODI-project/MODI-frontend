@@ -15,6 +15,7 @@ import Setting from "../pages/setting/Setting";
 import MapMarker from "../components/map/MapMarker";
 import Popup from "../components/common/Popup";
 import MapSearchBar from "../components/map/MapSearchBar";
+import NotiPopUp from "../components/notification/NotiPopUp";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -76,21 +77,7 @@ const Router = () => {
     },
     {
       path: "/popup",
-      element: (
-        <Popup
-          title=""
-          description="37일만에 경희대에 왔어요!이전 기록을 살펴볼까요?"
-          imageUrl="/images/pop-up/popUp-momo.svg"
-          showCloseButton={true}
-          onClose={() => {}}
-          buttons={[
-            {
-              label: "바로가기",
-              onClick: () => {},
-            },
-          ]}
-        />
-      ),
+      element: <NotiPopUp />,
     },
     {
       path: "/map-search-bar",
