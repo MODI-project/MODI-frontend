@@ -160,7 +160,21 @@ const DiaryWritePage = () => {
               className={styles.textarea}
               rows={4}
             />
-            <button className={styles.autogen_button}>
+          </div>
+          <div className={styles.autogen_container}>
+            {draft.keywords.length < 3 && (
+              <p className={styles.warning}>
+                <img src="/icons/danger.svg" className={styles.warning_icon} />
+                생성하려면 키워드가 필요해요
+              </p>
+            )}
+            <button
+              className={styles.autogen_button}
+              onClick={() => {
+                if (draft.keywords.length < 3) return;
+                // 자동 생성 로직 추가
+              }}
+            >
               <img src="/icons/rotate_gray.svg" /> 자동 생성
               {/* 온클릭 이벤트 달아야 함 */}
             </button>
