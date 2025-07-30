@@ -54,6 +54,7 @@ const LanguageStyle = () => {
   };
 
   const handleSelect = (index: number) => {
+    if (!previewedIndexes.includes(index)) return; // ❌ 선택은 미리보기 한 항목만 가능
     setSelectedIndex(index);
     const selected = dummyData[index];
     setDraft({
@@ -64,17 +65,26 @@ const LanguageStyle = () => {
 
   return (
     <div className={styles.LanguageStyle_wrapper}>
-      {dummyData.map((item, index) => (
-        <div key={index} onClick={() => handleSelect(index)}>
-          <LanguageStyleSelector
-            emotion={item.emotion}
-            content={item.content}
-            isPreviewed={previewedIndexes.includes(index)}
-            isSelected={selectedIndex === index}
-            onPreviewClick={() => handlePreviewClick(index)}
-          />
-        </div>
-      ))}
+      {dummyData.map((item, index) => {
+        const isPreviewed = previewedIndexes.includes(index);
+        const isSelected = selectedIndex === index;
+
+        return (
+          <div
+            key={index}
+            onClick={() => handleSelect(index)}
+            style={{ cursor: isPreviewed ? "pointer" : "default" }}
+          >
+            <LanguageStyleSelector
+              emotion={item.emotion}
+              content={item.content}
+              isPreviewed={isPreviewed}
+              isSelected={isSelected}
+              onPreviewClick={() => handlePreviewClick(index)}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 };
