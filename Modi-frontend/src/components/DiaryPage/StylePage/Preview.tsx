@@ -21,9 +21,11 @@ const Preview = () => {
   const characterNames = ["momo", "boro", "lumi", "zuni"];
 
   const templateName =
-    draft.templateId !== null && draft.templateId <= 8
+    draft.templateId === null
+      ? "pink" // 기본값 처리
+      : draft.templateId <= 8
       ? basicNames[draft.templateId - 1]
-      : characterNames[draft.templateId! - 9];
+      : characterNames[draft.templateId - 9];
 
   const characterFolder = isCharacterTemplate ? templateName : null;
 
