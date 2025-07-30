@@ -11,26 +11,58 @@
 .columnWrapper {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   height: 340px;
-  gap: 68px;
+  gap: 40px;
   z-index: 20;
+  overflow: visible;
+
+  margin-top: 150px;
 }
 
 .column {
+  outline: 2px dashed blue;
+  background: rgba(0, 0, 255, 0.05);
   display: flex;
-  width: 50px;
-  height: 120px;
+  width: 70px;
+  height: 100px;
+
   flex-direction: column;
   gap: 8px;
-  align-items: stretch;
 
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   scroll-snap-type: y mandatory;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%
+  );
+}
+
+.column::-webkit-scrollbar {
+  display: none;
 }
 
 .option {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   scroll-snap-align: center;
   color: #9c9c9c;
   text-align: center;
@@ -57,15 +89,16 @@
   letter-spacing: -0.23px;
 }
 
-.picker::before {
-  content: "";
+.selectionOverlay {
   position: absolute;
-  top: 88px;
-
-  width: 296px;
-  height: 28px;
-  flex-shrink: 0;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 310px;
+  height: 30px;
   border-radius: 7px;
-  opacity: 0.9;
   background-color: var(--picker-highlight);
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 1;
 }

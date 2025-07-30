@@ -31,6 +31,11 @@ const DateSelector: React.FC<Props> = ({
   onChange,
   userCharacter,
 }) => {
+  const ITEM_HEIGHT = 40; // 옵션 하나 높이
+  const DEFAULT_VISIBLE =
+    viewType === "polaroid" // 폴라로이드면 3줄, 아니면 2줄
+      ? 3
+      : 2;
   const [year, setYear] = useState(initialDate.slice(0, 4));
   const [month, setMonth] = useState(initialDate.slice(5, 7));
   const [day, setDay] = useState(
@@ -70,55 +75,85 @@ const DateSelector: React.FC<Props> = ({
     [items, viewType, year, month]
   );
 
+  const getVisibleCount = (len: number) =>
+    Math.max(1, Math.min(DEFAULT_VISIBLE, len - 1));
+  const yearCount = getVisibleCount(years.length);
+  const monthCount = getVisibleCount(months.length);
+  const dayCount = viewType === "polaroid" ? getVisibleCount(days.length) : 0;
+
+  const yearHeight = yearCount * ITEM_HEIGHT;
+  const monthHeight = monthCount * ITEM_HEIGHT;
+  const dayHeight = dayCount * ITEM_HEIGHT;
+
   const yearCol = useRef<HTMLDivElement>(null);
   const monthCol = useRef<HTMLDivElement>(null);
   const dayCol = useRef<HTMLDivElement>(null);
 
-  const onScroll = (
-    el: HTMLDivElement,
-    options: string[],
-    setter: (v: string) => void
-  ) => {
-    const { scrollTop, clientHeight } = el;
-    // 옵션 높이가 모두 동일하다고 가정 (예: 40px)
-    const itemHeight = 40;
-    // 중앙 y좌표 = scrollTop + clientHeight/2
-    const centerY = scrollTop + clientHeight / 2;
-    // 인덱스 계산
-    const idx = Math.round(centerY / itemHeight) - 1;
-    const clamped = Math.min(Math.max(idx, 0), options.length - 1);
-    const value = options[clamped];
-    setter(value);
-  };
+  const VISIBLE_COUNT = viewType === "polaroid" ? 3 : 2;
+  const VISIBLE_HEIGHT = ITEM_HEIGHT * VISIBLE_COUNT;
 
-  useEffect(() => {
-    const yC = yearCol.current,
-      mC = monthCol.current,
-      dC = dayCol.current;
-
-    let timeoutId: NodeJS.Timeout;
-
-    const handleScroll = (
-      el: HTMLDivElement,
-      options: string[],
-      setter: (v: string) => void
-    ) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        onScroll(el, options, setter);
-      }, 100); // 100ms 후에 처리 (스크롤 멈춘 후)
+  const handleScroll =
+    (options: string[], setter: (v: string) => void) =>
+    (e: React.UIEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      const el = e.currentTarget;
+      const centerY = Math.floor(
+        (el.scrollTop + VISIBLE_HEIGHT / 2) / ITEM_HEIGHT
+      );
+      const idx = Math.floor(centerY / ITEM_HEIGHT);
+      const clamped = Math.max(Math.min(idx, 0), options.length - 1);
+      setter(options[clamped]);
     };
 
-    if (yC)
-      yC.addEventListener("scroll", () => handleScroll(yC, years, setYear));
-    if (mC)
-      mC.addEventListener("scroll", () => handleScroll(mC, months, setMonth));
-    if (viewType === "polaroid" && dC)
-      dC.addEventListener("scroll", () => onScroll(dC, days, setDay));
-    // cleanup omitted for brevity
+  const handleWheel =
+    (
+      options: string[],
+      setter: (v: string) => void,
+      ref: React.RefObject<HTMLDivElement | null>
+    ) =>
+    (e: React.WheelEvent<HTMLDivElement>) => {
+      console.log("💥 wheel!", options, "deltaY:", e.deltaY);
 
-    return () => clearTimeout(timeoutId);
-  }, [years, months, days]);
+      e.stopPropagation();
+
+      const el = ref.current;
+      if (!el) return;
+
+      console.log("clientHeight:", el.clientHeight);
+      console.log("scrollHeight:", el.scrollHeight);
+      console.log("canScroll?", el.scrollHeight > el.clientHeight);
+
+      // 1) 컨테이너 자체를 스크롤
+      const delta = Math.sign(e.deltaY) * ITEM_HEIGHT;
+      el.scrollBy({ top: delta, behavior: "auto" });
+
+      // 2) 중앙 기준으로 선택도 업데이트
+      const centerY = el.scrollTop + VISIBLE_HEIGHT / 2;
+      const idx = Math.floor(centerY / ITEM_HEIGHT);
+      const clamped = Math.max(0, Math.min(idx, options.length - 1));
+      setter(options[clamped]);
+    };
+
+  // year 초기 스크롤 위치
+  useEffect(() => {
+    if (yearCol.current) {
+      yearCol.current.scrollTop = years.indexOf(year) * ITEM_HEIGHT;
+    }
+  }, [year, years]);
+
+  // month 초기 스크롤 위치
+  useEffect(() => {
+    if (monthCol.current) {
+      monthCol.current.scrollTop = months.indexOf(month) * ITEM_HEIGHT;
+    }
+  }, [month, months]);
+
+  // day 초기 스크롤 위치 (폴라로이드일 때만)
+  useEffect(() => {
+    if (viewType === "polaroid" && dayCol.current) {
+      dayCol.current.scrollTop = days.indexOf(day) * ITEM_HEIGHT;
+    }
+  }, [day, days]);
 
   // state가 바뀔 때 마다 onChange 호출
   useEffect(() => {
@@ -139,8 +174,15 @@ const DateSelector: React.FC<Props> = ({
 
   return (
     <div className={styles.picker} style={styleVars}>
+      <div className={styles.selectionOverlay} />
       <div className={styles.columnWrapper}>
-        <div className={styles.column} ref={yearCol}>
+        <div
+          className={styles.column}
+          ref={yearCol}
+          onWheel={handleWheel(years, setYear, yearCol)}
+          onScroll={handleScroll(years, setYear)}
+          style={{ height: yearHeight }}
+        >
           {years.map((y) => (
             <div
               key={y}
@@ -152,7 +194,13 @@ const DateSelector: React.FC<Props> = ({
             </div>
           ))}
         </div>
-        <div className={styles.column} ref={monthCol}>
+        <div
+          className={styles.column}
+          ref={monthCol}
+          onWheel={handleWheel(months, setMonth, monthCol)}
+          onScroll={handleScroll(months, setMonth)}
+          style={{ height: monthHeight }}
+        >
           {months.map((m) => (
             <div
               key={m}
@@ -165,7 +213,13 @@ const DateSelector: React.FC<Props> = ({
           ))}
         </div>
         {viewType === "polaroid" && (
-          <div className={styles.column} ref={dayCol}>
+          <div
+            className={styles.column}
+            ref={dayCol}
+            onWheel={handleWheel(days, setDay, dayCol)}
+            onScroll={handleScroll(days, setDay)}
+            style={{ height: dayHeight }}
+          >
             {days.map((d) => (
               <div
                 key={d}
