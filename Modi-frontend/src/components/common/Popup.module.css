@@ -58,6 +58,14 @@
   white-space: pre-line;
 }
 
+.popup_description {
+  font-family: var(--font-nanum-squareR);
+  font-size: 14px;
+  color: var(--color-gray3);
+  line-height: 22px;
+  letter-spacing: -0.43px;
+}
+
 .last_line {
   margin-bottom: 12px;
 }

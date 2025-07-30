@@ -13,6 +13,7 @@ const DiaryWritePage = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
   const navigate = useNavigate();
+  const [showEmptyContentPopup, setShowEmptyContentPopup] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handlePopupConfirm = () => {
@@ -172,7 +173,11 @@ const DiaryWritePage = () => {
           location="next"
           label="다음"
           onClick={() => {
-            navigate("/style");
+            if (draft.content.trim() === "") {
+              setShowEmptyContentPopup(true);
+            } else {
+              navigate("/style");
+            }
           }}
           disabled={!isReadyToSubmit}
         />
@@ -190,6 +195,27 @@ const DiaryWritePage = () => {
             {
               label: "예",
               onClick: handlePopupConfirm,
+            },
+          ]}
+        />
+      )}
+
+      {/* 팝업 */}
+      {showEmptyContentPopup && (
+        <Popup
+          title={["내용이 입력되지 않았어요!", "넘어가시겠어요?"]}
+          description="입력되지 않은 내용은 자동으로 생성돼요"
+          buttons={[
+            {
+              label: "아니요",
+              onClick: () => setShowEmptyContentPopup(false),
+            },
+            {
+              label: "예",
+              onClick: () => {
+                setShowEmptyContentPopup(false);
+                navigate("/style");
+              },
             },
           ]}
         />
