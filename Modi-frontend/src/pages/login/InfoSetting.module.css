@@ -9,12 +9,39 @@
   align-items: center;
   justify-content: center;
   background-image: url("/images/background/normal-bg.svg");
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
 }
 
 .initialSetting_wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* 미리보기 오버레이 */
+.preview_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* 닉네임 입력 영역 */

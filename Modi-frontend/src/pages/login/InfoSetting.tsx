@@ -1,9 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/common/Header";
 import styles from "./InfoSetting.module.css";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import { useCharacter } from "../../contexts/CharacterContext";
+import NotiPopUp from "../../components/notification/NotiPopUp";
 
 interface LocationState {
   from?: string;
@@ -15,18 +16,37 @@ const InitialSetting = () => {
   const location = useLocation();
   const from = (location.state as LocationState)?.from;
   const [selectedCharacter, setSelectedCharacter] = useState<string>("");
+  const [nickname, setNickname] = useState<string>("");
+  const [showPreview, setShowPreview] = useState<boolean>(false);
   const completeBtnRef = useRef<HTMLButtonElement>(null);
+
+  // 기본 이메일 placeholder
+  const defaultEmail = "user123@email.com";
 
   const handleCharacterSelect = (character: string) => {
     setSelectedCharacter(character);
     setCharacter(character as any);
+
     // 완료 버튼을 enabled 상태로 만들고 포커스
     if (completeBtnRef.current) {
       completeBtnRef.current.focus();
     }
   };
 
+  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNickname(e.target.value);
+  };
+
   const handleComplete = () => {
+    // 닉네임이 비어있으면 기본 이메일 사용
+    const finalNickname = nickname.trim() || defaultEmail;
+
+    // 닉네임을 localStorage에 저장 <- API 연동하고 나서는 서버 DB에 저장할 수 있게 수정!
+    localStorage.setItem("nickname", finalNickname);
+
+    console.log("저장된 닉네임:", finalNickname);
+    console.log("선택된 캐릭터:", selectedCharacter);
+
     if (location.state?.from === "/mypage") {
       navigate("/mypage");
     } else {
@@ -45,7 +65,9 @@ const InitialSetting = () => {
           <input
             className={styles.nicknameInput_input}
             type="text"
-            placeholder="user123@email.com"
+            value={nickname}
+            onChange={handleNicknameChange}
+            placeholder={defaultEmail}
           />
         </div>
         <div className={styles.characterSelect}>
