@@ -37,7 +37,7 @@ const DiaryKeywordPage = () => {
               키워드를 3개 이상 입력해주세요
             </p>
           ) : null}
-          <FrequentKeywords />
+          <FrequentKeywords Bigmargin={true} />
         </div>
         <PrimaryButton
           location="next"

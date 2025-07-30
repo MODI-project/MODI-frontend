@@ -13,10 +13,16 @@ const dummyKeywords = [
   "서울",
 ];
 
-const FrequentKeywords = () => {
+const FrequentKeywords = ({ Bigmargin }: { Bigmargin: boolean }) => {
   return (
     <div className={styles.wrapper}>
-      <p className={styles.title}>자주 사용하는 키워드</p>
+      <p
+        className={`${styles.title} ${
+          Bigmargin ? styles.margin_big : styles.margin_small
+        }`}
+      >
+        자주 사용하는 키워드
+      </p>
       <div className={styles.keyword_container}>
         {dummyKeywords.map((keyword, index) => (
           <span key={index} className={styles.keyword_chip}>

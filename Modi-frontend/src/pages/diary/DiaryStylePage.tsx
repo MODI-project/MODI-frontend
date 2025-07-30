@@ -23,16 +23,9 @@ const DiaryStylePage = () => {
     navigate("/home");
   };
 
-  // 각 탭에서 조건 만족 여부
-  const isSummaryDone = draft.summary && draft.font;
-  const isLanguageStyleDone = draft.emotion && draft.summary;
-  const isTemplateDone = draft.templateId !== null;
-
   // 버튼 활성화 여부 결정
   const isNextEnabled =
-    (selectedTab === "한줄요약" && isSummaryDone) ||
-    (selectedTab === "언어스타일" && isLanguageStyleDone) ||
-    (selectedTab === "템플릿" && isTemplateDone);
+    draft.summary && draft.font && draft.emotion && draft.templateId !== null;
 
   // 버튼 클릭 시 동작
   const handleNext = () => {
@@ -40,7 +33,7 @@ const DiaryStylePage = () => {
       setSelectedTab("언어스타일");
     } else if (selectedTab === "언어스타일") {
       setSelectedTab("템플릿");
-    } else if (selectedTab === "템플릿" && isTemplateDone) {
+    } else if (selectedTab === "템플릿") {
       // 완료 → 디테일페이지로 이동
       navigate("/home"); // 일단 홈으로 설정
     }

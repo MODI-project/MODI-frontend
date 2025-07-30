@@ -4,7 +4,6 @@
   font-size: var(--font-subheadline);
   line-height: 20px;
   letter-spacing: -0.23px;
-  margin-top: 32px;
   margin-bottom: 12px;
 }
 
@@ -22,4 +21,12 @@
   white-space: nowrap;
   font-size: var(--font-caption1);
   line-height: 16px;
+}
+
+.margin_big {
+  margin-top: 32px;
+}
+
+.margin_small {
+  margin-top: 20px;
 }

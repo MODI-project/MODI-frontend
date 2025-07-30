@@ -38,7 +38,6 @@
   border-radius: 15px;
   border-width: 1px;
   margin-top: 27px;
-  margin-bottom: 22px;
   background-color: white;
   box-sizing: border-box;
   opacity: 0.8;
@@ -50,7 +49,6 @@
   border-width: 1px;
   padding: 11px 16px;
   box-sizing: border-box;
-
   border: none;
   font-family: var(--font-nanum-squareB);
   font-size: var(--font-body);
@@ -58,4 +56,16 @@
 .search_icon {
   width: 24px;
   margin-right: 10px;
+}
+
+.no_result {
+  height: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.no_result_image {
+  width: 164px;
+  height: auto;
 }

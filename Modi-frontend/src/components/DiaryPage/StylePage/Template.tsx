@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import styles from "./Template.module.css";
 import { DiaryDraftContext } from "../../../contexts/DiaryDraftContext";
 
@@ -6,10 +6,7 @@ const Template = () => {
   const [selectedTab, setSelectedTab] = useState<"basic" | "character">(
     "basic"
   );
-  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(
-    null
-  );
-  const { setDraft } = useContext(DiaryDraftContext);
+  const { draft, setDraft } = useContext(DiaryDraftContext);
 
   const allTemplateIds = Array.from({ length: 12 }, (_, i) => i + 1);
   const templatesToRender =
@@ -18,7 +15,6 @@ const Template = () => {
       : allTemplateIds.slice(8);
 
   const handleTemplateClick = (id: number) => {
-    setSelectedTemplateId(id);
     setDraft({ templateId: id });
   };
 
@@ -50,7 +46,7 @@ const Template = () => {
             className={`${styles.template_item} ${
               selectedTab === "character" ? styles.character_item : ""
             } ${
-              selectedTemplateId === id
+              draft.templateId === id
                 ? `${styles.selected} ${
                     selectedTab === "character"
                       ? styles.selected_character
