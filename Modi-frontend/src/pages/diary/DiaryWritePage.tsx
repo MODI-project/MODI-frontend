@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import ExifReader from "exifreader";
 import { useNavigate } from "react-router-dom";
 import styles from "./DiaryWritePage.module.css";
@@ -7,11 +7,18 @@ import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import AddressInput from "../../components/DiaryPage/DetailPage/AddressInput";
 import KeywordInput from "../../components/DiaryPage/DetailPage/KeywordInput";
+import Popup from "../../components/common/Popup";
 
 const DiaryWritePage = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
   const navigate = useNavigate();
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const handlePopupConfirm = () => {
+    setIsPopupOpen(false);
+    navigate("/home");
+  };
 
   // 전역변수 가져오기
   const { draft, setDraft } = useDiaryDraft();
@@ -104,9 +111,10 @@ const DiaryWritePage = () => {
       <div className={styles.DiaryWrite_container}>
         <Header
           left="/icons/back.svg"
+          LeftClick={() => navigate(-1)}
           middle="일기 기록하기"
           right="/icons/X.svg"
-          write={true}
+          RightClick={() => setIsPopupOpen(true)}
         />
         <div className={styles.main_container}>
           {/* 사진 첨부 */}
@@ -169,6 +177,23 @@ const DiaryWritePage = () => {
           disabled={!isReadyToSubmit}
         />
       </div>
+
+      {/* 팝업 */}
+      {isPopupOpen && (
+        <Popup
+          title={["작성한 일기가 저장되지 않아요!", "화면을 닫을까요?"]}
+          buttons={[
+            {
+              label: "아니오",
+              onClick: () => setIsPopupOpen(false),
+            },
+            {
+              label: "예",
+              onClick: handlePopupConfirm,
+            },
+          ]}
+        />
+      )}
     </div>
   );
 };

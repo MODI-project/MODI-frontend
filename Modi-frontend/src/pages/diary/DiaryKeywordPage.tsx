@@ -5,20 +5,30 @@ import { useNavigate } from "react-router-dom";
 import KeywordInput from "../../components/DiaryPage/DetailPage/KeywordInput";
 import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 import FrequentKeywords from "../../components/common/keyword/FrequentKeywords";
+import Popup from "../../components/common/Popup";
+import { useState } from "react";
 
 const DiaryKeywordPage = () => {
   const navigate = useNavigate();
   const { draft } = useDiaryDraft();
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const handlePopupConfirm = () => {
+    setIsPopupOpen(false);
+    navigate("/home");
+  };
 
   return (
     <div className={styles.DiaryKeyword_wrapper}>
       <div className={styles.DiaryKeyword_container}>
         <Header
           left="/icons/back.svg"
+          LeftClick={() => navigate(-1)}
           middle="일기 기록하기"
           right="/icons/X.svg"
-          write={true}
+          RightClick={() => setIsPopupOpen(true)}
         />
+
         <div className={styles.main_container}>
           <KeywordInput />
           {draft.keywords.length < 3 ? (
@@ -36,6 +46,23 @@ const DiaryKeywordPage = () => {
           disabled={draft.keywords.length < 3}
         />
       </div>
+
+      {/* 팝업 */}
+      {isPopupOpen && (
+        <Popup
+          title={["작성한 일기가 저장되지 않아요!", "화면을 닫을까요?"]}
+          buttons={[
+            {
+              label: "아니오",
+              onClick: () => setIsPopupOpen(false),
+            },
+            {
+              label: "예",
+              onClick: handlePopupConfirm,
+            },
+          ]}
+        />
+      )}
     </div>
   );
 };
