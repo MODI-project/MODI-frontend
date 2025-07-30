@@ -1,8 +1,10 @@
 .initialSetting {
   display: flex;
   position: relative;
-  width: 360px;
-  height: 800px;
+  width: 100vw;
+  height: 100vh;
+  max-width: 400px;
+  max-height: auto;
   flex-direction: column;
   align-items: center;
   justify-content: center;
