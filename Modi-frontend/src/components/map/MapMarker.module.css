@@ -6,16 +6,36 @@
   max-height: 102.885px;
   padding: 2px 3.51px 8.69px 3px;
   flex-shrink: 0;
-  background-image: url("/images/map-marker/momo-marker/happy-momo-marker.svg");
 }
 
-.post_counts_container {
+.momo_image {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 7.81px;
+  left: 3px;
+}
+
+.boro_image {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+}
+
+.lumi_image {
+  position: absolute;
+  top: 14px;
+  left: 1.5px;
+}
+
+.zuni_image {
+  position: absolute;
+  top: 2px;
+  left: 18px;
 }
 
 .post_counts {
+  position: absolute;
+  left: 36px;
+  bottom: 23px;
   color: var(--gray5, #2c2c2c);
   text-align: center;
   font-feature-settings: "liga" off, "clig" off;
@@ -27,4 +47,28 @@
   font-weight: 700;
   line-height: 20px; /* 142.857% */
   letter-spacing: -0.23px;
+}
+
+.post_counts_momo {
+  position: absolute;
+  left: 36px;
+  bottom: 23px;
+}
+
+.post_counts_boro {
+  position: absolute;
+  left: 36px;
+  bottom: 16px;
+}
+
+.post_counts_lumi {
+  position: absolute;
+  left: 36px;
+  bottom: 29.5px;
+}
+
+.post_counts_zuni {
+  position: absolute;
+  left: 38.5px;
+  bottom: 29.5px;
 }

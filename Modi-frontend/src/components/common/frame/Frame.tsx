@@ -65,6 +65,7 @@ const frameFrontBackgrounds = {
   },
 };
 
+const frameId = {};
 const Frame = () => {
   const [isFlipped, setIsFlipped] = useState(false); // 프레임 클릭 시 앞뒤 전환
 
@@ -79,7 +80,9 @@ const Frame = () => {
     "basicFrameId:",
     basicFrameId,
     "characterFrameId:",
-    characterFrameId
+    characterFrameId,
+    "frameId:",
+    frameId
   );
 
   const wrapperBg =
