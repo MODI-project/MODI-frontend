@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import MapSearchBar from "./MapSearchBar";
+import Geolocation from "./Geolocation";
 
 interface KakaoMapProps {
   latitude: number;
@@ -116,6 +117,7 @@ const KakaoMap = ({
           <MapSearchBar map={mapInstance} onPlaceSelect={onPlaceSelect} />
         </div>
       )}
+      <Geolocation map={mapInstance} />
     </div>
   );
 };

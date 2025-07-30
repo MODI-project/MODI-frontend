@@ -13,6 +13,8 @@ const mockValue: FrameTemplateContextProps = {
   setBasicFrameId: () => {},
   characterFrameId: "lumi",
   setCharacterFrameId: () => {},
+  frameId: "1",
+  setFrameId: () => {},
 };
 
 export const FrameTemplateMockProvider = ({

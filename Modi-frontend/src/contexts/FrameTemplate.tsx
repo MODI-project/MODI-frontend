@@ -15,6 +15,20 @@ type BasicFrameId =
 
 type CharacterFrameId = "none" | "momo" | "boro" | "lumi" | "zuni";
 
+type FrameId =
+  | "1"
+  | "2"
+  | "3"
+  | "4"
+  | "5"
+  | "6"
+  | "7"
+  | "8"
+  | "9"
+  | "10"
+  | "11"
+  | "12";
+
 export interface FrameTemplateContextProps {
   frameType: FrameType;
   setFrameType: (type: FrameType) => void;
@@ -22,6 +36,8 @@ export interface FrameTemplateContextProps {
   setBasicFrameId: (id: BasicFrameId) => void;
   characterFrameId: CharacterFrameId;
   setCharacterFrameId: (id: CharacterFrameId) => void;
+  frameId: FrameId;
+  setFrameId: (id: FrameId) => void;
 }
 
 export const FrameTemplateContext = createContext<
@@ -37,6 +53,7 @@ export const FrameTemplateProvider = ({
   const [basicFrameId, setBasicFrameId] = useState<BasicFrameId>("none");
   const [characterFrameId, setCharacterFrameId] =
     useState<CharacterFrameId>("none");
+  const [frameId, setFrameId] = useState<FrameId>("1");
 
   return (
     <FrameTemplateContext.Provider
@@ -47,6 +64,8 @@ export const FrameTemplateProvider = ({
         setBasicFrameId,
         characterFrameId,
         setCharacterFrameId,
+        frameId,
+        setFrameId,
       }}
     >
       {children}
