@@ -161,7 +161,13 @@ const DiaryWritePage = () => {
               rows={4}
             />
           </div>
-          <div className={styles.autogen_container}>
+          <div
+            className={`${
+              draft.keywords.length < 3
+                ? styles.autogen_container
+                : styles.only_autogen_container
+            }`}
+          >
             {draft.keywords.length < 3 && (
               <p className={styles.warning}>
                 <img src="/icons/danger.svg" className={styles.warning_icon} />

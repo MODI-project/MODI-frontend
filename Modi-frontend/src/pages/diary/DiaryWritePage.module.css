@@ -188,3 +188,8 @@
   display: flex;
   justify-content: space-between;
 }
+
+.only_autogen_container {
+  display: flex;
+  justify-content: end;
+}
