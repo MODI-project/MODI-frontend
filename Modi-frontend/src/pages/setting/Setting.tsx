@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import styles from "./Setting.module.css";
 import Header from "../../components/common/Header";
 import ToggleSwitch from "../../components/toggle/ToggleSwitch";
+import { useNavigate } from "react-router-dom";
 
 const Setting = () => {
   // 설정별 이벤트 처리
   //캐릭터 id 가져오기
   const [selectedCharacter, setSelectedCharacter] = useState<string>("");
+
+  const navigate = useNavigate();
 
   const handleNotificationClick = () => {
     // 알림 설정 이벤트
@@ -25,7 +28,13 @@ const Setting = () => {
 
   return (
     <div className={styles.setting_wrapper}>
-      <Header left="/icons/arrow_left.svg" middle="설정" />
+      <Header
+        left="/icons/arrow_left.svg"
+        middle="설정"
+        LeftClick={() => {
+          navigate("/mypage");
+        }}
+      />
       <div className={styles.setting_container}>
         <div className={styles.notification} onClick={handleNotificationClick}>
           <span>알림 설정</span>

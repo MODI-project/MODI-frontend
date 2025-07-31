@@ -3,8 +3,8 @@
   flex-direction: column;
   width: 100vw;
   height: 100vh;
-  max-width: 360px;
-  max-height: 800px;
+  max-width: 400px;
+  max-height: auto;
   background-color: #f5f5f5;
 }
 

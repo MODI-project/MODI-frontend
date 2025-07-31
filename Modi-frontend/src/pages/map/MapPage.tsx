@@ -128,8 +128,9 @@ const MapPage = () => {
             <div
               className={styles.map_container}
               style={{
+                maxWidth: "400px",
                 minHeight: "500px", // 최소 높이 증가
-                height: "calc(100vh - 200px)", // 뷰포트 높이에서 푸터 등 제외
+                height: "calc(100vh)", // 뷰포트 높이에서 푸터 등 제외
               }}
             >
               <KakaoMap
