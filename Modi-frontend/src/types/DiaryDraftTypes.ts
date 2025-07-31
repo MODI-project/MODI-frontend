@@ -9,6 +9,7 @@ export interface DiaryDraft {
   tone: string;
   templateId: number | null;
   font: string;
+  noEmotionSummary: string;
 }
 
 export interface DiaryDraftContextType {
@@ -28,4 +29,5 @@ export const defaultDraft: DiaryDraft = {
   tone: "",
   templateId: null,
   font: "",
+  noEmotionSummary: "",
 };

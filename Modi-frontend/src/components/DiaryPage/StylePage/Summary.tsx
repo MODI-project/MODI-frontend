@@ -20,8 +20,8 @@ const Summary = () => {
       {isFontStyleOpen && <FontStyle />}
       <input
         className={styles.content}
-        value={draft.summary}
-        onChange={(e) => setDraft({ summary: e.target.value })}
+        value={draft.noEmotionSummary}
+        onChange={(e) => setDraft({ noEmotionSummary: e.target.value })}
       />
       <div className={styles.autogen_button_wrapper}>
         <button className={styles.autogen_button}>
