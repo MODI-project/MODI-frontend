@@ -5,7 +5,6 @@ import {
 } from "./FrameTemplate";
 
 // useFrameTemplate import하지 마세요!
-
 const mockValue: FrameTemplateContextProps = {
   frameId: "11",
   setFrameId: () => {},
@@ -22,6 +21,7 @@ const mockValue: FrameTemplateContextProps = {
   },
 };
 
+// 테스트 환경에서 Context를 감싸주는 Provider
 export const FrameTemplateMockProvider = ({
   children,
 }: {
