@@ -22,7 +22,7 @@ const Preview = () => {
 
   const templateName =
     draft.templateId === null
-      ? "pink" // 기본값 처리
+      ? "pink"
       : draft.templateId <= 8
       ? basicNames[draft.templateId - 1]
       : characterNames[draft.templateId - 9];
@@ -35,6 +35,14 @@ const Preview = () => {
     lumi: "green",
     zuni: "blue",
   };
+
+  const fontMap: Record<string, string> = {
+    "온글맆 류류체": "var(--font-onryuruu)",
+    이서윤체: "var(--font-leeseoyoon)",
+    "온글맆 박다현체": "var(--font-parkdahyun)",
+  };
+
+  const defaultFont = "온글맆 류류체";
 
   const requiresOverlay =
     characterFolder === "momo" || characterFolder === "boro";
@@ -83,7 +91,7 @@ const Preview = () => {
         {/* 요약 텍스트 */}
         <p
           className={styles.preview_text}
-          style={{ fontFamily: draft.font || "inherit" }}
+          style={{ fontFamily: fontMap[draft.font || defaultFont] }}
         >
           {draft.summary || "일기 내용 한 줄 요약"}
         </p>
