@@ -8,7 +8,25 @@ import EditButton from "../../components/common/button/ButtonIcon/EditButton";
 import DeleteButton from "../../components/common/button/ButtonIcon/DeleteButton";
 import { useFrameTemplate } from "../../contexts/FrameTemplate";
 
-const pageBackgrounds = {
+// 타입 선언 (FrameTemplateContext에서 이미 정의한 것을 참고)
+type BasicFrameId =
+  | "none"
+  | "pink"
+  | "yellow"
+  | "green"
+  | "blue"
+  | "cream"
+  | "star"
+  | "smallDot"
+  | "bigDot";
+
+type CharacterFrameId = "none" | "momo" | "boro" | "lumi" | "zuni";
+
+// 타입 명시된 pageBackgrounds
+const pageBackgrounds: {
+  basic: Record<BasicFrameId, string>;
+  character: Record<CharacterFrameId, string>;
+} = {
   basic: {
     none: "",
     pink: "/images/background/recordDetailPage/basicDetail/pink-detail.svg",
@@ -43,20 +61,9 @@ const RecordDetailPage = () => {
     setCharacterFrameId,
   } = useFrameTemplate();
 
-  // Frame.tsx에서 사용하는 값들을 콘솔에 출력
-  console.log(
-    "RecordDetailPage - frameType:",
-    frameType,
-    "basicFrameId:",
-    basicFrameId,
-    "characterFrameId:",
-    characterFrameId
-  );
-
   const handleSaveClick = () => {
     setMessageText("사진이 갤러리에 저장되었습니다.");
     setShowMessage(true);
-    // 3초 후 메시지 숨기기
     setTimeout(() => {
       setShowMessage(false);
     }, 3000);
@@ -65,7 +72,6 @@ const RecordDetailPage = () => {
   const handleFavoriteClick = () => {
     setMessageText("사진이 즐겨찾기에 추가되었습니다.");
     setShowMessage(true);
-    // 3초 후 메시지 숨기기
     setTimeout(() => {
       setShowMessage(false);
     }, 3000);
