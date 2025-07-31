@@ -29,19 +29,22 @@ type FrameId =
   | "11"
   | "12";
 
-export const frameIdMapping = {
-  "1": "pink",
-  "2": "yellow",
-  "3": "green",
-  "4": "blue",
-  "5": "cream",
-  "6": "star",
-  "7": "smallDot",
-  "8": "bigDot",
-  "9": "momo",
-  "10": "boro",
-  "11": "lumi",
-  "12": "zuni",
+export const frameIdMapping: Record<
+  FrameId,
+  { type: FrameType; id: BasicFrameId | CharacterFrameId }
+> = {
+  "1": { type: "basic", id: "pink" },
+  "2": { type: "basic", id: "yellow" },
+  "3": { type: "basic", id: "green" },
+  "4": { type: "basic", id: "blue" },
+  "5": { type: "basic", id: "cream" },
+  "6": { type: "basic", id: "star" },
+  "7": { type: "basic", id: "smallDot" },
+  "8": { type: "basic", id: "bigDot" },
+  "9": { type: "character", id: "momo" },
+  "10": { type: "character", id: "boro" },
+  "11": { type: "character", id: "lumi" },
+  "12": { type: "character", id: "zuni" },
 };
 
 export interface FrameTemplateContextProps {
