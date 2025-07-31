@@ -59,7 +59,14 @@ const RecordDetailPage = () => {
     setBasicFrameId,
     characterFrameId,
     setCharacterFrameId,
-  } = useFrameTemplate();
+  } = useFrameTemplate() as {
+    frameType: "basic" | "character";
+    setFrameType: (type: "basic" | "character") => void;
+    basicFrameId: keyof typeof pageBackgrounds.basic;
+    setBasicFrameId: (id: keyof typeof pageBackgrounds.basic) => void;
+    characterFrameId: keyof typeof pageBackgrounds.character;
+    setCharacterFrameId: (id: keyof typeof pageBackgrounds.character) => void;
+  };
 
   const handleSaveClick = () => {
     setMessageText("사진이 갤러리에 저장되었습니다.");
