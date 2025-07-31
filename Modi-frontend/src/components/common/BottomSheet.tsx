@@ -17,8 +17,8 @@ const BottomSheet = ({
   const startY = useRef(0);
   const [translateY, setTranslateY] = useState(0);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [maxHeight, setMaxHeight] = useState(window.innerHeight * 0.83);
-  const minHeight = 230;
+  const [maxHeight, setMaxHeight] = useState(window.innerHeight * 0.8);
+  const minHeight = 220;
   const translateYRef = useRef(0);
   const sheetRef = useRef<HTMLDivElement | null>(null);
   const [currentHeight, setCurrentHeight] = useState<number | null>(null);
@@ -28,7 +28,7 @@ const BottomSheet = ({
 
   // 창 크기 바뀔 때 maxHeight 다시 계산
   useEffect(() => {
-    const updateMaxHeight = () => setMaxHeight(window.innerHeight * 0.83);
+    const updateMaxHeight = () => setMaxHeight(window.innerHeight * 0.8);
     window.addEventListener("resize", updateMaxHeight);
     return () => window.removeEventListener("resize", updateMaxHeight);
   }, []);
