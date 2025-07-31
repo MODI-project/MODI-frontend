@@ -1,0 +1,60 @@
+.noti_popup_container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  max-width: 296px;
+  max-height: 351px;
+  flex-shrink: 0;
+
+  border-radius: 15px;
+  background: var(--color2, #fbf9f3);
+}
+
+.noti_popup_character {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  top: 40px; /* 위치 조정 */
+}
+
+/* 캐릭터별 이미지 클래스 */
+.character_momo {
+  background-image: url("/images/pop-up/popUp-momo.svg");
+}
+
+.character_boro {
+  background-image: url("/images/pop-up/popUp-boro.svg");
+}
+
+.character_lumi {
+  background-image: url("/images/pop-up/popUp-lumi.svg");
+}
+
+.character_zuni {
+  background-image: url("/images/pop-up/popUp-zuni.svg");
+}
+
+.noti_popup_title {
+  position: absolute;
+  bottom: 93px;
+  display: flex;
+  width: 100%;
+  max-width: 223px;
+  flex-direction: column;
+  align-items: center;
+}
+
+.noti_popup_title span {
+  color: var(--color1, #222);
+  font-feature-settings: "liga" off, "clig" off;
+  font-family: NanumSquareRound;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+}
