@@ -75,15 +75,14 @@ const DateSelector: React.FC<Props> = ({
     [items, viewType, year, month]
   );
 
+  useEffect(() => {
+    if (viewType === "polaroid" && days.length > 0) {
+      setDay(days[0]);
+    }
+  }, [days, viewType]);
+
   const getVisibleCount = (len: number) =>
     Math.max(1, Math.min(DEFAULT_VISIBLE, len - 1));
-  const yearCount = getVisibleCount(years.length);
-  const monthCount = getVisibleCount(months.length);
-  const dayCount = viewType === "polaroid" ? getVisibleCount(days.length) : 0;
-
-  const yearHeight = yearCount * ITEM_HEIGHT;
-  const monthHeight = monthCount * ITEM_HEIGHT;
-  const dayHeight = dayCount * ITEM_HEIGHT;
 
   const yearCol = useRef<HTMLDivElement>(null);
   const monthCol = useRef<HTMLDivElement>(null);
@@ -134,27 +133,6 @@ const DateSelector: React.FC<Props> = ({
       setter(options[clamped]);
     };
 
-  // year 초기 스크롤 위치
-  useEffect(() => {
-    if (yearCol.current) {
-      yearCol.current.scrollTop = years.indexOf(year) * ITEM_HEIGHT;
-    }
-  }, [year, years]);
-
-  // month 초기 스크롤 위치
-  useEffect(() => {
-    if (monthCol.current) {
-      monthCol.current.scrollTop = months.indexOf(month) * ITEM_HEIGHT;
-    }
-  }, [month, months]);
-
-  // day 초기 스크롤 위치 (폴라로이드일 때만)
-  useEffect(() => {
-    if (viewType === "polaroid" && dayCol.current) {
-      dayCol.current.scrollTop = days.indexOf(day) * ITEM_HEIGHT;
-    }
-  }, [day, days]);
-
   // state가 바뀔 때 마다 onChange 호출
   useEffect(() => {
     if (!hasMounted.current) {
@@ -172,6 +150,60 @@ const DateSelector: React.FC<Props> = ({
     "--picker-highlight": highlight,
   } as React.CSSProperties;
 
+  const yearPadCount = getVisibleCount(years.length);
+  const monthPadCount = getVisibleCount(months.length);
+  const dayPadCount =
+    viewType === "polaroid" ? getVisibleCount(days.length) : 0;
+
+  // year 초기 스크롤 위치
+  useEffect(() => {
+    if (yearCol.current) {
+      yearCol.current.scrollTop =
+        (yearPadCount + years.indexOf(year)) * ITEM_HEIGHT;
+    }
+  }, [year, years]);
+
+  // month 초기 스크롤 위치
+  useEffect(() => {
+    if (monthCol.current) {
+      monthCol.current.scrollTop =
+        (monthPadCount + months.indexOf(month)) * ITEM_HEIGHT;
+    }
+  }, [month, months]);
+
+  // day 초기 스크롤 위치 (폴라로이드일 때만)
+  useEffect(() => {
+    if (viewType === "polaroid" && dayCol.current && days.length > 0) {
+      const firstPaddedIdx = dayPadCount;
+      dayCol.current.scrollTop = firstPaddedIdx * ITEM_HEIGHT;
+      setDay(days[0]);
+    }
+  }, [days, dayPadCount, viewType]);
+
+  const yearHeight = yearPadCount * ITEM_HEIGHT;
+  const monthHeight = monthPadCount * ITEM_HEIGHT;
+  const dayHeight = dayPadCount * ITEM_HEIGHT;
+
+  const paddedYears = [
+    ...Array(yearPadCount).fill(""),
+    ...years,
+    ...Array(yearPadCount).fill(""),
+  ];
+  const paddedMonths = [
+    ...Array(monthPadCount).fill(""), // 앞에 빈칸
+    ...months,
+    ...Array(monthPadCount).fill(""), // 뒤에도 빈칸
+  ];
+
+  const paddedDays =
+    viewType === "polaroid"
+      ? [
+          ...Array(dayPadCount).fill(""),
+          ...days,
+          ...Array(dayPadCount).fill(""),
+        ]
+      : [];
+
   return (
     <div className={styles.picker} style={styleVars}>
       <div className={styles.selectionOverlay} />
@@ -179,36 +211,42 @@ const DateSelector: React.FC<Props> = ({
         <div
           className={styles.column}
           ref={yearCol}
-          onWheel={handleWheel(years, setYear, yearCol)}
-          onScroll={handleScroll(years, setYear)}
+          onWheel={handleWheel(paddedYears, setYear, yearCol)}
+          onScroll={handleScroll(paddedYears, setYear)}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
           style={{ height: yearHeight }}
         >
-          {years.map((y) => (
+          {paddedYears.map((y, idx) => (
             <div
-              key={y}
+              key={`year-${idx}`}
               className={`${styles.option} ${
                 y === year ? styles.selected : ""
               }`}
+              style={{ height: ITEM_HEIGHT }}
             >
-              {y}년
+              {y && `${y}년`}
             </div>
           ))}
         </div>
         <div
           className={styles.column}
           ref={monthCol}
-          onWheel={handleWheel(months, setMonth, monthCol)}
-          onScroll={handleScroll(months, setMonth)}
+          onWheel={handleWheel(paddedMonths, setMonth, monthCol)}
+          onScroll={handleScroll(paddedMonths, setMonth)}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
           style={{ height: monthHeight }}
         >
-          {months.map((m) => (
+          {paddedMonths.map((m, idx) => (
             <div
-              key={m}
+              key={`month-${idx}`} /* idx를 써서 유니크 key */
               className={`${styles.option} ${
                 m === month ? styles.selected : ""
               }`}
+              style={{ height: ITEM_HEIGHT }} /* 일정한 높이 보장 */
             >
-              {m}월
+              {m ? `${m}월` : ""}
             </div>
           ))}
         </div>
@@ -216,18 +254,21 @@ const DateSelector: React.FC<Props> = ({
           <div
             className={styles.column}
             ref={dayCol}
-            onWheel={handleWheel(days, setDay, dayCol)}
-            onScroll={handleScroll(days, setDay)}
+            onWheel={handleWheel(paddedDays, setDay, dayCol)}
+            onScroll={handleScroll(paddedDays, setDay)}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
             style={{ height: dayHeight }}
           >
-            {days.map((d) => (
+            {paddedDays.map((d, idx) => (
               <div
-                key={d}
+                key={`day-${idx}`}
                 className={`${styles.option} ${
                   d === day ? styles.selected : ""
                 }`}
+                style={{ height: ITEM_HEIGHT }}
               >
-                {d}일
+                {d && `${d}일`}
               </div>
             ))}
           </div>

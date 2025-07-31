@@ -25,18 +25,20 @@
   background: rgba(0, 0, 255, 0.05);
   display: flex;
   width: 70px;
-  height: 100px;
+  height: 150px;
 
   flex-direction: column;
   gap: 8px;
 
+  box-sizing: content-box;
+
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-snap-type: y mandatory;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  -webkit-overflow-scrolling: touch;
 
   -webkit-mask-image: linear-gradient(
     to bottom,
