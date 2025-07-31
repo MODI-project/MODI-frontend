@@ -54,7 +54,7 @@ export const FrameTemplateProvider = ({
   );
 };
 
-export const useFrameTemplate = () => {
+export const useFrameTemplate = (): FrameTemplateContextProps => {
   const context = useContext(FrameTemplateContext);
   if (!context) {
     throw new Error(
