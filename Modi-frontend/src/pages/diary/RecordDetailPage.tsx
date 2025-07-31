@@ -7,26 +7,22 @@ import FavoriteButton from "../../components/common/button/ButtonIcon/FavoriteBu
 import EditButton from "../../components/common/button/ButtonIcon/EditButton";
 import DeleteButton from "../../components/common/button/ButtonIcon/DeleteButton";
 import { useFrameTemplate } from "../../contexts/FrameTemplate";
+import { useNavigate } from "react-router-dom";
 
 const pageBackgrounds = {
-  basic: {
-    none: "",
-    pink: "/images/background/recordDetailPage/basicDetail/pink-detail.svg",
-    yellow: "/images/background/recordDetailPage/basicDetail/yellow-detail.svg",
-    green: "/images/background/recordDetailPage/basicDetail/green-detail.svg",
-    blue: "/images/background/recordDetailPage/basicDetail/blue-detail.svg",
-    cream: "/images/background/recordDetailPage/basicDetail/cream-detail.svg",
-    star: "/images/background/recordDetailPage/basicDetail/star-detail.svg",
-    smallDot:
-      "/images/background/recordDetailPage/basicDetail/smallDot-detail.svg",
-    bigDot: "/images/background/recordDetailPage/basicDetail/bigDot-detail.svg",
-  },
-  character: {
-    none: "",
-    momo: "/images/background/recordDetailPage/characterDetail/momo-detail.svg",
-    boro: "/images/background/recordDetailPage/characterDetail/boro-detail.svg",
-    lumi: "/images/background/recordDetailPage/characterDetail/lumi-detail.svg",
-    zuni: "/images/background/recordDetailPage/characterDetail/zuni-detail.svg",
+  frameId: {
+    "1": "/images/background/recordDetailPage/basicDetail/pink-detail.svg",
+    "2": "/images/background/recordDetailPage/basicDetail/yellow-detail.svg",
+    "3": "/images/background/recordDetailPage/basicDetail/green-detail.svg",
+    "4": "/images/background/recordDetailPage/basicDetail/blue-detail.svg",
+    "5": "/images/background/recordDetailPage/basicDetail/cream-detail.svg",
+    "6": "/images/background/recordDetailPage/basicDetail/star-detail.svg",
+    "7": "/images/background/recordDetailPage/basicDetail/smallDot-detail.svg",
+    "8": "/images/background/recordDetailPage/basicDetail/bigDot-detail.svg",
+    "9": "/images/background/recordDetailPage/characterDetail/momo-detail.svg",
+    "10": "/images/background/recordDetailPage/characterDetail/boro-detail.svg",
+    "11": "/images/background/recordDetailPage/characterDetail/lumi-detail.svg",
+    "12": "/images/background/recordDetailPage/characterDetail/zuni-detail.svg",
   },
 };
 
@@ -34,24 +30,8 @@ const RecordDetailPage = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
 
-  const {
-    frameType,
-    setFrameType,
-    basicFrameId,
-    setBasicFrameId,
-    characterFrameId,
-    setCharacterFrameId,
-  } = useFrameTemplate();
-
-  // Frame.tsx에서 사용하는 값들을 콘솔에 출력
-  console.log(
-    "RecordDetailPage - frameType:",
-    frameType,
-    "basicFrameId:",
-    basicFrameId,
-    "characterFrameId:",
-    characterFrameId
-  );
+  const { frameId } = useFrameTemplate();
+  const navigate = useNavigate();
 
   const handleSaveClick = () => {
     setMessageText("사진이 갤러리에 저장되었습니다.");
@@ -92,16 +72,19 @@ const RecordDetailPage = () => {
       <div
         className={styles.page_detail_container}
         style={{
-          backgroundImage:
-            frameType === "basic"
-              ? `url(${pageBackgrounds.basic[basicFrameId]})`
-              : `url(${pageBackgrounds.character[characterFrameId]})`,
+          backgroundImage: `url(${pageBackgrounds.frameId[frameId]})`,
         }}
       ></div>
       <Header
         left="/icons/arrow_left.svg"
         middle="일기 상세보기"
         right="/icons/home.svg"
+        LeftClick={() => {
+          navigate(-1);
+        }}
+        RightClick={() => {
+          navigate("/home");
+        }}
       />
       <div className={styles.btn_container}>
         <SaveButton onClick={handleSaveClick} />
@@ -110,7 +93,7 @@ const RecordDetailPage = () => {
         <DeleteButton onClick={handleDeleteClick} />
       </div>
       <div className={styles.frame_container}>
-        <Frame />
+        <Frame isAbled={true} />
       </div>
       {showMessage && (
         <div className={styles.message_container}>

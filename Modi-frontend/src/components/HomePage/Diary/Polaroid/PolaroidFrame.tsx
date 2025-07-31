@@ -27,7 +27,7 @@ const PolaroidFrame: React.FC<Props> = ({
 
   /* TODO: FrameProps가 준비될 때까지 임시로 주석 처리 */
   /* 임시 플레이스홀더 */
-  <Frame />
+  <Frame isAbled={false} />
 );
 
 export default PolaroidFrame;

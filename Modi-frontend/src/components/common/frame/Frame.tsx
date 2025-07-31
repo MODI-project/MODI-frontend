@@ -5,7 +5,6 @@ import {
 import styles from "./Frame.module.css";
 import { useState } from "react";
 
-// 프레임별 background 이미지 경로 예시
 const frameWrapperBackgrounds = {
   basic: {
     none: "",
@@ -69,14 +68,19 @@ const frameFrontBackgrounds = {
   },
 };
 
-const Frame = () => {
-  const [isFlipped, setIsFlipped] = useState(false); // 프레임 클릭 시 앞뒤 전환
+interface FrameProps {
+  isAbled?: boolean;
+}
+
+const Frame = ({ isAbled = true }: FrameProps) => {
+  const { frameId } = useFrameTemplate();
+  const [isFlipped, setIsFlipped] = useState(false);
 
   const handleFrameClick = () => {
+    if (!isAbled) return;
+
     setIsFlipped(!isFlipped);
   };
-
-  const { frameId } = useFrameTemplate();
 
   // frameId에 따라 프레임 정보 결정
   const frameMapping = frameIdMapping[frameId];
@@ -127,7 +131,7 @@ const Frame = () => {
 
   return (
     <div
-      className={styles.frame_wrapper}
+      className={`${styles.frame_wrapper} ${!isAbled ? styles.disabled : ""}`}
       style={wrapperStyle}
       onClick={handleFrameClick}
     >
