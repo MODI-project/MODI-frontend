@@ -73,6 +73,23 @@ export const FrameTemplateProvider = ({
     useState<CharacterFrameId>("none");
   const [frameId, setFrameId] = useState<FrameId>("1");
 
+  // frameId가 변경될 때 관련 값들을 자동으로 업데이트
+  const handleSetFrameId = (id: FrameId) => {
+    console.log("FrameTemplate - frameId 변경:", id);
+    setFrameId(id);
+    const mapping = frameIdMapping[id];
+    console.log("FrameTemplate - mapping:", mapping);
+    setFrameType(mapping.type);
+
+    if (mapping.type === "basic") {
+      setBasicFrameId(mapping.id as BasicFrameId);
+      setCharacterFrameId("none");
+    } else {
+      setCharacterFrameId(mapping.id as CharacterFrameId);
+      setBasicFrameId("none");
+    }
+  };
+
   return (
     <FrameTemplateContext.Provider
       value={{
@@ -83,7 +100,7 @@ export const FrameTemplateProvider = ({
         characterFrameId,
         setCharacterFrameId,
         frameId,
-        setFrameId,
+        setFrameId: handleSetFrameId,
       }}
     >
       {children}

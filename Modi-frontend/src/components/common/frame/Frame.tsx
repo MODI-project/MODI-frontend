@@ -5,6 +5,7 @@ import {
 import styles from "./Frame.module.css";
 import { useState } from "react";
 
+// 프레임별 background 이미지 경로 예시
 const frameWrapperBackgrounds = {
   basic: {
     none: "",
@@ -68,35 +69,112 @@ const frameFrontBackgrounds = {
   },
 };
 
-interface FrameProps {
-  isAbled?: boolean;
+// 서버 API 명세에 맞는 DiaryData 인터페이스
+export interface DiaryData {
+  id?: string;
+  content: string;
+  summary: string;
+  date: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  emotion: string;
+  tone: string;
+  tags: string[];
+  font: string;
+  frame: string;
+  photoUrl?: string; // 이미지 URL (서버에서 반환)
 }
 
-const Frame = ({ isAbled = true }: FrameProps) => {
+interface FrameProps {
+  isAbled?: boolean;
+  onClick?: () => void;
+  // 서버 데이터 props
+  diaryData?: DiaryData;
+  // 개별 데이터 props (diaryData가 없을 때 사용)
+  photoUrl?: string;
+  date?: string;
+  emotion?: string;
+  summary?: string;
+  placeInfo?: string;
+  tags?: string[];
+  content?: string;
+}
+
+const Frame = ({
+  isAbled = true,
+  onClick,
+  diaryData,
+  photoUrl,
+  date,
+  emotion,
+  summary,
+  placeInfo,
+  tags = [],
+  content,
+}: FrameProps) => {
   const { frameId } = useFrameTemplate();
   const [isFlipped, setIsFlipped] = useState(false);
+
+  // diaryData가 있으면 해당 일기의 frame을 사용, 없으면 전역 frameId 사용
+  const currentFrameId = diaryData?.frame || frameId;
 
   const handleFrameClick = () => {
     if (!isAbled) return;
 
-    setIsFlipped(!isFlipped);
+    if (onClick) {
+      onClick();
+    } else {
+      setIsFlipped(!isFlipped);
+    }
   };
 
-  // frameId에 따라 프레임 정보 결정
-  const frameMapping = frameIdMapping[frameId];
+  // diaryData가 있으면 우선 사용, 없으면 개별 props 사용
+  const displayData = diaryData
+    ? {
+        photoUrl: diaryData.photoUrl,
+        date: diaryData.date,
+        emotion: diaryData.emotion,
+        summary: diaryData.summary,
+        placeInfo: diaryData.address,
+        tags: diaryData.tags,
+        content: diaryData.content,
+      }
+    : {
+        photoUrl: photoUrl || "https://placehold.co/215x286",
+        date: date || "2000/00/00",
+        emotion: emotion || "기쁨",
+        summary: summary || "일기 내용 한 줄 요약",
+        placeInfo: placeInfo || "장소 정보",
+        tags: tags,
+        content:
+          content ||
+          "어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구",
+      };
+
+  // 안전한 frameMapping 처리
+  const frameMapping =
+    frameIdMapping[currentFrameId as keyof typeof frameIdMapping] ||
+    frameIdMapping["1"];
   const frameType = frameMapping.type;
   const frameTypeId = frameMapping.id;
 
-  console.log(
-    "frameId:",
-    frameId,
-    "frameType:",
+  console.log("Frame 컴포넌트 디버깅:", {
+    currentFrameId,
     frameType,
-    "frameTypeId:",
-    frameTypeId
-  );
+    frameTypeId,
+    diaryData: !!diaryData,
+    diaryDataFrame: diaryData?.frame,
+    displayData: {
+      photoUrl: displayData.photoUrl,
+      date: displayData.date,
+      emotion: displayData.emotion,
+      summary: displayData.summary,
+      tags: displayData.tags,
+      content: displayData.content?.substring(0, 50) + "...",
+    },
+  });
 
-  // frameId에 따라 배경 이미지 결정
   const wrapperBg =
     frameType === "basic"
       ? frameWrapperBackgrounds.basic[
@@ -141,10 +219,14 @@ const Frame = ({ isAbled = true }: FrameProps) => {
         <div className={styles.frame_back} style={backStyle}></div>
         <div className={styles.frame_front} style={frontStyle}></div>
         <div className={styles.image_container}>
-          <img className={styles.image} src="https://placehold.co/215x286" />
+          <img
+            className={styles.image}
+            src={displayData.photoUrl}
+            alt="일기 사진"
+          />
         </div>
         <div className={styles.comment_container}>
-          <span className={styles.comment}>일기 내용 한 줄 요약</span>
+          <span className={styles.comment}>{displayData.summary}</span>
         </div>
       </div>
       <div
@@ -152,19 +234,23 @@ const Frame = ({ isAbled = true }: FrameProps) => {
       >
         <div className={styles.diary_comment_container}>
           <div className={styles.diary_info_container}>
-            <span className={styles.diary_date}>2000/00/00</span>
+            <span className={styles.diary_date}>{displayData.date}</span>
             <div className={styles.tag_container}>
-              <span className={styles.tag}>#태그</span>
-              <span className={styles.tag}>#태그</span>
-              <span className={styles.tag}>#태그</span>
-              <span className={styles.more_tag}>더보기</span>
+              {displayData.tags.slice(0, 3).map((tag, index) => (
+                <span key={index} className={styles.tag}>
+                  #{tag}
+                </span>
+              ))}
+              {displayData.tags.length > 3 && (
+                <span className={styles.more_tag}>더보기</span>
+              )}
             </div>
-            <span className={styles.place_info}>장소 정보</span>
+            <span className={styles.place_info}>{displayData.placeInfo}</span>
           </div>
           <div className={styles.diary_detail_container}>
             <span className={styles.diary_detail_title}>세부 내용</span>
             <span className={styles.diary_detail_content}>
-              어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구
+              {displayData.content}
             </span>
           </div>
         </div>
