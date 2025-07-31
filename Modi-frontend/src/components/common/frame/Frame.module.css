@@ -7,6 +7,13 @@
   cursor: pointer;
 }
 
+/* disabled 상태 스타일 */
+.frame_wrapper.disabled {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
 /* 프레임 전면부 - 일기 사진 + 한 줄 요약 표시 */
 
 .fore_frame {

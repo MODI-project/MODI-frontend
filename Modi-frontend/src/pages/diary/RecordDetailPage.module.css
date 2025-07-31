@@ -6,9 +6,12 @@
   justify-content: center;
   width: 100vw;
   height: 100vh;
-  max-width: 360px;
-  max-height: 800px;
+  max-width: 400px;
+  max-height: auto;
   background-image: url("/images/background/normal-bg.svg");
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
 }
 .page_detail_container {
   position: absolute;
