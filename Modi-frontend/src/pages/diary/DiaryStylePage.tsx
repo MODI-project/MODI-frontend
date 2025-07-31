@@ -35,8 +35,7 @@ const DiaryStylePage = () => {
     } else if (selectedTab === "언어스타일") {
       setSelectedTab("템플릿");
     } else if (selectedTab === "템플릿") {
-      // 완료 → 디테일페이지로 이동
-      navigate("/home"); // 일단 홈으로 설정
+      navigate("/recorddetail");
     }
   };
 
