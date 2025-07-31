@@ -7,7 +7,7 @@ import FavoriteButton from "../../components/common/button/ButtonIcon/FavoriteBu
 import EditButton from "../../components/common/button/ButtonIcon/EditButton";
 import DeleteButton from "../../components/common/button/ButtonIcon/DeleteButton";
 import { useFrameTemplate } from "../../contexts/FrameTemplate";
-
+import { FrameTemplateContextProps } from "../../contexts/FrameTemplate";
 // 타입 선언 (FrameTemplateContext에서 이미 정의한 것을 참고)
 type BasicFrameId =
   | "none"
@@ -59,7 +59,7 @@ const RecordDetailPage = () => {
     setBasicFrameId,
     characterFrameId,
     setCharacterFrameId,
-  } = useFrameTemplate();
+  } = useFrameTemplate() as FrameTemplateContextProps;
 
   const handleSaveClick = () => {
     setMessageText("사진이 갤러리에 저장되었습니다.");
@@ -100,8 +100,16 @@ const RecordDetailPage = () => {
         style={{
           backgroundImage:
             frameType === "basic"
-              ? `url(${pageBackgrounds.basic[basicFrameId]})`
-              : `url(${pageBackgrounds.character[characterFrameId]})`,
+              ? `url(${
+                  pageBackgrounds.basic[
+                    basicFrameId as keyof typeof pageBackgrounds.basic
+                  ]
+                })`
+              : `url(${
+                  pageBackgrounds.character[
+                    characterFrameId as keyof typeof pageBackgrounds.character
+                  ]
+                })`,
         }}
       ></div>
       <Header
