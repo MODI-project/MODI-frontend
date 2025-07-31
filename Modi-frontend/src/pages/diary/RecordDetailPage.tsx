@@ -1,13 +1,14 @@
 import styles from "./RecordDetailPage.module.css";
 import Header from "../../components/common/Header";
 import Frame from "../../components/common/frame/Frame";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SaveButton from "../../components/common/button/ButtonIcon/SaveButton";
 import FavoriteButton from "../../components/common/button/ButtonIcon/FavoriteButton";
 import EditButton from "../../components/common/button/ButtonIcon/EditButton";
 import DeleteButton from "../../components/common/button/ButtonIcon/DeleteButton";
 import { useFrameTemplate } from "../../contexts/FrameTemplate";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { DiaryData } from "../../components/common/frame/Frame";
 
 const pageBackgrounds = {
   frameId: {
@@ -30,8 +31,21 @@ const RecordDetailPage = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
 
-  const { frameId } = useFrameTemplate();
+  const { frameId, setFrameId } = useFrameTemplate();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // 홈 화면에서 전달받은 일기 데이터
+  const diaryData = location.state?.diaryData as DiaryData | undefined;
+  const diaryId = location.state?.diaryId as string | undefined;
+
+  // 일기 데이터의 frame 값을 FrameTemplate의 frameId로 설정
+  useEffect(() => {
+    if (diaryData?.frame) {
+      console.log("RecordDetailPage - frame 설정:", diaryData.frame);
+      setFrameId(diaryData.frame as any);
+    }
+  }, [diaryData, setFrameId]);
 
   const handleSaveClick = () => {
     setMessageText("사진이 갤러리에 저장되었습니다.");
@@ -93,7 +107,18 @@ const RecordDetailPage = () => {
         <DeleteButton onClick={handleDeleteClick} />
       </div>
       <div className={styles.frame_container}>
-        <Frame isAbled={true} />
+        <Frame
+          isAbled={true}
+          diaryData={diaryData}
+          // diaryData가 없을 때 사용할 기본값들
+          photoUrl={diaryData?.photoUrl || "https://placehold.co/215x286"}
+          date={diaryData?.date || "2025/01/01"}
+          emotion={diaryData?.emotion || "기쁨"}
+          summary={diaryData?.summary || "일기 내용 한 줄 요약"}
+          placeInfo={diaryData?.address || "장소 정보"}
+          tags={diaryData?.tags || []}
+          content={diaryData?.content || "일기 내용이 여기에 표시됩니다."}
+        />
       </div>
       {showMessage && (
         <div className={styles.message_container}>
