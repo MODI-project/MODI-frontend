@@ -8,15 +8,20 @@ import PhotoView from "./PhotoView";
 import Header from "../../components/common/Header";
 import { allDiaries } from "../../data/diaries"; // 또는 상태 관리 데이터
 import EmptyDiaryView from "./EmptyDiaryView";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
   const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
+  const navigate = useNavigate();
   return (
     <div className={style.home_wrapper}>
       <div className={style.home_container}>
         <Header
           left="/images/logo/Modi.svg"
           right="/icons/notification_O.svg"
+          RightClick={() => {
+            navigate("/notification");
+          }}
         />
 
         <main className={style.mainContent}>

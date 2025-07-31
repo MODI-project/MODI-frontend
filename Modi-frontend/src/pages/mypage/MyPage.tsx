@@ -7,6 +7,7 @@ import Footer from "../../components/common/Footer";
 import FavoriteView from "./FavoriteView";
 import StatsView from "./StatsView";
 import { allDiaries, Diary } from "../../data/diaries";
+import { useNavigate } from "react-router-dom";
 
 const TAB_LABELS = ["즐겨찾기", "월간 일기"] as const;
 type TabLabel = (typeof TAB_LABELS)[number];
@@ -14,7 +15,7 @@ type TabLabel = (typeof TAB_LABELS)[number];
 const MyPage = () => {
   const [selectedTab, setSelectedTab] = useState<TabLabel>("즐겨찾기");
   const [nickname, setNickname] = useState<string>("user123@email.com");
-
+  const navigate = useNavigate();
   useEffect(() => {
     const savedNickname = localStorage.getItem("nickname");
     if (savedNickname) {
@@ -29,6 +30,12 @@ const MyPage = () => {
           left="/icons/setting.svg"
           middle="마이페이지"
           right="/icons/notification_O.svg"
+          LeftClick={() => {
+            navigate("/setting");
+          }}
+          RightClick={() => {
+            navigate("/notification");
+          }}
         />
         <div className={style.fixedHeader}>
           <div className={style.content}>
