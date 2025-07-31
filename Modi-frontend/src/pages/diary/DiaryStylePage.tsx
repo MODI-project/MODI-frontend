@@ -26,7 +26,17 @@ const DiaryStylePage = () => {
 
   // 버튼 활성화 여부 결정
   const isNextEnabled =
-    draft.summary && draft.font && draft.emotion && draft.templateId !== null;
+    selectedTab === "한줄요약"
+      ? !!(draft.font && draft.noEmotionSummary)
+      : selectedTab === "언어스타일"
+      ? !!(draft.emotion && draft.summary)
+      : !!(
+          draft.font &&
+          draft.noEmotionSummary &&
+          draft.emotion &&
+          draft.summary &&
+          draft.templateId !== null
+        );
 
   // 버튼 클릭 시 동작
   const handleNext = () => {
