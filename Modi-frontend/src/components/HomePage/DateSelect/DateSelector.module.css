@@ -9,6 +9,7 @@
 }
 
 .columnWrapper {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: stretch;
@@ -17,15 +18,14 @@
   z-index: 20;
   overflow: visible;
 
-  margin-top: 150px;
+  margin-top: 155px;
 }
 
 .column {
-  outline: 2px dashed blue;
-  background: rgba(0, 0, 255, 0.05);
   display: flex;
   width: 70px;
   height: 150px;
+  z-index: 2;
 
   flex-direction: column;
   gap: 8px;
@@ -37,6 +37,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-snap-type: y mandatory;
+  scroll-padding: calc(50% - 20px) 0;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 
@@ -77,6 +78,8 @@
   line-height: 22px;
   letter-spacing: -0.43px;
   cursor: pointer;
+
+  scroll-snap-align: center;
 }
 
 .option.selected {
@@ -93,14 +96,14 @@
 
 .selectionOverlay {
   position: absolute;
-  top: 100px;
+  top: 3px;
   left: 50%;
   transform: translateX(-50%);
   width: 310px;
   height: 30px;
   border-radius: 7px;
   background-color: var(--picker-highlight);
-  opacity: 0.9;
+  opacity: 1;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
 }

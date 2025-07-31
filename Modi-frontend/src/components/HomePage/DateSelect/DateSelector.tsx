@@ -91,17 +91,25 @@ const DateSelector: React.FC<Props> = ({
   const VISIBLE_COUNT = viewType === "polaroid" ? 3 : 2;
   const VISIBLE_HEIGHT = ITEM_HEIGHT * VISIBLE_COUNT;
 
+  const scrollTimeout = useRef<number | null>(null);
+
   const handleScroll =
     (options: string[], setter: (v: string) => void) =>
     (e: React.UIEvent<HTMLDivElement>) => {
       e.stopPropagation();
       const el = e.currentTarget;
-      const centerY = Math.floor(
-        (el.scrollTop + VISIBLE_HEIGHT / 2) / ITEM_HEIGHT
-      );
-      const idx = Math.floor(centerY / ITEM_HEIGHT);
-      const clamped = Math.max(Math.min(idx, 0), options.length - 1);
-      setter(options[clamped]);
+      if (scrollTimeout.current !== null) {
+        window.clearTimeout(scrollTimeout.current);
+      }
+
+      // 100ms 뒤에야 옵션을 계산해서 setter 호출
+      scrollTimeout.current = window.setTimeout(() => {
+        const { scrollTop, clientHeight } = el;
+        const centerY = scrollTop + clientHeight / 2;
+        const idx = Math.floor(centerY / ITEM_HEIGHT);
+        const clamped = Math.min(Math.max(idx, 0), options.length - 1);
+        setter(options[clamped]);
+      }, 300);
     };
 
   const handleWheel =
@@ -206,8 +214,8 @@ const DateSelector: React.FC<Props> = ({
 
   return (
     <div className={styles.picker} style={styleVars}>
-      <div className={styles.selectionOverlay} />
       <div className={styles.columnWrapper}>
+        <div className={styles.selectionOverlay} />
         <div
           className={styles.column}
           ref={yearCol}
