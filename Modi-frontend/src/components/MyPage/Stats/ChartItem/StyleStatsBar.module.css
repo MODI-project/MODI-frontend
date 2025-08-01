@@ -55,3 +55,28 @@
   gap: 22px;
   margin-top: 12px;
 }
+
+.zuniWrapper {
+  position: relative;
+  width: 50px;
+  height: 110px;
+  overflow: hidden;
+  margin-bottom: -7px;
+}
+
+.zuniCropWrapper {
+  width: 50px;
+  height: 110px;
+  overflow: hidden;
+}
+
+.zuniImage {
+  width: 100%;
+  display: block;
+}
+
+.barContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}

@@ -62,6 +62,7 @@ export default function VisitStatsBarList({
           icon={isMax ? coloredIcon : icon}
           isMax={isMax}
           maxColor={maxBarColorMap[character]}
+          character={character}
         />
       ))}
     </div>
