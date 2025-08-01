@@ -7,6 +7,7 @@ import { loadKakaoMapAPI } from "../../utils/kakaoMapLoader";
 import KakaoMap from "../../components/map/KakaoMap";
 import MapSearchBar from "../../components/map/MapSearchBar";
 import Footer from "../../components/common/Footer";
+import { useCharacter } from "../../contexts/CharacterContext";
 
 interface Diary {
   id: number;
@@ -22,6 +23,7 @@ const MapPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [mapInstance, setMapInstance] = useState<any>(null);
   const [diaries, setDiaries] = useState<Diary[]>([]);
+  const { character } = useCharacter();
 
   const loadMap = async () => {
     try {
@@ -172,13 +174,13 @@ const MapPage = () => {
                     onPlaceSelect={handlePlaceSelect}
                   />
                 </div>
-                {/* 2) 마커 렌더링 */}
+                {/* 마커 렌더링 */}
                 {diaries.map((d) => (
                   <MapMarker
                     key={d.id}
                     map={mapInstance}
                     diary={d}
-                    character={"momo"} // CharacterContext 등에서 실제값을 가져오세요
+                    character={character!}
                   />
                 ))}
               </>

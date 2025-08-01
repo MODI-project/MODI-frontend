@@ -36,17 +36,17 @@ export const mapMarkerIconMap: Record<
   zuni: {},
 };
 
-Object.entries(modules).forEach(([path, url]) => {
-  // path 예시: "../assets/map-marker/momo-marker/happy-momo-marker.svg"
-  const match = path.match(/map-marker\/([^-]+)-marker\/([^-]+)-marker\.svg$/);
+Object.entries(modules).forEach(([rawPath, url]) => {
+  const parts = rawPath.split("/"); // ["..", "assets", "map-marker", "momo-marker", "happy-momo-marker.svg"]
+  const folder = parts[parts.length - 2]!; // "momo-marker"
+  const character = folder.replace("-marker", ""); // "momo"
+  const fileName = parts[parts.length - 1]!; // "happy-momo-marker.svg"
+  const slug = fileName.split("-")[0]!; // "happy"
 
-  if (!match) return;
-  const [, charKey, slug] = match;
-  const emotion = slugToEmotion[slug];
+  const emotion = slugToEmotion[slug]; // 슬러그에 대응하는 한글 감정
   if (!emotion) return;
 
-  // 캐릭터별·감정별 URL 세팅
-  (mapMarkerIconMap[charKey as CharacterKey] as any)[emotion] = url as string;
+  mapMarkerIconMap[character as CharacterKey][emotion] = url as string;
 });
 
 // 호출 헬퍼
