@@ -1,5 +1,8 @@
 import { useEffect, useMemo } from "react";
 import styles from "./MapMarker.module.css";
+import { getMapMarkerIcon } from "../../utils/MapMarkerImages";
+import type { CharacterKey } from "../../utils/MapMarkerImages";
+import type { Emotion } from "../../data/diaries";
 
 interface MapMarkerProps {
   map: any; // kakao.maps.Map 인스턴스
@@ -10,7 +13,7 @@ interface MapMarkerProps {
     emotion: string; // ex) "happy","sad"...
     postCount: number; // +n 에 표시될 값
   };
-  character: "momo" | "boro" | "lumi" | "zuni";
+  character: Exclude<CharacterKey, null>;
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({ map, diary, character }) => {
@@ -27,14 +30,20 @@ const MapMarker: React.FC<MapMarkerProps> = ({ map, diary, character }) => {
 
     // 3) 캐릭터 이미지
     const charImg = document.createElement("img");
+    const emo = diary.emotion as Emotion;
+    const iconUrl = getMapMarkerIcon(character, emo);
+    if (!iconUrl) {
+      console.warn("Marker icon not found:", character, emo);
+    }
 
-    charImg.src = `/images/map-marker/${character}-marker/${diary.emotion}-${character}-marker.svg`;
+    charImg.src = iconUrl ?? "";
     charImg.alt = `${diary.emotion} ${character}`;
-    container.appendChild(charImg);
+
     charImg.classList.add(
       styles.character_image,
       styles[`${character}_image`] // 캐릭터 별 이미지 css 적용
     );
+    container.appendChild(charImg);
 
     // 4) 게시글 수 배지
     const badge = document.createElement("span");
