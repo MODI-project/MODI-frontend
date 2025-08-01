@@ -21,8 +21,17 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
     mapRef.current = map;
   }, [map]);
 
+  // 권한 거부 상태를 localStorage에 저장하여 반복 시도 방지
+  useEffect(() => {
+    const denied = localStorage.getItem("geolocation_denied");
+    if (denied === "true") {
+      setPermissionDenied(true);
+    }
+  }, []);
+
   // 현재 위치 가져오기
   const getCurrentPosition = () => {
+    console.log("getCurrentPosition 호출됨");
     if (!mapRef.current) {
       alert("지도가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.");
       return;
@@ -73,6 +82,8 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
 
             setCurrentPosition({ lat: latitude, lng: longitude });
             setIsLoading(false);
+            // 성공 시 권한 거부 상태 제거
+            localStorage.removeItem("geolocation_denied");
           }
         },
         // 에러 콜백
@@ -85,6 +96,8 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
               errorMessage =
                 "위치 정보 접근이 거부되었습니다.\n\n브라우저 설정에서 위치 정보 접근을 허용해주세요:\n\nChrome: 설정 → 개인정보 보호 및 보안 → 사이트 설정 → 위치 정보 → 허용\nSafari: 환경설정 → 웹사이트 → 위치 서비스 → 허용\nFirefox: 설정 → 개인정보 보호 및 보안 → 권한 → 위치 정보 → 허용";
               setPermissionDenied(true);
+              // 권한 거부 상태를 localStorage에 저장
+              localStorage.setItem("geolocation_denied", "true");
               break;
             case error.POSITION_UNAVAILABLE:
               errorMessage = "위치 정보를 사용할 수 없습니다.";
@@ -116,6 +129,8 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
   // 권한 재요청
   const requestPermission = () => {
     setPermissionDenied(false);
+    // localStorage에서 권한 거부 상태 제거
+    localStorage.removeItem("geolocation_denied");
     getCurrentPosition();
   };
 

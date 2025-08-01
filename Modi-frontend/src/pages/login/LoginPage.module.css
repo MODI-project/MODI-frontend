@@ -1,27 +1,67 @@
 .loginPage_wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.loginPage {
   position: relative;
-  width: 100vw;
-  height: 100vh;
-  max-width: 400px;
-  max-height: auto;
-  /* width: 100vw;
-  height: 100vh;
-  max-width: 400px; */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f5f5f5;
+  width: 100vw;
+  height: 100vh;
+  max-width: 400px;
+  max-height: auto;
   background-image: url("/images/background/intro-bg.svg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.modi_information {
+  position: absolute;
+  top: 8%;
+  left: 10%;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.modi_logo {
+  width: 72px;
+  height: 23px;
+  margin-bottom: 21px;
+}
+
+.modi_name {
+  color: #000;
+  font-family: var(--font-nanum-squareB, "NanumSquareRoundBold");
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%;
+  letter-spacing: -0.22px;
+  text-transform: capitalize;
+}
+
+.modi_introduction {
+  color: #000;
+  font-family: var(--font-nanum-square, "NanumSquareRound");
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 150%; /* 30px */
+  letter-spacing: -0.22px;
+  text-transform: capitalize;
+}
+
+.modi_character {
+  position: absolute;
+  top: 63%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  max-width: 327px;
+  max-height: 360px;
+  max-width: 327px;
+  max-height: 360px;
 }
 
 .loginPage_wrapper > GoogleLoginButton {

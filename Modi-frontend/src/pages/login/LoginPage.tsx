@@ -25,13 +25,26 @@ const LoginPage = () => {
 
   return (
     <div className={styles.loginPage_wrapper}>
-      <div className={styles.loginPage}>
-        <PrimaryButton
-          location="login"
-          label="구글로 시작하기"
-          onClick={handleGoogleLogin}
+      <div className={styles.modi_information}>
+        <img className={styles.modi_logo} src="/icons/modi.svg" />
+        <span className={styles.modi_introduction}>하루의 순간에</span>
+        <div>
+          <span className={styles.modi_introduction}>함께하는 친구, </span>
+          <span className={styles.modi_name}>모디</span>
+        </div>
+      </div>
+      <div className={styles.character_container}>
+        <img
+          className={styles.modi_character}
+          src="/images/background/intro-character.svg"
+          alt="모디 캐릭터 이미지"
         />
       </div>
+      <PrimaryButton
+        location="login"
+        label="구글로 시작하기"
+        onClick={handleGoogleLogin}
+      />
     </div>
   );
 };
