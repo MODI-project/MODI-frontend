@@ -1,15 +1,27 @@
 import styles from "./MapPage.module.css";
 import { useEffect, useState, useRef, useCallback } from "react";
+import { mockDiaries } from "../../apis/diaryInfo";
+import { DiaryData } from "../../apis/diaryInfo";
+import MapMarker from "../../components/map/MapMarker";
 import { loadKakaoMapAPI } from "../../utils/kakaoMapLoader";
 import KakaoMap from "../../components/map/KakaoMap";
 import MapSearchBar from "../../components/map/MapSearchBar";
 import Footer from "../../components/common/Footer";
+
+interface Diary {
+  id: number;
+  lat: number;
+  lng: number;
+  emotion: string;
+  postCount: number;
+}
 
 const MapPage = () => {
   const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mapInstance, setMapInstance] = useState<any>(null);
+  const [diaries, setDiaries] = useState<Diary[]>([]);
 
   const loadMap = async () => {
     try {
@@ -44,6 +56,16 @@ const MapPage = () => {
 
   useEffect(() => {
     loadMap();
+  }, []);
+  useEffect(() => {
+    const mapped: Diary[] = mockDiaries.map((d: DiaryData) => ({
+      id: Number(d.id),
+      lat: d.latitude,
+      lng: d.longitude,
+      emotion: d.emotion,
+      postCount: 1,
+    }));
+    setDiaries(mapped);
   }, []);
 
   const handlePlaceSelect = useCallback(
@@ -143,12 +165,23 @@ const MapPage = () => {
 
             {/* 검색바 오버레이 - mapInstance가 있을 때만 렌더링 */}
             {mapInstance && (
-              <div className={styles.search_bar_container}>
-                <MapSearchBar
-                  map={mapInstance}
-                  onPlaceSelect={handlePlaceSelect}
-                />
-              </div>
+              <>
+                <div className={styles.search_bar_container}>
+                  <MapSearchBar
+                    map={mapInstance}
+                    onPlaceSelect={handlePlaceSelect}
+                  />
+                </div>
+                {/* 2) 마커 렌더링 */}
+                {diaries.map((d) => (
+                  <MapMarker
+                    key={d.id}
+                    map={mapInstance}
+                    diary={d}
+                    character={"momo"} // CharacterContext 등에서 실제값을 가져오세요
+                  />
+                ))}
+              </>
             )}
           </>
         ) : (
