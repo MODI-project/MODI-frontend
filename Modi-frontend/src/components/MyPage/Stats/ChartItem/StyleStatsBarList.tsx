@@ -19,7 +19,7 @@ export default function StyleBarList({ onMaxLabelChange }: StyleBarListProps) {
 
   const styleData = [
     { label: "즐거움", value: 15, icon: iconPath },
-    { label: "고민", value: 7, icon: iconPath },
+    { label: "고민", value: 13, icon: iconPath },
     { label: "슬픔", value: 5, icon: iconPath },
     { label: "화남", value: 2, icon: iconPath },
   ];
@@ -61,6 +61,7 @@ export default function StyleBarList({ onMaxLabelChange }: StyleBarListProps) {
           icon={isMax ? coloredIcon : icon}
           isMax={isMax}
           maxColor={maxBarColorMap[character]}
+          character={character}
         />
       ))}
     </div>

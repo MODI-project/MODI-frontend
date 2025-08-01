@@ -12,7 +12,7 @@ interface Props {
   onPrev: () => void;
   onNext: () => void;
   onOpenModal: () => void;
-  onSwitchView: (vt: "polaroid" | "photo") => void;
+  onSwitchView: () => void;
 }
 
 export default function HomeHeader({
@@ -58,9 +58,9 @@ export default function HomeHeader({
 
       <div className={styles.modeSwitch}>
         {viewType === "polaroid" ? (
-          <PhotoButton onClick={() => onSwitchView("photo")} />
+          <PhotoButton onClick={onSwitchView} />
         ) : (
-          <PolaroidButton onClick={() => onSwitchView("polaroid")} />
+          <PolaroidButton onClick={onSwitchView} />
         )}
       </div>
     </div>

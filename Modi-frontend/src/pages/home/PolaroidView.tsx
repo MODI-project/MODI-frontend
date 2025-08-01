@@ -115,12 +115,6 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     if (newIndex !== -1) {
       setCurrentIndex(newIndex);
     }
-
-    if (hasOpened.current) {
-      setIsSheetOpen(false); // 두 번째 이후부터 닫힘
-    } else {
-      hasOpened.current = true; // 첫 호출은 무시
-    }
   };
 
   const touchStartX = useRef<number | null>(null);
@@ -220,7 +214,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       <BottomSheet
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
-        minimizeOnDrag={true} // 드래그 시 최소화 기능 원하면 true
+        minimizeOnDrag={false} // 드래그 시 최소화 기능 원하면 true
       >
         <div className={pageStyles.modalInner}>
           <h3 className={pageStyles.modalTitle}>다른 날짜 일기 보기</h3>
