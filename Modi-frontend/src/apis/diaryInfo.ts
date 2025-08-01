@@ -3,7 +3,7 @@ import axios from "axios";
 export type { DiaryData };
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_ENV || "http://localhost:5173/api";
+  import.meta.env.VITE_API_URL || "http://localhost:5173/api";
 
 // 실제 서버 API 응답 타입
 interface DiariesResponse {

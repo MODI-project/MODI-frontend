@@ -16,6 +16,7 @@ import MapMarker from "../components/map/MapMarker";
 import Popup from "../components/common/Popup";
 import MapSearchBar from "../components/map/MapSearchBar";
 import NotiPopUp from "../components/notification/NotiPopUp";
+import OAuthCallback from "../pages/login/OAuthCallback";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -82,6 +83,10 @@ const Router = () => {
     {
       path: "/map-search-bar",
       element: <MapSearchBar />,
+    },
+    {
+      path: "/oauth/callback",
+      element: <OAuthCallback />,
     },
   ]);
   return <RouterProvider router={router} />;
