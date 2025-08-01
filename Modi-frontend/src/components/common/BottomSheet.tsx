@@ -17,9 +17,9 @@ const BottomSheet = ({
   const startY = useRef(0);
   const [translateY, setTranslateY] = useState(0);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [maxHeight, setMaxHeight] = useState(window.innerHeight * 0.88);
-  const minHeight = 373;
-
+  const [maxHeight, setMaxHeight] = useState(window.innerHeight * 0.8);
+  const minHeight = 220;
+  const translateYRef = useRef(0);
   const sheetRef = useRef<HTMLDivElement | null>(null);
   const [currentHeight, setCurrentHeight] = useState<number | null>(null);
   const threshold = 100;
@@ -28,7 +28,7 @@ const BottomSheet = ({
 
   // 창 크기 바뀔 때 maxHeight 다시 계산
   useEffect(() => {
-    const updateMaxHeight = () => setMaxHeight(window.innerHeight * 0.88);
+    const updateMaxHeight = () => setMaxHeight(window.innerHeight * 0.8);
     window.addEventListener("resize", updateMaxHeight);
     return () => window.removeEventListener("resize", updateMaxHeight);
   }, []);
@@ -120,7 +120,8 @@ const BottomSheet = ({
     const deltaY = e.clientY - startY.current;
     const newHeight = (currentHeight ?? maxHeight) - deltaY;
     const clampedHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
-    setTranslateY(deltaY);
+
+    translateYRef.current = deltaY;
     if (sheetRef.current) {
       sheetRef.current.style.height = `${clampedHeight}px`;
     }
@@ -130,13 +131,15 @@ const BottomSheet = ({
     if (!isDragging.current) return;
     isDragging.current = false;
 
-    if (translateY > threshold) {
+    const delta = translateYRef.current;
+
+    if (delta > threshold) {
       if (minimizeOnDrag) {
         setIsMinimized(true);
       } else {
         onClose();
       }
-    } else if (translateY < -threshold && minimizeOnDrag && isMinimized) {
+    } else if (delta < -threshold && minimizeOnDrag && isMinimized) {
       setIsMinimized(false);
     } else {
       if (sheetRef.current) {
@@ -146,8 +149,7 @@ const BottomSheet = ({
       }
     }
 
-    setTranslateY(0);
-
+    translateYRef.current = 0; // 초기화
     document.removeEventListener("mousemove", handleMouseMove);
     document.removeEventListener("mouseup", handleMouseUp);
   };

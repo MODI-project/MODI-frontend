@@ -1,7 +1,7 @@
 import styles from "./Popup.module.css";
 
 interface PopupProps {
-  title: string;
+  title: string | string[];
   description?: string;
   imageUrl?: string;
   showCloseButton?: boolean;
@@ -40,7 +40,20 @@ const Popup = ({
         )}
 
         {/* 타이틀 */}
-        <p className={styles.popup_title}>{title}</p>
+        {Array.isArray(title) ? (
+          title.map((line, idx) => (
+            <p
+              key={idx}
+              className={`${styles.popup_title} ${
+                idx === title.length - 1 ? styles.last_line : ""
+              }`}
+            >
+              {line}
+            </p>
+          ))
+        ) : (
+          <p className={`${styles.popup_title} ${styles.last_line}`}>{title}</p>
+        )}
 
         {/* 설명 (옵션) */}
         {description && (

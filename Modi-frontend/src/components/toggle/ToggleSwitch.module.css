@@ -18,7 +18,7 @@
 }
 
 .toggle_container:has(.toggle_switch.on) {
-  background: #4fbe79;
+  background: var(--character-color, #fbd7d5);
 }
 
 .toggle_switch.off {

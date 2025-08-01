@@ -1,0 +1,36 @@
+.font_list {
+  background-color: white;
+  border: 1px solid var(--color-gray2);
+  border-radius: 15px;
+  margin-top: 8px;
+}
+
+.font_item {
+  padding: 12px 0 12px 16px;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.font_item + li {
+  border-top: 1px solid var(--color-gray1);
+}
+.font_1 {
+  font-family: var(--font-onryuruu);
+}
+.font_2 {
+  font-family: var(--font-leeseoyoon);
+}
+.font_3 {
+  font-family: var(--font-parkdahyun);
+}
+.selected1 {
+  background-color: var(--color-gray1);
+  border-radius: 15px 15px 0 0;
+}
+.selected2 {
+  background-color: var(--color-gray1);
+}
+.selected3 {
+  background-color: var(--color-gray1);
+  border-radius: 0 0 15px 15px;
+}

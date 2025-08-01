@@ -1,8 +1,32 @@
 .title {
-  font-family: var(--font-nanum-square);
+  font-family: var(--font-nanum-squareB);
   font-weight: 600;
   font-size: var(--font-subheadline);
   line-height: 20px;
   letter-spacing: -0.23px;
+  margin-bottom: 12px;
+}
+
+.keyword_container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.keyword_chip {
+  background-color: var(--color-pink);
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  white-space: nowrap;
+  font-size: var(--font-caption1);
+  line-height: 16px;
+}
+
+.margin_big {
   margin-top: 32px;
+}
+
+.margin_small {
+  margin-top: 20px;
 }

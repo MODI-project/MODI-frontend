@@ -27,10 +27,79 @@
   top: 163px;
 }
 
+.fixedHeader {
+  width: 400px;
+  height: auto;
+  position: absolute;
+  left: 52px;
+  top: 0px;
+  flex-shrink: 0;
+  z-index: 10;
+  background-color: #fff;
+}
+
 .tab_bar {
   display: flex;
 
   position: absolute;
   top: 285px;
-  left: 50px;
+  left: 0px;
+}
+
+.photoGrid {
+  position: absolute;
+  top: 310px;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7.22px;
+  padding: 13px;
+}
+
+.statsContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.fixedTop {
+  flex-shrink: 0;
+  padding: 24px 16px 0;
+  background: #fff; /* 배경색 유지 */
+  z-index: 10;
+}
+
+.chartSection {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding-top: 0px;
+  padding-bottom: 300px;
+  padding-left: 22px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.scrollArea::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollWrapper {
+  position: relative;
+  top: 350px;
+  height: calc(100vh - 200px);
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollWrapper::-webkit-scrollbar {
+  display: none;
 }

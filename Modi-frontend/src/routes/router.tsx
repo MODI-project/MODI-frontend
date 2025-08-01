@@ -10,8 +10,12 @@ import SearchPage from "../pages/search/SearchPage";
 import DiaryEmotionTag from "../pages/diary/DiaryEmotionTag";
 import DiaryKeywordPage from "../pages/diary/DiaryKeywordPage";
 import DiaryStylePage from "../pages/diary/DiaryStylePage";
-import OAuthCallbackPage from "../pages/oauth/OAuthCallbakPage";
+import NotificationPage from "../pages/notification/NotificationPage";
 import Setting from "../pages/setting/Setting";
+import MapMarker from "../components/map/MapMarker";
+import Popup from "../components/common/Popup";
+import MapSearchBar from "../components/map/MapSearchBar";
+import NotiPopUp from "../components/notification/NotiPopUp";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -60,12 +64,24 @@ const Router = () => {
       element: <InfoSetting />,
     },
     {
-      path: "/oauth/callback",
-      element: <OAuthCallbackPage />,
+      path: "/notification",
+      element: <NotificationPage />,
     },
     {
       path: "/setting",
       element: <Setting />,
+    },
+    {
+      path: "/map-marker",
+      element: <MapMarker />,
+    },
+    {
+      path: "/popup",
+      element: <NotiPopUp />,
+    },
+    {
+      path: "/map-search-bar",
+      element: <MapSearchBar />,
     },
   ]);
   return <RouterProvider router={router} />;

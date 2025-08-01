@@ -1,5 +1,5 @@
 .tab_container {
   display: inline-flex;
-  align-items: center;
+  justify-content: flex-end;
   gap: 16px;
 }

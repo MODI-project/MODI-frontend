@@ -1,0 +1,132 @@
+.header {
+  width: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  position: absolute;
+  top: 330px;
+  left: 53px;
+}
+
+.title {
+  color: #404040;
+  display: inline-flex;
+  align-items: center;
+
+  /* 날짜 */
+  font-family: "DM Sans";
+  font-size: 22px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20.884px; /* 94.929% */
+  letter-spacing: -0.949px;
+  text-transform: capitalize;
+}
+
+.downArrow {
+  width: 9px;
+  height: 9px;
+  margin-left: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.modalTitle {
+  align-self: stretch;
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* headline */
+  font-family: var(--font-nanum-squareB);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px; /* 137.5% */
+  letter-spacing: -0.43px;
+
+  position: relative;
+  top: 20px;
+}
+
+.modalInner {
+  display: flex;
+  width: auto;
+  max-width: 400px;
+  height: 373px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 16px;
+  padding-top: 32px;
+  padding-bottom: 100px;
+  margin: 0 auto;
+}
+
+.picker {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 340px;
+  gap: 68px;
+  z-index: 20;
+}
+
+/* ─ 가로 하이라이트 바 ─────────────────────────── */
+.picker::before {
+  content: "";
+  position: absolute;
+  top: 0px;
+
+  width: 296px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  opacity: 0.9;
+  background-color: var(--picker-highlight);
+}
+
+/* ── 스크롤 칼럼 ────────────────────────────────── */
+
+.column {
+  font-family: var(--font-nanum-squareB);
+  display: flex;
+  width: 50px;
+  height: 120px;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+
+  z-index: 1; /* 하이라이트 위에 떠야 아이템 보임 */
+}
+.column::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── 옵션 하나 ─────────────────────────────────── */
+.option {
+  height: 40px; /* 옵션 높이 */
+  line-height: 40px; /* 텍스트 수직 정렬 */
+  text-align: center;
+  scroll-snap-align: center;
+  color: #bbb; /* 미선택 시 회색 */
+  user-select: none;
+  font-size: 16px;
+}
+
+/* ── 선택된 옵션 ───────────────────────────────── */
+.selected {
+  color: #404040; /* 진한 회색 */
+  font-weight: 600; /* 굵게 */
+}
+
+/* ── 확인 버튼 등 나머지 그대로 ───────────────── */
+.footerWrapper {
+  padding: 0 16px 24px;
+}

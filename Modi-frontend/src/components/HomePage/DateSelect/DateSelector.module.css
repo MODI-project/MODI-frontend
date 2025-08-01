@@ -1,42 +1,92 @@
 .picker {
-  height: 140px;
+  height: 100%;
   align-self: stretch;
-  gap: 68px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+}
+
+.columnWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 340px;
+  gap: 40px;
+  z-index: 20;
+  overflow: visible;
+
+  margin-top: 155px;
 }
 
 .column {
   display: flex;
-  width: 22px;
+  width: 70px;
+  height: 150px;
+  z-index: 2;
+
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   gap: 8px;
 
+  box-sizing: content-box;
+
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   scroll-snap-type: y mandatory;
+  scroll-padding: calc(50% - 20px) 0;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 20%,
+    black 80%,
+    transparent 100%
+  );
+}
+
+.column::-webkit-scrollbar {
+  display: none;
 }
 
 .option {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   scroll-snap-align: center;
   color: #9c9c9c;
   text-align: center;
   font-feature-settings: "liga" off, "clig" off;
 
-  font-family: NanumSquareRound;
+  font-family: "NanumSquareRoundBold", "NanumSquareRound", sans-serif;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
   letter-spacing: -0.43px;
   cursor: pointer;
+
+  scroll-snap-align: center;
 }
 
 .option.selected {
   color: #2c2c2c;
   text-align: center;
   font-feature-settings: "liga" off, "clig" off;
-  font-family: NanumSquareRoundOTF;
+  font-family: "NanumSquareRoundBold", "NanumSquareRound", sans-serif;
   font-size: 14px;
   font-style: normal;
   font-weight: 700;
@@ -44,16 +94,16 @@
   letter-spacing: -0.23px;
 }
 
-.picker::before {
-  content: "";
+.selectionOverlay {
   position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-
-  width: 296px;
-  height: 28px;
-  flex-shrink: 0;
+  top: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 310px;
+  height: 30px;
   border-radius: 7px;
   background-color: var(--picker-highlight);
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
 }

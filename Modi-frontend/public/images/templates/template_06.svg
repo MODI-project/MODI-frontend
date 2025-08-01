@@ -1,0 +1,13 @@
+<svg width="68" height="69" viewBox="0 0 68 69" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect width="68" height="69" rx="15" fill="#FBFBFB"/>
+<rect width="68" height="69" rx="15" fill="url(#pattern0_40000648_11193)" fill-opacity="0.8"/>
+<defs>
+<pattern id="pattern0_40000648_11193" patternUnits="userSpaceOnUse" viewBox="-7952 -6458.15 245.7 122.85" width="62.38852405674907%" height="30.742171274340123%" x="30.115" y="30.615" patternContentUnits="objectBoundingBox">
+<g id="pattern0_40000648_11193_inner">
+<path d="M-7929.5 -6581L-7922.23 -6568.51L-7908.1 -6565.45L-7917.73 -6554.68L-7916.27 -6540.3L-7929.5 -6546.12L-7942.73 -6540.3L-7941.27 -6554.68L-7950.9 -6565.45L-7936.77 -6568.51L-7929.5 -6581Z" fill="#FFF4C2"/>
+</g>
+<use xlink:href="#pattern0_40000648_11193_inner" transform="translate(0 122.85)"/>
+<use xlink:href="#pattern0_40000648_11193_inner" transform="translate(122.85 61.425)"/>
+<use xlink:href="#pattern0_40000648_11193_inner" transform="translate(122.85 184.275)"/>
+</pattern></defs>
+</svg>

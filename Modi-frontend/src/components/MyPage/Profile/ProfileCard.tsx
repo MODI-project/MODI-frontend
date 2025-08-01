@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import styles from "./ProfileCard.module.css";
 import EditButton from "../../../components/common/button/ButtonIcon/EditButton";
 import profileImg from "../../../../public/icons/profile_img.svg";
+import { useCharacter } from "../../../contexts/CharacterContext";
+
 export interface ProfileCardProps {
   nickname: string;
   email: string;
@@ -11,6 +13,7 @@ export interface ProfileCardProps {
 export default function ProfileCard({ nickname, email }: ProfileCardProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { character } = useCharacter();
 
   const handleEdit = () => {
     navigate("/information-setting", {
@@ -18,12 +21,13 @@ export default function ProfileCard({ nickname, email }: ProfileCardProps) {
       replace: false, // 원하는 옵션
     });
   };
+
   return (
     <div className={styles.card}>
       <div className={styles.frame}>
         <div className={styles.frame_info}>
           <img
-            src={profileImg}
+            src={`/icons/profile_${character}.svg`}
             alt="기본 프로필 사진"
             className={styles.profileImg}
           />
@@ -32,9 +36,9 @@ export default function ProfileCard({ nickname, email }: ProfileCardProps) {
             <div className={styles.email}>{email}</div>
           </div>
         </div>
-        <button onClick={handleEdit} className={styles.editBtn}>
+        <div onClick={handleEdit} className={styles.editBtn}>
           <EditButton />
-        </button>
+        </div>
       </div>
     </div>
   );

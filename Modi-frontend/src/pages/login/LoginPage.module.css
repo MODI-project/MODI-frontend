@@ -6,8 +6,10 @@
 
 .loginPage {
   position: relative;
-  width: 360px;
-  height: 800px;
+  width: 100vw;
+  height: 100vh;
+  max-width: 400px;
+  max-height: auto;
   /* width: 100vw;
   height: 100vh;
   max-width: 400px; */
@@ -22,7 +24,7 @@
   background-repeat: no-repeat;
 }
 
-.loginPage_wrapper > PrimaryButton {
+.loginPage_wrapper > GoogleLoginButton {
   position: absolute;
   height: 58px;
   box-sizing: border-box;

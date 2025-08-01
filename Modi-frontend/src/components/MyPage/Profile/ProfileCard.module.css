@@ -31,9 +31,7 @@
   height: 58px;
   aspect-ratio: 1/1;
   border-radius: 58px;
-  background: url(../../../../public/icons/profile_img.svg) lightgray 50% /
-      cover no-repeat,
-    #d9d9d9;
+  object-fit: cover;
 }
 
 .info {
@@ -49,7 +47,7 @@
   color: var(--gray5, #2c2c2c);
   font-feature-settings: "liga" off, "clig" off;
 
-  font-family: "NanumSquareRound", sans-serif;
+  font-family: var(--font-nanum-squareB);
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
@@ -69,14 +67,10 @@
 }
 
 .editBtn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
   display: flex;
-  width: 40px;
-  height: 40px;
-  padding: 7px;
-  justify-content: center;
   align-items: center;
-  flex-shrink: 0;
-  border-radius: 20px;
-  border: 1px solid var(--gray2, #cbcbc5);
-  background: #eeedeb;
+  justify-content: center;
 }

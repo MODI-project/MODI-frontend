@@ -23,6 +23,11 @@
   src: url("/fonts/MalgeunHyanggi.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "NanumSquareRoundBold";
+  src: url("/fonts/NanumSquareRoundB.ttf") format("truetype");
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -34,7 +39,8 @@
   -moz-osx-font-smoothing: grayscale;
 
   /* Font Families */
-  --font-nanum-square: "NanumSquareRoundBold", sans-serif;
+  --font-nanum-squareB: "NanumSquareRoundBold", sans-serif;
+  --font-nanum-square: "NanumSquareRound", sans-serif;
   --font-dm-sans: "DM Sans", sans-serif;
   --font-eujin: "Eujin", sans-serif;
   --font-leeseoyoon: "LeeSeoYoon", sans-serif;
@@ -102,21 +108,8 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
+  color: black;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
-}
-
-@font-face {
-  font-family: "Ownglyph_ryurue-Rg";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/2405-2@1.0/Ownglyph_ryurue-Rg.woff2")
-    format("woff2");
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "NanumSquareRound";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff")
-    format("woff");
-  font-style: normal;
 }
