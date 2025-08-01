@@ -27,14 +27,21 @@ const MapMarker: React.FC<MapMarkerProps> = ({ map, diary, character }) => {
 
     // 3) 캐릭터 이미지
     const charImg = document.createElement("img");
-    charImg.className = styles.character_image;
+
     charImg.src = `/images/map-marker/${character}-marker/${diary.emotion}-${character}-marker.svg`;
     charImg.alt = `${diary.emotion} ${character}`;
     container.appendChild(charImg);
+    charImg.classList.add(
+      styles.character_image,
+      styles[`${character}_image`] // 캐릭터 별 이미지 css 적용
+    );
 
     // 4) 게시글 수 배지
     const badge = document.createElement("span");
-    badge.className = styles.post_counts;
+    badge.classList.add(
+      styles.post_counts,
+      styles[`post_counts_${character}`] // 캐릭터 별 post_counts css 적용
+    );
     badge.textContent = `+${diary.postCount}`;
     container.appendChild(badge);
 
