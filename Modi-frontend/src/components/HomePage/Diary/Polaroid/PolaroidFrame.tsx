@@ -11,7 +11,7 @@ interface Props {
   emotion?: string;
   summary?: string;
   // API 연동을 위한 props
-  diaryId?: string; // 특정 일기 ID
+  diaryId?: string | number; // 특정 일기 ID (string 또는 number)
   diaryData?: DiaryData; // 직접 전달받은 일기 데이터
 }
 
@@ -35,7 +35,7 @@ const PolaroidFrame: React.FC<Props> = ({
         setLoading(true);
         setError(null);
         try {
-          const data = await mockFetchDiaryById(diaryId);
+          const data = await mockFetchDiaryById(diaryId.toString());
           setDiary(data);
         } catch (err) {
           setError(

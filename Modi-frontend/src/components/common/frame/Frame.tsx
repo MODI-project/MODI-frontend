@@ -71,19 +71,20 @@ const frameFrontBackgrounds = {
 
 // 서버 API 명세에 맞는 DiaryData 인터페이스
 export interface DiaryData {
-  id?: string;
-  content: string;
-  summary: string;
-  date: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-  emotion: string;
-  tone: string;
-  tags: string[];
-  font: string;
-  frame: string;
-  photoUrl?: string; // 이미지 URL (서버에서 반환)
+  id: number; // 서버에서 반환하는 실제 ID (number 타입)
+  date: string; // "YYYY-MM-DD" 형식
+  photoUrl: string; // 이미지 URL
+  summary: string; // 일기 요약
+  emotion: string; // 감정
+  tags: string[]; // 태그 배열
+  // 기존 필드들 (서버에서 제공하지 않는 경우 기본값 사용)
+  content?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
+  tone?: string;
+  font?: string;
+  frame?: string;
 }
 
 interface FrameProps {
