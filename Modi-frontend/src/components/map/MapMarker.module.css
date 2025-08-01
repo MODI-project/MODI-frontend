@@ -8,6 +8,14 @@
   flex-shrink: 0;
 }
 
+.character_image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 83px;
+  height: 103px;
+}
+
 .momo_image {
   position: absolute;
   top: 7.81px;
