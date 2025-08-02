@@ -73,10 +73,6 @@ const Router = () => {
       element: <Setting />,
     },
     {
-      path: "/map-marker",
-      element: <MapMarker />,
-    },
-    {
       path: "/popup",
       element: <NotiPopUp />,
     },
