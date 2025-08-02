@@ -61,9 +61,9 @@ const MapPage = () => {
   }, []);
   useEffect(() => {
     const mapped: Diary[] = mockDiaries.map((d: DiaryData) => ({
-      id: Number(d.id),
-      lat: d.latitude,
-      lng: d.longitude,
+      id: d.id,
+      lat: d.latitude as number,
+      lng: d.longitude as number,
       emotion: d.emotion,
       postCount: 1,
     }));
