@@ -119,8 +119,8 @@ const InitialSetting = () => {
   };
 
   return (
-    <div className={styles.initialSetting_wrapper}>
-      <div className={styles.initialSetting}>
+    <div className={styles.infoSetting_wrapper}>
+      <div className={styles.infoSetting}>
         <Header />
         <div className={styles.setting_container}>
           <div className={styles.nicknameInput}>

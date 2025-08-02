@@ -1,10 +1,10 @@
-.initialSetting_wrapper {
+.infoSetting_wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.initialSetting {
+.infoSetting {
   display: flex;
   position: relative;
   width: 100vw;
