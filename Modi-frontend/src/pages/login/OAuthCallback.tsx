@@ -12,10 +12,26 @@ const OAuthCallback = () => {
   useEffect(() => {
     const handleOAuthCallback = async () => {
       try {
-        // URL에서 isNew 파라미터 추출
+        // URL에서 파라미터 추출
         const urlParams = new URLSearchParams(window.location.search);
         const isNew = urlParams.get("isNew");
         const error = urlParams.get("error");
+        const accessToken = urlParams.get("token"); // Access token 추출
+
+        console.log("=== OAuth 콜백 디버깅 정보 ===");
+        console.log("전체 URL:", window.location.href);
+        console.log("URL 파라미터:", {
+          isNew,
+          error,
+          hasAccessToken: !!accessToken,
+          accessTokenLength: accessToken?.length || 0,
+        });
+
+        // 모든 URL 파라미터 출력
+        console.log("모든 URL 파라미터:");
+        for (const [key, value] of urlParams.entries()) {
+          console.log(`  ${key}: ${value}`);
+        }
 
         if (error) {
           setStatus("error");
@@ -29,19 +45,64 @@ const OAuthCallback = () => {
 
         console.log("Google OAuth 콜백 성공! isNew:", isNew);
 
-        // JWT는 쿠키로 전달되므로 별도 처리 불필요
-        // 백엔드에서 자동으로 쿠키 설정
+        // Access token 처리
+        console.log("=== Access Token 처리 시작 ===");
+
+        if (accessToken) {
+          localStorage.setItem("accessToken", accessToken);
+          console.log(
+            "✅ Access Token을 URL에서 추출하여 localStorage에 저장 완료"
+          );
+          console.log("저장된 토큰 길이:", accessToken.length);
+          console.log("토큰 앞 10자리:", accessToken.substring(0, 10) + "...");
+        } else {
+          console.log("❌ URL에서 Access Token을 찾을 수 없음");
+
+          // 쿠키에서 토큰 확인 (백엔드가 쿠키로 토큰을 관리하는 경우)
+          console.log("쿠키에서 토큰 확인 중...");
+          const cookies = document.cookie.split(";");
+          console.log("현재 모든 쿠키:", cookies);
+
+          const tokenCookie = cookies.find((cookie) =>
+            cookie.trim().startsWith("accessToken=")
+          );
+
+          if (tokenCookie) {
+            const token = tokenCookie.split("=")[1];
+            localStorage.setItem("accessToken", token);
+            console.log(
+              "✅ Access Token을 쿠키에서 추출하여 localStorage에 저장 완료"
+            );
+            console.log("저장된 토큰 길이:", token.length);
+            console.log("토큰 앞 10자리:", token.substring(0, 10) + "...");
+          } else {
+            console.warn("❌ Access Token이 URL이나 쿠키에 없습니다.");
+            console.log(
+              "백엔드에서 토큰을 전달하지 않았거나 다른 방식으로 전달되었을 수 있습니다."
+            );
+          }
+        }
+
+        // localStorage 확인
+        const savedToken = localStorage.getItem("accessToken");
+        console.log("=== localStorage 확인 ===");
+        console.log("저장된 토큰 존재 여부:", !!savedToken);
+        if (savedToken) {
+          console.log("저장된 토큰 길이:", savedToken.length);
+          console.log(
+            "저장된 토큰 앞 10자리:",
+            savedToken.substring(0, 10) + "..."
+          );
+        }
 
         setStatus("success");
 
         if (isNew === "true") {
-          setMessage("새로운 회원입니다! 정보 설정 페이지로 이동합니다...");
           // 새로운 회원은 정보 설정 페이지로
           setTimeout(() => {
             navigate("/information-setting");
           }, 2000);
         } else {
-          setMessage("로그인 성공! 홈 페이지로 이동합니다...");
           // 기존 회원은 홈 페이지로
           setTimeout(() => {
             navigate("/home");

@@ -28,10 +28,17 @@ export const signUp = async (
 // 사용 예시 함수 (InfoSetting.tsx에서 사용할 수 있음)
 export const handleUserSignUp = async (nickname: string, character: string) => {
   try {
+    console.log("=== handleUserSignUp 시작 ===");
+
     // localStorage에서 accessToken 가져오기 (OAuth 콜백에서 저장되었다고 가정)
     const accessToken = localStorage.getItem("accessToken");
+    console.log("signUp.ts에서 토큰 확인:", {
+      hasToken: !!accessToken,
+      tokenLength: accessToken?.length || 0,
+    });
 
     if (!accessToken) {
+      console.error("❌ Access Token이 없어서 회원가입을 진행할 수 없습니다.");
       throw new Error("Access token이 없습니다. 다시 로그인해주세요.");
     }
 
