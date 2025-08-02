@@ -1,3 +1,27 @@
+:global(.picker-container .picker-scroller) {
+  padding-top: 40px !important;
+  padding-bottom: 40px !important;
+  margin-top: -40px !important;
+}
+
+/* 2) 라이브러리 기본 하이라이트 바 숨기기 */
+:global(.picker-container .picker-highlight) {
+  display: none !important;
+}
+
+/* 3) 양쪽 그레이 마스크 제거 */
+:global(.picker-container),
+:global(.picker-container .picker-scroller) {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  background-color: transparent !important;
+}
+
+/* 4) 스크롤바 트랙 숨기기 */
+:global(.picker-container ::-webkit-scrollbar) {
+  display: none !important;
+}
+
 .picker {
   height: 100%;
   align-self: stretch;
@@ -6,6 +30,7 @@
   flex-direction: row;
   align-items: center;
   position: relative;
+  top: -50px;
 }
 
 .columnWrapper {
@@ -18,7 +43,7 @@
   z-index: 20;
   overflow: visible;
 
-  margin-top: 155px;
+  margin-top: 115px;
 }
 
 .column {
@@ -37,7 +62,6 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-snap-type: y mandatory;
-  scroll-padding: calc(50% - 20px) 0;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 
@@ -63,6 +87,7 @@
 
 .option {
   height: 40px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,7 +121,7 @@
 
 .selectionOverlay {
   position: absolute;
-  top: 3px;
+  top: 143px;
   left: 50%;
   transform: translateX(-50%);
   width: 310px;

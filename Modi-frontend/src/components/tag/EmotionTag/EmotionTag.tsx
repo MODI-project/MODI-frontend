@@ -9,7 +9,7 @@ export default function EmotionTag({ label, type }: EmotionTagProps) {
   return (
     <div className={styles.tag}>
       <div className={`${styles["inner-border"]} ${styles[type]}`}>
-        <span className={styles.label}>{label}</span>
+        <span className={styles.label}>{"#" + label}</span>
       </div>
     </div>
   );
