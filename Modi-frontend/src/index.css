@@ -113,3 +113,22 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
+.react-mobile-picker-scroll .wheel-container {
+  padding-top: 40px !important; /* 빈칸 높이 */
+  padding-bottom: 40px !important; /* 위아래 동일하게 */
+  margin-top: -40px !important; /* 위로 당겨서 원래 위치 맞추기 */
+}
+
+/* 2) 기존 그레이 그라데이션 마스크 제거 */
+.react-mobile-picker-scroll .wheel-container,
+.react-mobile-picker-scroll .wheel-mask {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  background-color: transparent !important;
+}
+
+/* 3) 스크롤바 트랙 숨기기 */
+.react-mobile-picker-scroll ::-webkit-scrollbar {
+  display: none !important;
+}
