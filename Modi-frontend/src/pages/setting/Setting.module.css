@@ -12,9 +12,9 @@
 }
 
 .setting_container {
+  margin-top: 20vh;
   display: flex;
   flex-direction: column;
-  margin-top: 14.7vh;
   width: 296px;
   height: 230px;
   gap: 2.5vh;

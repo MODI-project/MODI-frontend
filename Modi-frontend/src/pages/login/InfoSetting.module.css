@@ -1,4 +1,10 @@
-.initialSetting {
+.infoSetting_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.infoSetting {
   display: flex;
   position: relative;
   width: 100vw;
@@ -14,25 +20,14 @@
   background-repeat: no-repeat;
 }
 
-.initialSetting_wrapper {
+.setting_container {
+  position: absolute;
+  top: 18vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-}
-
-/* 미리보기 오버레이 */
-.preview_overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease-in-out;
+  gap: 2.5vh;
 }
 
 @keyframes fadeIn {
@@ -46,9 +41,6 @@
 
 /* 닉네임 입력 영역 */
 .nicknameInput {
-  position: absolute;
-  top: 141px;
-  gap: 12px;
   width: 328px;
   height: 70px;
 }
@@ -93,10 +85,24 @@
   color: #2c2c2c;
 }
 
+/* 에러 상태 스타일 */
+.nicknameInput_input.error {
+  border-color: #ff6b6b;
+  background: #fff5f5;
+}
+
+/* 에러 메시지 */
+.error_message {
+  color: #ff6b6b;
+  font-size: 12px;
+  margin-top: 4px;
+  font-family: "NanumSquareRound", sans-serif;
+  font-weight: 400;
+  line-height: 16px;
+}
+
 /* 캐릭터 선택 영역 */
 .characterSelect {
-  position: absolute;
-  top: 280px;
   width: 328px;
   height: 378px;
 }
