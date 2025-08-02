@@ -27,38 +27,43 @@ const Setting = () => {
   };
 
   return (
-    <div className={styles.setting_wrapper}>
-      <Header
-        left="/icons/arrow_left.svg"
-        middle="설정"
-        LeftClick={() => {
-          navigate("/mypage");
-        }}
-      />
-      <div className={styles.setting_container}>
-        <div className={styles.notification} onClick={handleNotificationClick}>
-          <span>알림 설정</span>
-          <ToggleSwitch />
-        </div>
-        <div className={styles.setting_button_list}>
-          <button
-            className={styles.setting_item}
-            onClick={handleGoogleDriveClick}
+    <div className={styles.setting_page_wrapper}>
+      <div className={styles.setting_page_container}>
+        <Header
+          left="/icons/arrow_left.svg"
+          middle="설정"
+          LeftClick={() => {
+            navigate("/mypage");
+          }}
+        />
+        <div className={styles.setting_container}>
+          <div
+            className={styles.notification}
+            onClick={handleNotificationClick}
           >
-            <span>구글 드라이브 연동</span>
-            <img src="/icons/arrow_right.svg" />
-          </button>
-          <button className={styles.setting_item} onClick={handleLogoutClick}>
-            <span>로그아웃</span>
-            <img src="/icons/arrow_right.svg" />
-          </button>
-          <button
-            className={styles.setting_item}
-            onClick={handleWithdrawalClick}
-          >
-            <span>회원 탈퇴</span>
-            <img src="/icons/arrow_right.svg" />
-          </button>
+            <span>알림 설정</span>
+            <ToggleSwitch />
+          </div>
+          <div className={styles.setting_button_list}>
+            <button
+              className={styles.setting_item}
+              onClick={handleGoogleDriveClick}
+            >
+              <span>구글 드라이브 연동</span>
+              <img src="/icons/arrow_right.svg" />
+            </button>
+            <button className={styles.setting_item} onClick={handleLogoutClick}>
+              <span>로그아웃</span>
+              <img src="/icons/arrow_right.svg" />
+            </button>
+            <button
+              className={styles.setting_item}
+              onClick={handleWithdrawalClick}
+            >
+              <span>회원 탈퇴</span>
+              <img src="/icons/arrow_right.svg" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
