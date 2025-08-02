@@ -37,7 +37,6 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-snap-type: y mandatory;
-  scroll-padding: calc(50% - 20px) 0;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 
@@ -106,4 +105,9 @@
   opacity: 1;
   pointer-events: none;
   z-index: 0;
+}
+
+:global(.react-mobile-picker-scroll .wheel-container) {
+  scroll-padding-top: 40px;
+  scroll-padding-bottom: 40px;
 }
