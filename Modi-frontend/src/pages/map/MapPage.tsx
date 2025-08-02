@@ -11,8 +11,8 @@ import { useCharacter } from "../../contexts/CharacterContext";
 
 interface Diary {
   id: number;
-  lat: number;
-  lng: number;
+  lat?: number;
+  lng?: number;
   emotion: string;
   postCount: number;
 }
@@ -60,18 +60,13 @@ const MapPage = () => {
     loadMap();
   }, []);
   useEffect(() => {
-    const mapped: Diary[] = mockDiaries
-      .filter(
-        (d): d is DiaryData & { latitude: number; longitude: number } =>
-          d.latitude != null && d.longitude != null
-      )
-      .map((d) => ({
-        id: d.id,
-        lat: d.latitude, // number 인 것이 보장됨
-        lng: d.longitude,
-        emotion: d.emotion,
-        postCount: 1,
-      }));
+    const mapped: Diary[] = mockDiaries.map((d) => ({
+      id: d.id,
+      lat: d.latitude, // number 인 것이 보장됨
+      lng: d.longitude,
+      emotion: d.emotion,
+      postCount: 1,
+    }));
     setDiaries(mapped);
   }, []);
 

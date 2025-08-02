@@ -8,8 +8,8 @@ interface MapMarkerProps {
   map: any; // kakao.maps.Map 인스턴스
   diary: {
     id: number;
-    lat: number; // 위도 (y)
-    lng: number; // 경도 (x)
+    lat?: number; // 위도 (y)
+    lng?: number; // 경도 (x)
     emotion: string; // ex) "happy","sad"...
     postCount: number; // +n 에 표시될 값
   };
