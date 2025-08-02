@@ -132,8 +132,6 @@ const DateSelector: React.FC<Props> = ({
     <div
       className={styles.picker}
       style={{ "--picker-highlight": highlight } as any}
-      onWheel={(e) => e.stopPropagation()}
-      onTouchMove={(e) => e.stopPropagation()}
     >
       <div className={styles.selectionOverlay} />
       <div className={styles.option}>
