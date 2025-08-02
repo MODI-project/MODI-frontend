@@ -76,25 +76,48 @@ const DateSelector: React.FC<Props> = ({
     }
   }, [days, viewType]);
 
-  // Controlled value groups
-  const optionGroups = useMemo(() => {
-    const base = { year: years, month: months };
-    if (viewType === "polaroid") return { ...base, day: days };
+  const padCount = Math.floor(VISIBLE / 2);
+  const paddedDays =
+    viewType === "polaroid"
+      ? [...Array(padCount).fill(""), ...days, ...Array(padCount).fill("")]
+      : [];
+
+  const displayOptionGroups = useMemo(() => {
+    const base = {
+      year: years.map((y) => `${y}년`),
+      month: months.map((m) => `${Number(m)}월`),
+      ...(viewType === "polaroid" && {
+        day: paddedDays.map((d) => (d ? `${Number(d)}일` : "")),
+      }),
+    };
+    if (viewType === "polaroid") {
+      return { ...base, day: days.map((d) => `${Number(d)}일`) };
+    }
     return base;
   }, [years, months, days, viewType]);
 
-  const valueGroups = useMemo(() => {
-    const base = { year, month };
-    if (viewType === "polaroid") return { ...base, day };
+  // 현재 선택된 값도 표시용으로 “2025년” 등
+  const displayValueGroups = useMemo(() => {
+    const base = {
+      year: `${year}년`,
+      month: `${Number(month)}월`,
+    };
+    if (viewType === "polaroid") {
+      return { ...base, day: `${Number(day)}일` };
+    }
     return base;
   }, [year, month, day, viewType]);
 
-  const handleChange = (name: string, value: string) => {
-    if (name === "year") setYear(value);
-    if (name === "month") setMonth(value);
-    if (name === "day") setDay(value);
+  // 사용자가 스크롤로 선택하면, “숫자”만 떼서 state에 저장
+  const handleChange = (name: string, displayVal: string) => {
+    // 숫자만 남기고, 연(year)은 4자리, 월/일은 2자리로 패딩
+    const raw = displayVal
+      .replace(/\D/g, "")
+      .padStart(name === "year" ? 4 : 2, "0");
+    if (name === "year") setYear(raw);
+    if (name === "month") setMonth(raw);
+    if (name === "day") setDay(raw);
   };
-
   // 상위 onChange
   useEffect(() => {
     const date =
@@ -112,13 +135,16 @@ const DateSelector: React.FC<Props> = ({
       onWheel={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}
     >
-      <Picker
-        optionGroups={optionGroups}
-        valueGroups={valueGroups}
-        onChange={handleChange}
-        itemHeight={ITEM_HEIGHT}
-        height={ITEM_HEIGHT * VISIBLE}
-      />
+      <div className={styles.selectionOverlay} />
+      <div className={styles.option}>
+        <Picker
+          optionGroups={displayOptionGroups}
+          valueGroups={displayValueGroups}
+          onChange={handleChange}
+          itemHeight={ITEM_HEIGHT}
+          height={ITEM_HEIGHT * VISIBLE}
+        />
+      </div>
     </div>
   );
 };

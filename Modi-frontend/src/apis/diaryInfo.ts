@@ -181,6 +181,91 @@ export const mockDiaries: DiaryData[] = [
     font: "NanumSquareNeo",
     frame: "12",
   },
+  {
+    id: 17,
+    date: "2025-08-02",
+    photoUrl:
+      "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
+    summary: "한여름에는 즐거운 물놀이!",
+    emotion: "신남",
+    tags: ["시원함", "행복", "청춘", "추억"],
+    // 추가 필드들 (기본값)
+    content: "한여름에는 즐거운 물놀이!",
+    address: "인천광역시 중구 을왕동",
+    latitude: 37.44637098924813,
+    longitude: 126.37234085890937,
+    tone: "즐거움",
+    font: "NanumSquareNeo",
+    frame: "12",
+  },
+  {
+    id: 17,
+    date: "2025-08-03",
+    photoUrl:
+      "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
+    summary: "한여름에는 즐거운 물놀이!",
+    emotion: "신남",
+    tags: ["시원함", "행복", "청춘", "추억"],
+    // 추가 필드들 (기본값)
+    content: "한여름에는 즐거운 물놀이!",
+    address: "인천광역시 중구 을왕동",
+    latitude: 37.44637098924813,
+    longitude: 126.37234085890937,
+    tone: "즐거움",
+    font: "NanumSquareNeo",
+    frame: "12",
+  },
+  {
+    id: 17,
+    date: "2025-07-30",
+    photoUrl:
+      "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
+    summary: "한여름에는 즐거운 물놀이!",
+    emotion: "신남",
+    tags: ["시원함", "행복", "청춘", "추억"],
+    // 추가 필드들 (기본값)
+    content: "한여름에는 즐거운 물놀이!",
+    address: "인천광역시 중구 을왕동",
+    latitude: 37.44637098924813,
+    longitude: 126.37234085890937,
+    tone: "즐거움",
+    font: "NanumSquareNeo",
+    frame: "12",
+  },
+  {
+    id: 17,
+    date: "2025-06-30",
+    photoUrl:
+      "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
+    summary: "한여름에는 즐거운 물놀이!",
+    emotion: "신남",
+    tags: ["시원함", "행복", "청춘", "추억"],
+    // 추가 필드들 (기본값)
+    content: "한여름에는 즐거운 물놀이!",
+    address: "인천광역시 중구 을왕동",
+    latitude: 37.44637098924813,
+    longitude: 126.37234085890937,
+    tone: "즐거움",
+    font: "NanumSquareNeo",
+    frame: "12",
+  },
+  {
+    id: 17,
+    date: "2024-07-30",
+    photoUrl:
+      "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
+    summary: "한여름에는 즐거운 물놀이!",
+    emotion: "신남",
+    tags: ["시원함", "행복", "청춘", "추억"],
+    // 추가 필드들 (기본값)
+    content: "한여름에는 즐거운 물놀이!",
+    address: "인천광역시 중구 을왕동",
+    latitude: 37.44637098924813,
+    longitude: 126.37234085890937,
+    tone: "즐거움",
+    font: "NanumSquareNeo",
+    frame: "12",
+  },
 ];
 
 // Mock API 함수들 (개발용)

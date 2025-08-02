@@ -6,6 +6,7 @@
   flex-direction: row;
   align-items: center;
   position: relative;
+  top: -50px;
 }
 
 .columnWrapper {
@@ -18,7 +19,7 @@
   z-index: 20;
   overflow: visible;
 
-  margin-top: 155px;
+  margin-top: 115px;
 }
 
 .column {
@@ -62,6 +63,7 @@
 
 .option {
   height: 40px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,7 +97,7 @@
 
 .selectionOverlay {
   position: absolute;
-  top: 3px;
+  top: 143px;
   left: 50%;
   transform: translateX(-50%);
   width: 310px;
@@ -105,9 +107,4 @@
   opacity: 1;
   pointer-events: none;
   z-index: 0;
-}
-
-:global(.react-mobile-picker-scroll .wheel-container) {
-  scroll-padding-top: 40px;
-  scroll-padding-bottom: 40px;
 }
