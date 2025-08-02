@@ -14,8 +14,8 @@
     "axios": "^1.11.0",
     "exif-js": "^2.3.0",
     "exifreader": "^4.31.1",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "react-mobile-picker-scroll": "^0.2.14",
     "react-router-dom": "^7.7.1",
     "react-tag-input": "^6.10.6"
