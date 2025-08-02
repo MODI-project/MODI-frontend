@@ -226,8 +226,8 @@ const Frame = ({
             alt="일기 사진"
           />
         </div>
-        <div className={styles.comment_container}>
-          <span className={styles.comment}>{displayData.summary}</span>
+        <div className={styles.summary_container}>
+          <span className={styles.summary}>{displayData.summary}</span>
         </div>
       </div>
       <div
