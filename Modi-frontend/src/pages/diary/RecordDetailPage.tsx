@@ -9,6 +9,7 @@ import DeleteButton from "../../components/common/button/ButtonIcon/DeleteButton
 import { useFrameTemplate } from "../../contexts/FrameTemplate";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DiaryData } from "../../components/common/frame/Frame";
+import { updateFavorite } from "../../apis/favorites";
 
 const pageBackgrounds = {
   frameId: {
@@ -36,8 +37,11 @@ const RecordDetailPage = () => {
   const location = useLocation();
 
   // 홈 화면에서 전달받은 일기 데이터
-  const diaryData = location.state?.diaryData as DiaryData | undefined;
+  const diaryData = location.state?.diaryData as DiaryData & {
+    isFavorited?: boolean;
+  };
   const diaryId = location.state?.diaryId as string | undefined;
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
 
   // 일기 데이터의 frame 값을 FrameTemplate의 frameId로 설정
   useEffect(() => {
@@ -47,6 +51,12 @@ const RecordDetailPage = () => {
     }
   }, [diaryData, setFrameId]);
 
+  useEffect(() => {
+    if (diaryData?.isFavorited !== undefined) {
+      setIsFavorite(diaryData.isFavorited);
+    }
+  }, [diaryData]);
+
   const handleSaveClick = () => {
     setMessageText("사진이 갤러리에 저장되었습니다.");
     setShowMessage(true);
@@ -55,14 +65,16 @@ const RecordDetailPage = () => {
       setShowMessage(false);
     }, 3000);
   };
-
-  const handleFavoriteClick = () => {
-    setMessageText("사진이 즐겨찾기에 추가되었습니다.");
+  const handleFavoriteClick = async () => {
+    try {
+      await updateFavorite(Number(diaryId), !isFavorite);
+      setIsFavorite((prev) => !prev);
+      setMessageText(!isFavorite ? "즐겨찾기 추가됨!" : "즐겨찾기 해제됨!");
+    } catch (err) {
+      setMessageText("즐겨찾기 요청 실패!");
+    }
     setShowMessage(true);
-    // 3초 후 메시지 숨기기
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 3000);
+    setTimeout(() => setShowMessage(false), 3000);
   };
 
   const handleEditClick = () => {
@@ -102,7 +114,7 @@ const RecordDetailPage = () => {
       />
       <div className={styles.btn_container}>
         <SaveButton onClick={handleSaveClick} />
-        <FavoriteButton onClick={handleFavoriteClick} isFavorite={false} />
+        <FavoriteButton onClick={handleFavoriteClick} isFavorite={isFavorite} />
         <EditButton onClick={handleEditClick} />
         <DeleteButton onClick={handleDeleteClick} />
       </div>
