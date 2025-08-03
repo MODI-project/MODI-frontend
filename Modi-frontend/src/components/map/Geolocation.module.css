@@ -87,8 +87,3 @@
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
 }
-
-.info_window {
-  padding: 5px;
-  font-size: 12px;
-}
