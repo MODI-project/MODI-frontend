@@ -1,3 +1,12 @@
+.noti_popup_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
 .noti_popup_container {
   position: relative;
   display: flex;
@@ -8,41 +17,225 @@
   max-width: 296px;
   max-height: 351px;
   flex-shrink: 0;
-
   border-radius: 15px;
   background: var(--color2, #fbf9f3);
 }
 
-.noti_popup_character {
+.noti_popup_close_button {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  top: 19px;
+  right: 16px;
+  aspect-ratio: 1/1;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+  background-image: url("/public/icons/X.svg");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  top: 40px; /* 위치 조정 */
 }
 
-/* 캐릭터별 이미지 클래스 */
-.character_momo {
-  background-image: url("/images/pop-up/popUp-momo.svg");
+.noti_popup_close_button:hover {
+  opacity: 0.7;
 }
 
-.character_boro {
-  background-image: url("/images/pop-up/popUp-boro.svg");
-}
-
-.character_lumi {
-  background-image: url("/images/pop-up/popUp-lumi.svg");
-}
-
-.character_zuni {
-  background-image: url("/images/pop-up/popUp-zuni.svg");
-}
-
-.noti_popup_title {
+.noti_popup_character {
   position: absolute;
-  bottom: 93px;
+  width: 100%;
+  height: 100%;
+  max-width: 151px;
+  max-height: 162px;
+  margin-bottom: 12px;
+  top: 40px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* momo 캐릭터 emotion 클래스들 */
+.character_momo_happy {
+  background-image: url("/public/images/notiPopup/momo/momo_happy.svg");
+}
+
+.character_momo_sad {
+  background-image: url("/public/images/notiPopup/momo/momo_sad.svg");
+}
+
+.character_momo_angry {
+  background-image: url("/public/images/notiPopup/momo/momo_angry.svg");
+}
+
+.character_momo_surprised {
+  background-image: url("/public/images/notiPopup/momo/momo_surprised.svg");
+}
+
+.character_momo_love {
+  background-image: url("/public/images/notiPopup/momo/momo_love.svg");
+}
+
+.character_momo_bored {
+  background-image: url("/public/images/notiPopup/momo/momo_bored.svg");
+}
+
+.character_momo_excited {
+  background-image: url("/public/images/notiPopup/momo/momo_excited.svg");
+}
+
+.character_momo_nervous {
+  background-image: url("/public/images/notiPopup/momo/momo_nervous.svg");
+}
+
+.character_momo_normal {
+  background-image: url("/public/images/notiPopup/momo/momo_normal.svg");
+}
+
+.character_momo_sick {
+  background-image: url("/public/images/notiPopup/momo/momo_sick.svg");
+}
+
+/* boro 캐릭터 emotion 클래스들 */
+.character_boro_happy {
+  background-image: url("/public/images/notiPopup/boro/boro_happy.svg");
+}
+
+.character_boro_sad {
+  background-image: url("/public/images/notiPopup/boro/boro_sad.svg");
+}
+
+.character_boro_angry {
+  background-image: url("/public/images/notiPopup/boro/boro_angry.svg");
+}
+
+.character_boro_surprised {
+  background-image: url("/public/images/notiPopup/boro/boro_surprised.svg");
+}
+
+.character_boro_love {
+  background-image: url("/public/images/notiPopup/boro/boro_love.svg");
+}
+
+.character_boro_bored {
+  background-image: url("/public/images/notiPopup/boro/boro_bored.svg");
+}
+
+.character_boro_excited {
+  background-image: url("/public/images/notiPopup/boro/boro_excited.svg");
+}
+
+.character_boro_nervous {
+  background-image: url("/public/images/notiPopup/boro/boro_nervous.svg");
+}
+
+.character_boro_normal {
+  background-image: url("/public/images/notiPopup/boro/boro_normal.svg");
+}
+
+.character_boro_sick {
+  background-image: url("/public/images/notiPopup/boro/boro_sick.svg");
+}
+
+/* lumi 캐릭터 emotion 클래스들 */
+.character_lumi_happy {
+  background-image: url("/public/images/notiPopup/lumi/lumi_happy.svg");
+}
+
+.character_lumi_sad {
+  background-image: url("/public/images/notiPopup/lumi/lumi_sad.svg");
+}
+
+.character_lumi_angry {
+  background-image: url("/public/images/notiPopup/lumi/lumi_angry.svg");
+}
+
+.character_lumi_surprised {
+  background-image: url("/public/images/notiPopup/lumi/lumi_surprised.svg");
+}
+
+.character_lumi_love {
+  background-image: url("/public/images/notiPopup/lumi/lumi_love.svg");
+}
+
+.character_lumi_bored {
+  background-image: url("/public/images/notiPopup/lumi/lumi_bored.svg");
+}
+
+.character_lumi_excited {
+  background-image: url("/public/images/notiPopup/lumi/lumi_excited.svg");
+}
+
+.character_lumi_nervous {
+  background-image: url("/public/images/notiPopup/lumi/lumi_nervous.svg");
+}
+
+.character_lumi_normal {
+  background-image: url("/public/images/notiPopup/lumi/lumi_normal.svg");
+}
+
+.character_lumi_sick {
+  background-image: url("/public/images/notiPopup/lumi/lumi_sick.svg");
+}
+
+/* zuni 캐릭터 emotion 클래스들 */
+.character_zuni_happy {
+  background-image: url("/public/images/notiPopup/zuni/zuni_happy.svg");
+}
+
+.character_zuni_sad {
+  background-image: url("/public/images/notiPopup/zuni/zuni_sad.svg");
+}
+
+.character_zuni_angry {
+  background-image: url("/public/images/notiPopup/zuni/zuni_angry.svg");
+}
+
+.character_zuni_surprised {
+  background-image: url("/public/images/notiPopup/zuni/zuni_surprised.svg");
+}
+
+.character_zuni_love {
+  background-image: url("/public/images/notiPopup/zuni/zuni_love.svg");
+}
+
+.character_zuni_bored {
+  background-image: url("/public/images/notiPopup/zuni/zuni_bored.svg");
+}
+
+.character_zuni_excited {
+  background-image: url("/public/images/notiPopup/zuni/zuni_excited.svg");
+}
+
+.character_zuni_nervous {
+  background-image: url("/public/images/notiPopup/zuni/zuni_nervous.svg");
+}
+
+.character_zuni_normal {
+  background-image: url("/public/images/notiPopup/zuni/zuni_normal.svg");
+}
+
+.character_zuni_sick {
+  background-image: url("/public/images/notiPopup/zuni/zuni_sick.svg");
+}
+
+.noti_popup_content {
+  position: absolute;
+  bottom: -17px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.noti_popup_text_container {
+  position: absolute;
+  bottom: 113px;
   display: flex;
   width: 100%;
   max-width: 223px;
@@ -50,10 +243,10 @@
   align-items: center;
 }
 
-.noti_popup_title span {
-  color: var(--color1, #222);
+.noti_popup_text_container span {
+  color: var(--gray4, #5c5c5c);
   font-feature-settings: "liga" off, "clig" off;
-  font-family: NanumSquareRound;
+  font-family: var(--font-nanum-squareB, "NanumSquareRoundBold");
   font-size: 15px;
   font-style: normal;
   font-weight: 700;
