@@ -11,7 +11,6 @@ const LoginPage = () => {
     const backendOAuthUrl = `http://ec2-3-38-55-66.ap-northeast-2.compute.amazonaws.com/api/oauth2/authorize/google`;
 
     console.log("Google 로그인 URL:", backendOAuthUrl);
-    console.log("환경변수 VITE_API_URL:", import.meta.env.VITE_API_URL);
 
     // 외부 URL로 이동하므로 window.location.href 사용
     // React Router가 내부 라우트로 인식하지 않도록 전체 URL 사용
@@ -25,26 +24,28 @@ const LoginPage = () => {
 
   return (
     <div className={styles.loginPage_wrapper}>
-      <div className={styles.modi_information}>
-        <img className={styles.modi_logo} src="/icons/modi.svg" />
-        <span className={styles.modi_introduction}>하루의 순간에</span>
-        <div>
-          <span className={styles.modi_introduction}>함께하는 친구, </span>
-          <span className={styles.modi_name}>모디</span>
+      <div className={styles.loginPage_container}>
+        <div className={styles.modi_information}>
+          <img className={styles.modi_logo} src="/icons/modi.svg" />
+          <span className={styles.modi_introduction}>하루의 순간에</span>
+          <div>
+            <span className={styles.modi_introduction}>함께하는 친구, </span>
+            <span className={styles.modi_name}>모디</span>
+          </div>
         </div>
-      </div>
-      <div className={styles.character_container}>
-        <img
-          className={styles.modi_character}
-          src="/images/background/intro-character.svg"
-          alt="모디 캐릭터 이미지"
+        <div className={styles.character_container}>
+          <img
+            className={styles.modi_character}
+            src="/images/background/intro-character.svg"
+            alt="모디 캐릭터 이미지"
+          />
+        </div>
+        <PrimaryButton
+          location="login"
+          label="구글로 시작하기"
+          onClick={handleGoogleLogin}
         />
       </div>
-      <PrimaryButton
-        location="login"
-        label="구글로 시작하기"
-        onClick={handleGoogleLogin}
-      />
     </div>
   );
 };

@@ -1,16 +1,24 @@
 .loginPage_wrapper {
-  position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.loginPage_container {
+  display: flex;
+  position: relative;
   width: 100vw;
   height: 100vh;
   max-width: 400px;
-  max-height: auto;
-  background-image: url("/images/background/intro-bg.svg");
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url("/images/background/normal-bg.svg");
   background-size: cover;
-  background-position: center;
+  background-position: top center;
   background-repeat: no-repeat;
 }
 
@@ -18,7 +26,6 @@
   position: absolute;
   top: 8%;
   left: 10%;
-
   display: flex;
   flex-direction: column;
 }
