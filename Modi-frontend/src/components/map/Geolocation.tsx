@@ -54,8 +54,8 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
           if (kakao && kakao.maps) {
             const currentPos = new kakao.maps.LatLng(latitude, longitude);
 
-            // 지도 중심을 현재 위치로 이동
-            mapRef.current.panTo(currentPos);
+            // 지도 중심을 현재 위치로 이동 (항상 정중앙에 위치)
+            mapRef.current.setCenter(currentPos);
 
             // 기존 마커 제거
             if (markerRef.current) {
@@ -70,8 +70,7 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
 
             // 인포윈도우 생성 (선택사항)
             const infowindow = new kakao.maps.InfoWindow({
-              content:
-                '<div style="padding:5px;font-size:12px;">현재 위치</div>',
+              content: "<div className={styles.info_window}>현재 위치</div>",
             });
             infowindow.open(mapRef.current, markerRef.current);
 
