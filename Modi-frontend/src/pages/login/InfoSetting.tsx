@@ -87,16 +87,9 @@ const InitialSetting = () => {
       return;
     }
 
-    // Access Token 확인
-    console.log("=== 회원가입 시작 - Access Token 확인 ===");
-    const accessToken = localStorage.getItem("accessToken");
-    console.log("localStorage에서 토큰 존재 여부:", !!accessToken);
-    if (accessToken) {
-      console.log("토큰 길이:", accessToken.length);
-      console.log("토큰 앞 10자리:", accessToken.substring(0, 10) + "...");
-    } else {
-      console.error("❌ Access Token이 없습니다!");
-    }
+    // 백엔드에서 토큰 가져와서 회원가입 진행
+    console.log("=== 회원가입 시작 - 백엔드 토큰 요청 ===");
+    console.log("HttpOnly 쿠키를 통해 백엔드에서 토큰 요청");
 
     setIsLoading(true);
 

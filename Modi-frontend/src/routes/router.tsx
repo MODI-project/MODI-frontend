@@ -74,7 +74,7 @@ const Router = () => {
     },
     {
       path: "/popup",
-      element: <NotiPopUp />,
+      element: <NotiPopUp isVisible={true} onClose={() => {}} />,
     },
     {
       path: "/map-search-bar",

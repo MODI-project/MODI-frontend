@@ -10,6 +10,9 @@ const OAuthCallback = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("=== OAuthCallback 컴포넌트 마운트됨 ===");
+    console.log("현재 URL:", window.location.href);
+
     const handleOAuthCallback = async () => {
       try {
         // URL에서 파라미터 추출
@@ -33,6 +36,13 @@ const OAuthCallback = () => {
           console.log(`  ${key}: ${value}`);
         }
 
+        // 쿠키 확인
+        console.log("현재 모든 쿠키:", document.cookie);
+
+        // Response Body 확인 (페이지 로드 시점)
+        console.log("페이지 제목:", document.title);
+        console.log("현재 URL:", window.location.href);
+
         if (error) {
           setStatus("error");
           setMessage("로그인에 실패했습니다.");
@@ -45,55 +55,10 @@ const OAuthCallback = () => {
 
         console.log("Google OAuth 콜백 성공! isNew:", isNew);
 
-        // Access token 처리
-        console.log("=== Access Token 처리 시작 ===");
-
-        if (accessToken) {
-          localStorage.setItem("accessToken", accessToken);
-          console.log(
-            "✅ Access Token을 URL에서 추출하여 localStorage에 저장 완료"
-          );
-          console.log("저장된 토큰 길이:", accessToken.length);
-          console.log("토큰 앞 10자리:", accessToken.substring(0, 10) + "...");
-        } else {
-          console.log("❌ URL에서 Access Token을 찾을 수 없음");
-
-          // 쿠키에서 토큰 확인 (백엔드가 쿠키로 토큰을 관리하는 경우)
-          console.log("쿠키에서 토큰 확인 중...");
-          const cookies = document.cookie.split(";");
-          console.log("현재 모든 쿠키:", cookies);
-
-          const tokenCookie = cookies.find((cookie) =>
-            cookie.trim().startsWith("accessToken=")
-          );
-
-          if (tokenCookie) {
-            const token = tokenCookie.split("=")[1];
-            localStorage.setItem("accessToken", token);
-            console.log(
-              "✅ Access Token을 쿠키에서 추출하여 localStorage에 저장 완료"
-            );
-            console.log("저장된 토큰 길이:", token.length);
-            console.log("토큰 앞 10자리:", token.substring(0, 10) + "...");
-          } else {
-            console.warn("❌ Access Token이 URL이나 쿠키에 없습니다.");
-            console.log(
-              "백엔드에서 토큰을 전달하지 않았거나 다른 방식으로 전달되었을 수 있습니다."
-            );
-          }
-        }
-
-        // localStorage 확인
-        const savedToken = localStorage.getItem("accessToken");
-        console.log("=== localStorage 확인 ===");
-        console.log("저장된 토큰 존재 여부:", !!savedToken);
-        if (savedToken) {
-          console.log("저장된 토큰 길이:", savedToken.length);
-          console.log(
-            "저장된 토큰 앞 10자리:",
-            savedToken.substring(0, 10) + "..."
-          );
-        }
+        // HttpOnly 쿠키 방식 사용 - 토큰은 쿠키로 자동 전송됨
+        console.log("=== HttpOnly 쿠키 인증 방식 ===");
+        console.log("토큰은 HttpOnly 쿠키로 백엔드에서 관리됨");
+        console.log("프론트엔드에서는 쿠키 자동 전송만 사용");
 
         setStatus("success");
 
