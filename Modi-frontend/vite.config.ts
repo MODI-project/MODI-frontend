@@ -6,6 +6,13 @@ export default defineConfig({
   plugins: [svgr({ exportAsDefault: true }), react()],
   server: {
     open: true,
+    proxy: {
+      "/api": {
+        target: "https://modidiary.store/",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
   },
   define: {
     global: "globalThis",
