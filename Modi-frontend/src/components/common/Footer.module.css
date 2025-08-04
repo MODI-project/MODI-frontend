@@ -7,7 +7,7 @@
   background-color: #fbf9f3;
   margin: 0 auto;
   padding: 23px 33px 38px 33px;
-  z-index: 100;
+  z-index: 1;
   border-radius: 13.74px 13.74px 0 0;
   border-top: 1px solid var(--color-gray2);
 }
