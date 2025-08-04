@@ -130,3 +130,7 @@
 .footerWrapper {
   padding: 0 16px 24px;
 }
+
+.wrapper {
+  z-index: 1005;
+}

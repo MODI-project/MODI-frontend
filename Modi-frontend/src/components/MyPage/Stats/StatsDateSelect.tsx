@@ -86,7 +86,6 @@ export default function StatsDateSelect({
         </div>
       </div>
       <div className={styles.wrapper}>
-        {" "}
         <BottomSheet
           isOpen={open}
           onClose={() => setOpen(false)}
