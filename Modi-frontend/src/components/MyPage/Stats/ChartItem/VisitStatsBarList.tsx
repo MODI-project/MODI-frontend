@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import StyleBar from "./StyleStatsBar";
 import style from "./StyleStatsBar.module.css";
 import { useCharacter } from "../../../../contexts/CharacterContext";
+import { getVisitStatsByMonth } from "../../../../utils/getVisitStatsByMonth";
 
 const MAX_BAR_HEIGHT = 70;
 
@@ -13,18 +14,18 @@ export default function VisitStatsBarList({
   onMaxLabelChange,
 }: StyleBarListProps) {
   const { character } = useCharacter();
+  const now = new Date();
+  const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}`;
+  const styleData = getVisitStatsByMonth(ym);
 
-  if (!character) return null;
+  if (!character || styleData.length === 0) return null;
 
   const iconPath = `/images/character-statsbar/${character}/${character}_head.svg`;
   const coloredIcon = `/images/character-statsbar/${character}/${character}_head_color.svg`;
 
-  const styleData = [
-    { label: "영통동", value: 15, icon: iconPath },
-    { label: "경희대", value: 7, icon: iconPath },
-    { label: "서천동", value: 5, icon: iconPath },
-    { label: "행궁동", value: 2, icon: iconPath },
-  ];
   const max = Math.max(...styleData.map((d) => d.value));
   const maxLabel = styleData.find((d) => d.value === max)?.label;
 
@@ -42,7 +43,7 @@ export default function VisitStatsBarList({
     zuni: "#93D1E0",
   };
 
-  const normalized = styleData
+  const normalized = [...styleData]
     .sort((a, b) => b.value - a.value) // 내림차순 정렬
     .map((d) => ({
       ...d,
