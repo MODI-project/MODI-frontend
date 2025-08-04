@@ -2,7 +2,7 @@ import { useState } from "react";
 import styles from "./StatsCard.module.css";
 import VisitStatsBarList from "../ChartItem/VisitStatsBarList";
 
-export default function StyleStatsCard() {
+export default function VisitStatsCard() {
   const [maxLabel, setMaxLabel] = useState<string | null>(null);
 
   return (
