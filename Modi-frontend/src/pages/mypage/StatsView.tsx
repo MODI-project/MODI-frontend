@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { allDiaries, Diary } from "../../data/diaries";
 import StatsDateSelect from "../../components/MyPage/Stats/StatsDateSelect";
 import styles from "./MyPage.module.css";
 import EmotionStatsCard from "../../components/MyPage/Stats/StatsCard/EmotionStatsCard";
 import StyleStats from "../../components/MyPage/Stats/StatsCard/StyleStats";
 import VisitStats from "../../components/MyPage/Stats/StatsCard/VisitStats";
+import { mockDiaries } from "../../apis/diaryInfo";
 
 type Emotion = Diary["emotion"];
 
@@ -35,6 +36,21 @@ export default function StatsView() {
     return counts;
   }, [monthDiaries]);
 
+  const [stats, setStats] = useState<StatsResponse | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const [y, m] = month.split("-"); // "2025-07"
+      try {
+        const data = await getDiaryStats(Number(y), Number(m));
+        setStats(data);
+      } catch (err) {
+        console.error("📉 통계 데이터 불러오기 실패", err);
+      }
+    };
+    fetchStats();
+  }, [month]);
+
   return (
     <div className={styles.statsContainer}>
       <div className={styles.fixedTop}>
@@ -48,9 +64,9 @@ export default function StatsView() {
       {/* 통계 차트 영역 */}
       <div className={styles.scrollWrapper}>
         <div className={styles.chartSection}>
-          <EmotionStatsCard />
-          <StyleStats />
-          <VisitStats />
+          <EmotionStatsCard data={stats?.topEmotions ?? []} />
+          <StyleStats month={month} />
+          <VisitStats data={stats?.topLocations ?? []} />
         </div>
       </div>
     </div>

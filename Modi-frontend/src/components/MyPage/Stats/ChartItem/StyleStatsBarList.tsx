@@ -5,27 +5,29 @@ import { useCharacter } from "../../../../contexts/CharacterContext";
 
 const MAX_BAR_HEIGHT = 70;
 
+interface StyleDataItem {
+  label: string;
+  value: number;
+  icon?: string;
+}
+
 interface StyleBarListProps {
+  data: StyleDataItem[];
   onMaxLabelChange?: (label: string) => void;
 }
 
-export default function StyleBarList({ onMaxLabelChange }: StyleBarListProps) {
+export default function StyleBarList({
+  data,
+  onMaxLabelChange,
+}: StyleBarListProps) {
   const { character } = useCharacter();
-
-  if (!character) return null;
+  if (!character || data.length === 0) return null;
 
   const iconPath = `/images/character-statsbar/${character}/${character}_head.svg`;
   const coloredIcon = `/images/character-statsbar/${character}/${character}_head_color.svg`;
 
-  const styleData = [
-    { label: "즐거움", value: 15, icon: iconPath },
-    { label: "고민", value: 13, icon: iconPath },
-    { label: "슬픔", value: 5, icon: iconPath },
-    { label: "화남", value: 2, icon: iconPath },
-  ];
-
-  const max = Math.max(...styleData.map((d) => d.value));
-  const maxLabel = styleData.find((d) => d.value === max)?.label;
+  const max = Math.max(...data.map((d) => d.value));
+  const maxLabel = data.find((d) => d.value === max)?.label;
 
   // maxLabel이 변경되면 부모에 알림
   useEffect(() => {
@@ -41,7 +43,7 @@ export default function StyleBarList({ onMaxLabelChange }: StyleBarListProps) {
     zuni: "#93D1E0",
   };
 
-  const normalized = styleData
+  const normalized = [...data]
     .sort((a, b) => b.value - a.value) // 내림차순 정렬
     .map((d) => ({
       ...d,
