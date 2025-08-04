@@ -9,10 +9,10 @@ export function getEmotionStatsByMonth(ym: string) {
     counter[d.emotion] = (counter[d.emotion] || 0) + 1;
   });
 
-  const result = Object.entries(counter).map(([name, count]) => ({
-    name,
-    count,
+  const result = Object.entries(counter).map(([label, value]) => ({
+    label,
+    value,
   }));
 
-  return result.sort((a, b) => b.count - a.count);
+  return result.sort((a, b) => b.value - a.value);
 }

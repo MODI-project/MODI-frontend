@@ -6,28 +6,23 @@ import { getVisitStatsByMonth } from "../../../../utils/getVisitStatsByMonth";
 
 const MAX_BAR_HEIGHT = 70;
 
-interface StyleBarListProps {
+interface VisitStatsBarListProps {
+  data: { label: string; value: number }[];
   onMaxLabelChange?: (label: string) => void;
 }
 
 export default function VisitStatsBarList({
+  data,
   onMaxLabelChange,
-}: StyleBarListProps) {
+}: VisitStatsBarListProps) {
   const { character } = useCharacter();
-  const now = new Date();
-  const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}`;
-  const styleData = getVisitStatsByMonth(ym);
-
-  if (!character || styleData.length === 0) return null;
+  if (!character || data.length === 0) return null;
 
   const iconPath = `/images/character-statsbar/${character}/${character}_head.svg`;
   const coloredIcon = `/images/character-statsbar/${character}/${character}_head_color.svg`;
 
-  const max = Math.max(...styleData.map((d) => d.value));
-  const maxLabel = styleData.find((d) => d.value === max)?.label;
+  const max = Math.max(...data.map((d) => d.value));
+  const maxLabel = data.find((d) => d.value === max)?.label;
 
   // maxLabel이 변경되면 부모에 알림
   useEffect(() => {
@@ -43,7 +38,7 @@ export default function VisitStatsBarList({
     zuni: "#93D1E0",
   };
 
-  const normalized = [...styleData]
+  const normalized = [...data]
     .sort((a, b) => b.value - a.value) // 내림차순 정렬
     .map((d) => ({
       ...d,
