@@ -5,6 +5,7 @@ import styles from "./InfoSetting.module.css";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import { useCharacter } from "../../contexts/CharacterContext";
 import { handleUserSignUp } from "../../apis/UserAPIS/signUp";
+import { editUserInfo } from "../../apis/UserAPIS/editUserInfo";
 
 interface LocationState {
   from?: string;
@@ -103,18 +104,34 @@ const InitialSetting = () => {
     try {
       const finalNickname = nickname.trim();
 
+      const payload = {
+        nickname: finalNickname,
+        character: selectedCharacter,
+      };
+
+      let userInfo;
+
       console.log("회원가입 시작:", {
         nickname: finalNickname,
         character: selectedCharacter,
       });
 
       // API 호출하여 회원가입
-      const userInfo = await handleUserSignUp(finalNickname, selectedCharacter);
-
-      console.log("회원가입 성공:", userInfo);
+      if (from === "/mypage") {
+        // ✅ 마이페이지에서 온 경우 → 수정
+        console.log("회원정보 수정 시작:", payload);
+        userInfo = await editUserInfo(payload);
+        console.log("회원정보 수정 완료:", userInfo);
+      } else {
+        // ✅ 최초 회원가입인 경우
+        console.log("회원가입 시작:", payload);
+        userInfo = await handleUserSignUp(finalNickname, selectedCharacter);
+        console.log("회원가입 완료:", userInfo);
+      }
 
       // 닉네임을 localStorage에 저장 (기존 코드와의 호환성을 위해)
       localStorage.setItem("nickname", finalNickname);
+      localStorage.setItem("character", selectedCharacter);
 
       if (location.state?.from === "/mypage") {
         navigate("/mypage");
