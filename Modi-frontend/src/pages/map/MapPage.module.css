@@ -37,9 +37,11 @@
 .search_bar_container {
   position: absolute;
   top: 39px;
-  left: 16px;
+  left: 35.5px;
+  width: 100vw;
+  max-width: 329px;
+  height: 41px;
   z-index: 1000;
-  width: 100%;
 }
 
 /* 로딩 상태 스타일 */
