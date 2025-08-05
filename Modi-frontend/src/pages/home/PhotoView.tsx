@@ -11,7 +11,7 @@ import EmotionTab, {
 } from "../../components/HomePage/EmotionTab/EmotionTab";
 import PhotoDiary from "../../components/HomePage/Diary/Photo/PhotoDiary";
 import { useCharacter } from "../../contexts/CharacterContext";
-import { mockDiaries } from "../../apis/diaryInfo";
+import { mockDiaries, DiaryData } from "../../apis/diaryInfo";
 import Search from "../../components/HomePage/Diary/Photo/Search";
 import BottomSheet from "../../components/common/BottomSheet";
 
@@ -86,6 +86,14 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
     }
   };
 
+  const handleDiaryClick = (diary: DiaryData) => {
+    navigate(`/recorddetail/`, {
+      state: {
+        diaryData: diary,
+      },
+    });
+  };
+
   return (
     <div className={pageStyles.wrapper}>
       {/* HomeHeader 에 props 로 상태·핸들러 내려주기 */}
@@ -117,6 +125,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
                 date={d.date}
                 emotion={d.emotion}
                 clicked={false}
+                onClick={() => handleDiaryClick(d)}
               />
             ))}
           </div>
