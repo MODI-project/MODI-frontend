@@ -5,7 +5,9 @@ import styles from "./InfoSetting.module.css";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import { useCharacter } from "../../contexts/CharacterContext";
 import { handleUserSignUp } from "../../apis/UserAPIS/signUp";
-import { handleEditUserInfo } from "../../apis/UserAPIS/editUserInfo";
+import { UserInfo } from "../../apis/UserAPIS/editUserInfo";
+import { editUserInfo } from "../../apis/UserAPIS/editUserInfo";
+
 
 interface LocationState {
   from?: string;
@@ -118,28 +120,35 @@ const InitialSetting = () => {
     try {
       const finalNickname = nickname.trim();
 
-      console.log("사용자 정보 처리 시작:", {
+      const payload = {
+        nickname: finalNickname,
+        character: selectedCharacter,
+      };
+
+      let userInfo;
+
+      console.log("회원가입 시작:", {
         nickname: finalNickname,
         character: selectedCharacter,
         isNew,
       });
 
-      let userInfo;
-
-      if (isNew) {
-        // 새로운 사용자: 회원가입 API 호출
-        console.log("새로운 사용자 - 회원가입 진행");
-        userInfo = await handleUserSignUp(finalNickname, selectedCharacter);
-        console.log("회원가입 성공:", userInfo);
+      // API 호출하여 회원가입
+      if (from === "/mypage") {
+        // ✅ 마이페이지에서 온 경우 → 수정
+        console.log("회원정보 수정 시작:", payload);
+        userInfo = await editUserInfo(payload);
+        console.log("회원정보 수정 완료:", userInfo);
       } else {
-        // 기존 사용자: 회원 정보 수정 API 호출
-        console.log("기존 사용자 - 회원 정보 수정 진행");
-        userInfo = await handleEditUserInfo(finalNickname, selectedCharacter);
-        console.log("회원 정보 수정 성공:", userInfo);
+        // ✅ 최초 회원가입인 경우
+        console.log("회원가입 시작:", payload);
+        userInfo = await handleUserSignUp(finalNickname, selectedCharacter);
+        console.log("회원가입 완료:", userInfo);
       }
 
       // 닉네임을 localStorage에 저장 (기존 코드와의 호환성을 위해)
       localStorage.setItem("nickname", finalNickname);
+      localStorage.setItem("character", selectedCharacter);
 
       if (location.state?.from === "/mypage") {
         navigate("/mypage");

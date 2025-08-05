@@ -10,6 +10,7 @@
 
   position: relative;
   right: 10px;
+  width: 290px;
 
   flex-shrink: 0;
 }
