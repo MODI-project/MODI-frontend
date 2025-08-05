@@ -6,7 +6,7 @@ interface ButtonIconProps {
 
 export default function ButtonIcon({ onClick }: ButtonIconProps) {
   return (
-    <button className={styles.edit_container} onClick={onClick}>
+    <button className={styles.container} onClick={onClick}>
       <img
         src="/icons/edit.svg"
         alt="수정하기 아이콘"
