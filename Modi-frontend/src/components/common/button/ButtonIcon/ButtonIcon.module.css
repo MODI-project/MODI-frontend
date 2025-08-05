@@ -31,5 +31,5 @@
   flex-shrink: 0;
   border-radius: 20px;
   border: 1px solid var(--gray2, #cbcbc5);
-  background: #eeedeb;
+  background-color: var(--color1, #fbfbfb);
 }
