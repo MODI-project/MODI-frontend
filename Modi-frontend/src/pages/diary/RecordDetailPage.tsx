@@ -72,13 +72,20 @@ const RecordDetailPage = () => {
 
       const dataUrl = canvas.toDataURL("image/png");
 
-      if (/Mobi|Android/i.test(navigator.userAgent)) {
-        // 모바일: 새 창 열기
-        window.open(dataUrl, "_blank");
+      // ✅ base64 → Blob 변환
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+        // 모바일: 새 탭에 이미지 띄우기 (길게 눌러 저장 가능)
+        setTimeout(() => {
+          window.open(blobUrl, "_blank");
+        }, 0);
       } else {
-        // PC: 다운로드
+        // PC: 자동 다운로드
         const link = document.createElement("a");
-        link.href = dataUrl;
+        link.href = blobUrl;
         link.download = "diary.png";
         link.click();
       }
