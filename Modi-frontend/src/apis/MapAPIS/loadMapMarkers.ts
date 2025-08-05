@@ -5,8 +5,7 @@ import type {
   ErrorResponse,
 } from "../../types/map-marker";
 
-const API_BASE_URL =
-  "http://ec2-3-38-55-66.ap-northeast-2.compute.amazonaws.com/api";
+const API_BASE_URL = "https://modidiary.store/api";
 
 const accessToken =
   "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMyIsImlhdCI6MTc1NDMwNzc3NCwiZXhwIjoxNzU0MzExMzc0fQ.MfjtQsxMU4sEPOwiMoNVAl-3nTQioJFZHoPydt1HEx0";
