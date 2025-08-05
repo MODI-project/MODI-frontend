@@ -68,35 +68,69 @@ const RecordDetailPage = () => {
         allowTaint: false,
         backgroundColor: null,
         scale: 2,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: document.documentElement.offsetWidth,
+        windowHeight: document.documentElement.offsetHeight,
       });
 
-      const dataUrl = canvas.toDataURL("image/png");
+      // ✅ toBlob 방식으로 이미지 생성
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          setMessageText("이미지 저장용 변환 실패");
+          return;
+        }
 
-      // ✅ base64 → Blob 변환
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
+        const blobUrl = URL.createObjectURL(blob);
 
-      if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-        // 모바일: 새 탭에 이미지 띄우기 (길게 눌러 저장 가능)
-        setTimeout(() => {
-          window.open(blobUrl, "_blank");
-        }, 0);
-      } else {
-        // PC: 자동 다운로드
-        const link = document.createElement("a");
-        link.href = blobUrl;
-        link.download = "diary.png";
-        link.click();
-      }
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+          // 모바일: 새 HTML 페이지에 <img>로 보여주기 (흰 배경 문제 해결)
+          const newWindow = window.open();
+          if (newWindow) {
+            newWindow.document.write(`
+            <html>
+              <head>
+                <title>이미지 저장</title>
+                <style>
+                  body {
+                    margin: 0;
+                    padding: 0;
+                    background: transparent;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                  }
+                  img {
+                    max-width: 100%;
+                    max-height: 100%;
+                  }
+                </style>
+              </head>
+              <body>
+                <img src="${blobUrl}" alt="일기 이미지" />
+              </body>
+            </html>
+          `);
+          }
+          setMessageText("이미지를 길게 눌러 저장하세요.");
+        } else {
+          // PC: 자동 다운로드
+          const link = document.createElement("a");
+          link.href = blobUrl;
+          link.download = "diary.png";
+          link.click();
+          setMessageText("사진이 갤러리에 저장되었습니다.");
+        }
 
-      setMessageText("사진이 갤러리에 저장되었습니다.");
+        setShowMessage(true);
+        setTimeout(() => setShowMessage(false), 3000);
+      }, "image/png");
     } catch {
       setMessageText("저장에 실패했습니다.");
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000);
     }
-
-    setShowMessage(true);
-    setTimeout(() => setShowMessage(false), 3000);
   };
 
   const handleFavoriteClick = async () => {
