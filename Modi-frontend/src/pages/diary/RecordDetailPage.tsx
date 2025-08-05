@@ -1,7 +1,8 @@
 import styles from "./RecordDetailPage.module.css";
 import Header from "../../components/common/Header";
 import Frame from "../../components/common/frame/Frame";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import html2canvas from "html2canvas";
 import SaveButton from "../../components/common/button/ButtonIcon/SaveButton";
 import FavoriteButton from "../../components/common/button/ButtonIcon/FavoriteButton";
 import EditButton from "../../components/common/button/ButtonIcon/EditButton";
@@ -31,6 +32,7 @@ const pageBackgrounds = {
 const RecordDetailPage = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
+  const frameRef = useRef<HTMLDivElement>(null);
 
   const { frameId, setFrameId } = useFrameTemplate();
   const navigate = useNavigate();
@@ -57,14 +59,33 @@ const RecordDetailPage = () => {
     }
   }, [diaryData]);
 
-  const handleSaveClick = () => {
-    setMessageText("사진이 갤러리에 저장되었습니다.");
+  const handleSaveClick = async () => {
+    if (!frameRef.current) return;
+
+    try {
+      const canvas = await html2canvas(frameRef.current!, {
+        useCORS: true,
+        allowTaint: false,
+        scale: 2,
+        backgroundColor: null,
+      });
+
+      const dataUrl = canvas.toDataURL("image/png");
+
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = "diary.png";
+      link.click();
+
+      setMessageText("사진이 갤러리에 저장되었습니다.");
+    } catch {
+      setMessageText("저장에 실패했습니다.");
+    }
+
     setShowMessage(true);
-    // 3초 후 메시지 숨기기
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 3000);
+    setTimeout(() => setShowMessage(false), 3000);
   };
+
   const handleFavoriteClick = async () => {
     try {
       await updateFavorite(Number(diaryId), !isFavorite);
@@ -118,7 +139,7 @@ const RecordDetailPage = () => {
         <EditButton onClick={handleEditClick} />
         <DeleteButton onClick={handleDeleteClick} />
       </div>
-      <div className={styles.frame_container}>
+      <div className={styles.frame_container} ref={frameRef}>
         <Frame
           isAbled={true}
           diaryData={diaryData}

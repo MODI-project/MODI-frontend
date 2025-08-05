@@ -224,6 +224,7 @@ const Frame = ({
             className={styles.image}
             src={displayData.photoUrl}
             alt="일기 사진"
+            crossOrigin="anonymous"
           />
         </div>
         <div className={styles.summary_container}>
