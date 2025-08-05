@@ -66,16 +66,22 @@ const RecordDetailPage = () => {
       const canvas = await html2canvas(frameRef.current!, {
         useCORS: true,
         allowTaint: false,
-        scale: 2,
         backgroundColor: null,
+        scale: 2,
       });
 
       const dataUrl = canvas.toDataURL("image/png");
 
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = "diary.png";
-      link.click();
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
+        // 모바일: 새 창 열기
+        window.open(dataUrl, "_blank");
+      } else {
+        // PC: 다운로드
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = "diary.png";
+        link.click();
+      }
 
       setMessageText("사진이 갤러리에 저장되었습니다.");
     } catch {
