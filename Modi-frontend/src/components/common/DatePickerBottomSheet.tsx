@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import styles from "./BottomSheet.module.css";
+import styles from "./DatePickerBottomSheet.module.css";
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -37,23 +37,8 @@ const BottomSheet = ({
     if (isOpen) {
       setIsMinimized(false);
       setTranslateY(0);
-      // 열릴 때 전체 높이로 초기화
-      setTimeout(() => {
-        if (sheetRef.current) {
-          sheetRef.current.style.height = `${maxHeight}px`;
-        }
-      }, 0);
     }
-  }, [isOpen, maxHeight]);
-
-  useEffect(() => {
-    // 최소화 여부가 바뀌었을 때 높이 조정
-    if (sheetRef.current) {
-      sheetRef.current.style.height = isMinimized
-        ? `${minHeight}px`
-        : `${maxHeight}px`;
-    }
-  }, [isMinimized, maxHeight]);
+  }, [isOpen]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     startY.current = e.touches[0].clientY;
@@ -67,9 +52,6 @@ const BottomSheet = ({
     const newHeight = (currentHeight ?? maxHeight) - deltaY;
     const clampedHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
     setTranslateY(deltaY);
-    if (sheetRef.current) {
-      sheetRef.current.style.height = `${clampedHeight}px`;
-    }
   };
 
   const handleTouchEnd = () => {
@@ -81,8 +63,9 @@ const BottomSheet = ({
       }
     } else if (translateY < -threshold && minimizeOnDrag && isMinimized) {
       setIsMinimized(false);
-    } else {
-      // 변화가 없을 때 원래 상태로 복구
+    } else if (translateY !== 0) {
+      // ← 추가
+      // 실제 드래그했을 때만 복구
       if (sheetRef.current) {
         sheetRef.current.style.height = isMinimized
           ? `${minHeight}px`
@@ -141,7 +124,7 @@ const BottomSheet = ({
       }
     } else if (delta < -threshold && minimizeOnDrag && isMinimized) {
       setIsMinimized(false);
-    } else {
+    } else if (delta !== 0) {
       if (sheetRef.current) {
         sheetRef.current.style.height = isMinimized
           ? `${minHeight}px`
