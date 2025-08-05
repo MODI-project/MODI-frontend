@@ -10,7 +10,7 @@ import { useState } from "react";
 
 const DiaryKeywordPage = () => {
   const navigate = useNavigate();
-  const { draft } = useDiaryDraft();
+  const { draft, setDraft } = useDiaryDraft();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const handlePopupConfirm = () => {
@@ -37,7 +37,14 @@ const DiaryKeywordPage = () => {
               키워드를 3개 이상 입력해주세요
             </p>
           ) : null}
-          <FrequentKeywords Bigmargin={true} />
+          <FrequentKeywords
+            Bigmargin={true}
+            onKeywordClick={(keyword) => {
+              if (!draft.keywords.includes(keyword)) {
+                setDraft({ keywords: [...draft.keywords, keyword] }); // ✅ 키워드 추가
+              }
+            }}
+          />
         </div>
         <PrimaryButton
           location="next"

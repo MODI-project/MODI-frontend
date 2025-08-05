@@ -14,11 +14,11 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
-    https: {
-      key: fs.readFileSync("./ssl/key.pem"),
-      cert: fs.readFileSync("./ssl/cert.pem"),
-    },
-    port: 5173,
+     https: {
+       key: fs.readFileSync("./ssl/key.pem"),
+       cert: fs.readFileSync("./ssl/cert.pem"),
+     },
+
   },
   define: {
     global: "globalThis",

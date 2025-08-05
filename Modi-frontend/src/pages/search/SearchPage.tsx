@@ -36,10 +36,12 @@ const SearchPage = () => {
                 setSearchStarted(false);
               }}
               onBlur={() => {
-                setIsFocused(false);
-                if (hasSearched) {
-                  setSearchStarted(true);
-                }
+                setTimeout(() => {
+                  setIsFocused(false);
+                  if (hasSearched) {
+                    setSearchStarted(true);
+                  }
+                }, 100);
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -58,7 +60,17 @@ const SearchPage = () => {
           </div>
 
           {/* 입력창 포커스 시에만 추천 키워드 */}
-          {isFocused && <FrequentKeywords Bigmargin={false} />}
+          {isFocused && (
+            <FrequentKeywords
+              Bigmargin={false}
+              onKeywordClick={(keyword) => {
+                setQuery(keyword);
+                setHasSearched(true);
+                setSearchStarted(true);
+                setIsFocused(false);
+              }}
+            />
+          )}
 
           {/* 검색 시작되었고 결과 없을 때 이미지 */}
           {searchStarted && (

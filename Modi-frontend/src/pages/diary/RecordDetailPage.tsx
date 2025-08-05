@@ -1,7 +1,8 @@
 import styles from "./RecordDetailPage.module.css";
 import Header from "../../components/common/Header";
 import Frame from "../../components/common/frame/Frame";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import html2canvas from "html2canvas";
 import SaveButton from "../../components/common/button/ButtonIcon/SaveButton";
 import FavoriteButton from "../../components/common/button/ButtonIcon/FavoriteButton";
 import EditButton from "../../components/common/button/ButtonIcon/EditButton";
@@ -31,6 +32,7 @@ const pageBackgrounds = {
 const RecordDetailPage = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
+  const frameRef = useRef<HTMLDivElement>(null);
 
   const { frameId, setFrameId } = useFrameTemplate();
   const navigate = useNavigate();
@@ -57,14 +59,87 @@ const RecordDetailPage = () => {
     }
   }, [diaryData]);
 
-  const handleSaveClick = () => {
-    setMessageText("사진이 갤러리에 저장되었습니다.");
-    setShowMessage(true);
-    // 3초 후 메시지 숨기기
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 3000);
+  const handleSaveClick = async () => {
+    if (!frameRef.current) return;
+
+    try {
+      const canvas = await html2canvas(frameRef.current!, {
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: null, // 투명 배경
+        scale: 2,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: document.documentElement.offsetWidth,
+        windowHeight: document.documentElement.offsetHeight,
+      });
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          setMessageText("이미지 저장용 변환 실패");
+          setShowMessage(true);
+          setTimeout(() => setShowMessage(false), 3000);
+          return;
+        }
+
+        const blobUrl = URL.createObjectURL(blob);
+        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+
+        if (isMobile) {
+          // 모바일: 새 탭에 이미지 띄우고 길게 눌러 저장
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const newWindow = window.open();
+            if (newWindow) {
+              newWindow.document.write(`
+              <html>
+                <head>
+                  <title>이미지 저장</title>
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                  <style>
+                    body {
+                      margin: 0;
+                      background: white;
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      height: 100vh;
+                    }
+                    img {
+                      max-width: 100%;
+                      height: auto;
+                      display: block;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <img src="${reader.result}" alt="diary" />
+                </body>
+              </html>
+            `);
+            }
+          };
+          reader.readAsDataURL(blob);
+          setMessageText("이미지를 길게 눌러 저장하세요.");
+        } else {
+          // 데스크탑: 자동 다운로드
+          const link = document.createElement("a");
+          link.href = blobUrl;
+          link.download = "diary.png";
+          link.click();
+          setMessageText("사진이 갤러리에 저장되었습니다.");
+        }
+
+        setShowMessage(true);
+        setTimeout(() => setShowMessage(false), 3000);
+      }, "image/png");
+    } catch {
+      setMessageText("저장에 실패했습니다.");
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000);
+    }
   };
+
   const handleFavoriteClick = async () => {
     try {
       await updateFavorite(Number(diaryId), !isFavorite);
@@ -118,7 +193,7 @@ const RecordDetailPage = () => {
         <EditButton onClick={handleEditClick} />
         <DeleteButton onClick={handleDeleteClick} />
       </div>
-      <div className={styles.frame_container}>
+      <div className={styles.frame_container} ref={frameRef}>
         <Frame
           isAbled={true}
           diaryData={diaryData}
