@@ -5,7 +5,7 @@ import DateSelector, {
   DiaryItem,
 } from "../../components/HomePage/DateSelect/DateSelector";
 import ButtonBar from "../../components/common/button/ButtonBar/PrimaryButton";
-import BottomSheet from "../../components/common/BottomSheet";
+import DatePickerBottomSheet from "../../components/common/DatePickerBottomSheet";
 import PolaroidFrame from "../../components/HomePage/Diary/Polaroid/PolaroidFrame";
 import EmotionCharacter from "../../components/HomePage/Diary/Polaroid/EmotionCharacter";
 import EmotionTagList from "../../components/HomePage/Diary/Polaroid/EmotionTagList";
@@ -211,7 +211,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       </div>
 
       {/* 날짜 선택 모달 */}
-      <BottomSheet
+      <DatePickerBottomSheet
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
         minimizeOnDrag={false} // 드래그 시 최소화 기능 원하면 true
@@ -236,7 +236,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
             disabled={false}
           />
         </div>
-      </BottomSheet>
+      </DatePickerBottomSheet>
     </div>
   );
 }
