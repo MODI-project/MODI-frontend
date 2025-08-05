@@ -5,9 +5,7 @@ import styles from "./InfoSetting.module.css";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import { useCharacter } from "../../contexts/CharacterContext";
 import { handleUserSignUp } from "../../apis/UserAPIS/signUp";
-import { UserInfo } from "../../apis/UserAPIS/editUserInfo";
-import { editUserInfo } from "../../apis/UserAPIS/editUserInfo";
-
+import { handleEditUserInfo } from "../../apis/UserAPIS/editUserInfo";
 
 interface LocationState {
   from?: string;
@@ -137,7 +135,10 @@ const InitialSetting = () => {
       if (from === "/mypage") {
         // ✅ 마이페이지에서 온 경우 → 수정
         console.log("회원정보 수정 시작:", payload);
-        userInfo = await editUserInfo(payload);
+        userInfo = await handleEditUserInfo(
+          payload.nickname,
+          payload.character
+        );
         console.log("회원정보 수정 완료:", userInfo);
       } else {
         // ✅ 최초 회원가입인 경우
