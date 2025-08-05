@@ -66,7 +66,7 @@ const RecordDetailPage = () => {
       const canvas = await html2canvas(frameRef.current!, {
         useCORS: true,
         allowTaint: false,
-        backgroundColor: null,
+        backgroundColor: null, // 투명 배경
         scale: 2,
         scrollX: 0,
         scrollY: 0,
@@ -74,48 +74,55 @@ const RecordDetailPage = () => {
         windowHeight: document.documentElement.offsetHeight,
       });
 
-      // ✅ toBlob 방식으로 이미지 생성
       canvas.toBlob((blob) => {
         if (!blob) {
           setMessageText("이미지 저장용 변환 실패");
+          setShowMessage(true);
+          setTimeout(() => setShowMessage(false), 3000);
           return;
         }
 
         const blobUrl = URL.createObjectURL(blob);
+        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-          // 모바일: 새 HTML 페이지에 <img>로 보여주기 (흰 배경 문제 해결)
-          const newWindow = window.open();
-          if (newWindow) {
-            newWindow.document.write(`
-            <html>
-              <head>
-                <title>이미지 저장</title>
-                <style>
-                  body {
-                    margin: 0;
-                    padding: 0;
-                    background: transparent;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                  }
-                  img {
-                    max-width: 100%;
-                    max-height: 100%;
-                  }
-                </style>
-              </head>
-              <body>
-                <img src="${blobUrl}" alt="일기 이미지" />
-              </body>
-            </html>
-          `);
-          }
+        if (isMobile) {
+          // 모바일: 새 탭에 이미지 띄우고 길게 눌러 저장
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const newWindow = window.open();
+            if (newWindow) {
+              newWindow.document.write(`
+              <html>
+                <head>
+                  <title>이미지 저장</title>
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                  <style>
+                    body {
+                      margin: 0;
+                      background: white;
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      height: 100vh;
+                    }
+                    img {
+                      max-width: 100%;
+                      height: auto;
+                      display: block;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <img src="${reader.result}" alt="diary" />
+                </body>
+              </html>
+            `);
+            }
+          };
+          reader.readAsDataURL(blob);
           setMessageText("이미지를 길게 눌러 저장하세요.");
         } else {
-          // PC: 자동 다운로드
+          // 데스크탑: 자동 다운로드
           const link = document.createElement("a");
           link.href = blobUrl;
           link.download = "diary.png";
