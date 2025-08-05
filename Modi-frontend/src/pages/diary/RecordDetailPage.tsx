@@ -66,7 +66,7 @@ const RecordDetailPage = () => {
       const canvas = await html2canvas(frameRef.current!, {
         useCORS: true,
         allowTaint: false,
-        backgroundColor: null, // 투명 배경
+        backgroundColor: null,
         scale: 2,
         scrollX: 0,
         scrollY: 0,
@@ -86,43 +86,59 @@ const RecordDetailPage = () => {
         const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
         if (isMobile) {
-          // 모바일: 새 탭에 이미지 띄우고 길게 눌러 저장
+          // 새 탭 미리 열고 즉시 HTML 작성
+          const newWindow = window.open("", "_blank");
+          if (!newWindow) {
+            alert("팝업 차단이 감지되었습니다. 브라우저 설정을 확인해주세요.");
+            return;
+          }
+
+          newWindow.document.write(`
+          <html>
+            <head>
+              <title>이미지 저장</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <style>
+                body {
+                  margin: 0;
+                  background: white;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  height: 100vh;
+                }
+                img {
+                  max-width: 100%;
+                  height: auto;
+                  display: block;
+                }
+              </style>
+            </head>
+            <body>
+              <p>이미지를 불러오는 중...</p>
+              <img id="preview" style="display:none;" />
+              <script>
+                window.addEventListener('message', function(event) {
+                  const img = document.getElementById('preview');
+                  img.src = event.data;
+                  img.style.display = 'block';
+                  document.querySelector('p').remove();
+                });
+              </script>
+            </body>
+          </html>
+        `);
+          newWindow.document.close(); // ❗ 렌더링 트리거
+
           const reader = new FileReader();
           reader.onloadend = () => {
-            const newWindow = window.open();
-            if (newWindow) {
-              newWindow.document.write(`
-              <html>
-                <head>
-                  <title>이미지 저장</title>
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                  <style>
-                    body {
-                      margin: 0;
-                      background: white;
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      height: 100vh;
-                    }
-                    img {
-                      max-width: 100%;
-                      height: auto;
-                      display: block;
-                    }
-                  </style>
-                </head>
-                <body>
-                  <img src="${reader.result}" alt="diary" />
-                </body>
-              </html>
-            `);
-            }
+            newWindow.postMessage(reader.result, "*"); // base64 이미지 전송
           };
           reader.readAsDataURL(blob);
+
           setMessageText("이미지를 길게 눌러 저장하세요.");
         } else {
-          // 데스크탑: 자동 다운로드
+          // 데스크탑 다운로드
           const link = document.createElement("a");
           link.href = blobUrl;
           link.download = "diary.png";
@@ -133,7 +149,8 @@ const RecordDetailPage = () => {
         setShowMessage(true);
         setTimeout(() => setShowMessage(false), 3000);
       }, "image/png");
-    } catch {
+    } catch (err) {
+      console.error(err);
       setMessageText("저장에 실패했습니다.");
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 3000);
