@@ -67,12 +67,16 @@ export default function EmotionStatsCard({
     };
   });
   const sortedData = [...enrichedData].sort((a, b) => b.value - a.value);
+  const monthNumber = parseInt(month.split("-")[1], 10);
+  const isEnglishLabel = maxEmotion && emotionTextMap[maxEmotion] !== undefined;
+  const maxEmotionText = isEnglishLabel
+    ? emotionTextMap[maxEmotion!]
+    : maxEmotion ?? "";
 
   return (
     <div className={styles.card}>
       <h3 className={styles.title}>
-        {month.split("-")[1]}월은 {emotionTextMap[maxEmotion ?? ""]}을 가장 많이
-        느꼈어요
+        {monthNumber}월은 {maxEmotionText}을 가장 많이 느꼈어요
       </h3>
       <EmotionCircleList data={sortedData} />
     </div>

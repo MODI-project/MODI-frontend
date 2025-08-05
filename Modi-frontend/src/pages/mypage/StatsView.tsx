@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { allDiaries, Diary } from "../../data/diaries";
+import { mockDiaries, DiaryData } from "../../apis/diaryInfo";
 import StatsDateSelect from "../../components/MyPage/Stats/StatsDateSelect";
 import styles from "./MyPage.module.css";
 import EmotionStatsCard from "../../components/MyPage/Stats/StatsCard/EmotionStatsCard";
@@ -10,12 +10,13 @@ import { getEmotionStatsByMonth } from "../../utils/getEmotionStatsByMonth";
 import { getToneStatsByMonth } from "../../utils/getToneStatsByMonths";
 import { getVisitStatsByMonth } from "../../utils/getVisitStatsByMonth";
 
-type Emotion = Diary["emotion"];
+type Emotion = DiaryData["emotion"];
 
 export default function StatsView() {
   // 1) 사용 가능한 월 리스트 (중복 제거·정렬)
   const allMonths = useMemo(
-    () => Array.from(new Set(allDiaries.map((d) => d.date.slice(0, 7)))).sort(),
+    () =>
+      Array.from(new Set(mockDiaries.map((d) => d.date.slice(0, 7)))).sort(),
     []
   );
 
