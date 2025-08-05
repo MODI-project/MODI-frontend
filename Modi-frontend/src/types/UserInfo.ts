@@ -11,11 +11,3 @@ export interface SignUpResponse {
   nickname: string;
   character: string;
 }
-
-// 기존 UserInfo 인터페이스 (다른 곳에서 사용 중일 수 있으므로 유지)
-export interface UserInfo {
-  userId: number;
-  email: string;
-  nickname: string;
-  character: string;
-}

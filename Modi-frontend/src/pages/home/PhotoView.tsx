@@ -6,13 +6,12 @@ import DateSelector, {
   DiaryItem,
 } from "../../components/HomePage/DateSelect/DateSelector";
 import ButtonBar from "../../components/common/button/ButtonBar/PrimaryButton";
-import Modal from "../../components/common/Modal";
 import EmotionTab, {
   Emotion,
 } from "../../components/HomePage/EmotionTab/EmotionTab";
 import PhotoDiary from "../../components/HomePage/Diary/Photo/PhotoDiary";
 import { useCharacter } from "../../contexts/CharacterContext";
-import { allDiaries, Diary } from "../../data/diaries";
+import { mockDiaries, DiaryData } from "../../apis/diaryInfo";
 import Search from "../../components/HomePage/Diary/Photo/Search";
 import BottomSheet from "../../components/common/BottomSheet";
 
@@ -28,7 +27,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
 
   const availableMonths = useMemo(() => {
     return Array.from(
-      new Set(allDiaries.map((d) => d.date.slice(0, 7)))
+      new Set(mockDiaries.map((d) => d.date.slice(0, 7)))
     ).sort();
   }, []);
   const dateItems = availableMonths.map((d) => ({ date: d }));
@@ -44,15 +43,13 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
   });
 
   const monthDiaries = useMemo(
-    () => allDiaries.filter((d) => d.date.startsWith(viewDate)),
+    () => mockDiaries.filter((d) => d.date.startsWith(viewDate)),
     [viewDate]
   );
 
-  const emotionList: Emotion[] = Array.from(
+  const emotionList = Array.from(
     new Set(monthDiaries.map((d) => d.emotion))
-  );
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  ) as Emotion[];
 
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
 
@@ -89,6 +86,14 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
     }
   };
 
+  const handleDiaryClick = (diary: DiaryData) => {
+    navigate(`/recorddetail/`, {
+      state: {
+        diaryData: diary,
+      },
+    });
+  };
+
   return (
     <div className={pageStyles.wrapper}>
       {/* HomeHeader 에 props 로 상태·핸들러 내려주기 */}
@@ -120,6 +125,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
                 date={d.date}
                 emotion={d.emotion}
                 clicked={false}
+                onClick={() => handleDiaryClick(d)}
               />
             ))}
           </div>
@@ -133,7 +139,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
         <BottomSheet
           isOpen={isSheetOpen}
           onClose={() => setIsSheetOpen(false)}
-          minimizeOnDrag={true}
+          minimizeOnDrag={false}
         >
           <div className={pageStyles.modalInner}>
             <h3 className={pageStyles.modalTitle}>다른 날짜 일기 보기</h3>
@@ -142,10 +148,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
               viewType="photo"
               items={dateItems}
               initialDate={viewDate}
-              onChange={(newDate) => {
-                setViewDate(newDate);
-                setIsModalOpen(false);
-              }}
+              onChange={handleChange}
               userCharacter={character!}
             />
           </div>
