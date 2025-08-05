@@ -5,6 +5,7 @@ export interface DiaryDraft {
   keywords: string[];
   content: string;
   image: string | null;
+  imageFile?: File;
   summary: string;
   tone: string;
   templateId: number | null;
@@ -25,6 +26,7 @@ export const defaultDraft: DiaryDraft = {
   keywords: [],
   content: "",
   image: null,
+  imageFile: undefined,
   summary: "",
   tone: "",
   templateId: null,

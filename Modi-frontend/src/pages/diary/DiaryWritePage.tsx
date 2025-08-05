@@ -21,9 +21,9 @@ const DiaryWritePage = () => {
     navigate("/home");
   };
 
-  // 전역변수 가져오기
   const { draft, setDraft } = useDiaryDraft();
-  // 비활성화 조건 추가
+
+  // 비활성화 조건
   const isReadyToSubmit =
     draft.image && draft.address.trim() !== "" && draft.keywords.length > 2;
 
@@ -31,45 +31,51 @@ const DiaryWritePage = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // 1. 원본 File 객체 저장 (FormData 전송용)
+    setDraft({ imageFile: file });
+
+    // 2. 미리보기 용 base64 URL 생성
     const reader = new FileReader();
     reader.onload = async () => {
       const imageUrl = reader.result as string;
       setDraft({ image: imageUrl });
 
-      // GPS 정보 추출
-      const arrayBuffer = await file.arrayBuffer();
-      const tags = await ExifReader.load(arrayBuffer);
+      // 3. GPS 정보 추출
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const tags = await ExifReader.load(arrayBuffer);
 
-      console.log("EXIF 태그:", tags);
+        const latRaw = tags["GPSLatitude"]?.value as [number, number][];
+        const lonRaw = tags["GPSLongitude"]?.value as [number, number][];
 
-      const latRaw = tags["GPSLatitude"]?.value as [number, number][];
-      const lonRaw = tags["GPSLongitude"]?.value as [number, number][];
+        if (
+          Array.isArray(latRaw) &&
+          Array.isArray(lonRaw) &&
+          latRaw.length === 3 &&
+          lonRaw.length === 3
+        ) {
+          const parse = (dms: [number, number][]): number[] =>
+            dms.map(([num, den]) => num / den);
 
-      if (
-        Array.isArray(latRaw) &&
-        Array.isArray(lonRaw) &&
-        latRaw.length === 3 &&
-        lonRaw.length === 3
-      ) {
-        // [ [37,1], [17,1], [383,10] ] 구조
-        const parse = (dms: [number, number][]): number[] =>
-          dms.map(([num, den]) => num / den);
+          const lat = parse(latRaw);
+          const lon = parse(lonRaw);
 
-        const lat = parse(latRaw);
-        const lon = parse(lonRaw);
+          const latRef = tags["GPSLatitudeRef"]?.description || "N";
+          const lonRef = tags["GPSLongitudeRef"]?.description || "E";
 
-        const latRef = tags["GPSLatitudeRef"]?.description || "N";
-        const lonRef = tags["GPSLongitudeRef"]?.description || "E";
+          const latitude = convertDMSToDD(lat, latRef);
+          const longitude = convertDMSToDD(lon, lonRef);
 
-        const latitude = convertDMSToDD(lat, latRef);
-        const longitude = convertDMSToDD(lon, lonRef);
-        reverseGeocode(latitude, longitude);
-      } else {
-        alert("GPS 데이터 형식이 잘못되었거나 없습니다.");
+          reverseGeocode(latitude, longitude);
+        } else {
+          alert("GPS 정보가 없는 사진입니다. 주소를 수동으로 입력해주세요.");
+        }
+      } catch (err) {
+        console.error("GPS 정보 추출 실패", err);
       }
     };
 
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(file); // base64 미리보기 용
   };
 
   const convertDMSToDD = (dms: number[], ref: string) => {
