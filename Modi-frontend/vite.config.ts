@@ -9,6 +9,7 @@ export default defineConfig({
     open: true,
     proxy: {
       "/api": {
+
         target: "https://modidiary.store/",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
@@ -18,7 +19,6 @@ export default defineConfig({
        key: fs.readFileSync("./ssl/key.pem"),
        cert: fs.readFileSync("./ssl/cert.pem"),
      },
-
   },
   define: {
     global: "globalThis",

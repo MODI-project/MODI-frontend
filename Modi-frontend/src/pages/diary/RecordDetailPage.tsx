@@ -223,12 +223,32 @@ const RecordDetailPage = () => {
           tags={diaryData?.tags || []}
           content={diaryData?.content || "일기 내용이 여기에 표시됩니다."}
         />
-      </div>
-      {showMessage && (
-        <div className={styles.message_container}>
-          <span className={styles.message_text}>{messageText}</span>
+        <div className={styles.btn_container}>
+          <SaveButton onClick={handleSaveClick} />
+          <FavoriteButton onClick={handleFavoriteClick} isFavorite={false} />
+          <EditButton onClick={handleEditClick} />
+          <DeleteButton onClick={handleDeleteClick} />
         </div>
-      )}
+        <div className={styles.frame_container}>
+          <Frame
+            isAbled={true}
+            diaryData={diaryData}
+            // diaryData가 없을 때 사용할 기본값들
+            photoUrl={diaryData?.photoUrl || "https://placehold.co/215x286"}
+            date={diaryData?.date || "2025/01/01"}
+            emotion={diaryData?.emotion || "기쁨"}
+            summary={diaryData?.summary || "일기 내용 한 줄 요약"}
+            placeInfo={diaryData?.address || "장소 정보"}
+            tags={diaryData?.tags || []}
+            content={diaryData?.content || "일기 내용이 여기에 표시됩니다."}
+          />
+        </div>
+        {showMessage && (
+          <div className={styles.message_container}>
+            <span className={styles.message_text}>{messageText}</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

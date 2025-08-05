@@ -5,10 +5,13 @@ import styles from "./InfoSetting.module.css";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import { useCharacter } from "../../contexts/CharacterContext";
 import { handleUserSignUp } from "../../apis/UserAPIS/signUp";
+import { UserInfo } from "../../apis/UserAPIS/editUserInfo";
 import { editUserInfo } from "../../apis/UserAPIS/editUserInfo";
+
 
 interface LocationState {
   from?: string;
+  isNew?: boolean;
 }
 
 const InitialSetting = () => {
@@ -16,6 +19,25 @@ const InitialSetting = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as LocationState)?.from;
+
+  // isNew 값 확인: URL state > 로컬 스토리지 > 기본값 순서로 확인
+  const getIsNew = (): boolean => {
+    const stateIsNew = (location.state as LocationState)?.isNew;
+    if (stateIsNew !== undefined) {
+      return stateIsNew;
+    }
+
+    // 2. 로컬 스토리지에서 확인
+    const localStorageIsNew = localStorage.getItem("isNew");
+    if (localStorageIsNew) {
+      return localStorageIsNew === "true";
+    }
+
+    // 3. 기본값 (기존 사용자)
+    return false;
+  };
+
+  const isNew = getIsNew();
   const [selectedCharacter, setSelectedCharacter] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
   const [showPreview, setShowPreview] = useState<boolean>(false);
@@ -88,8 +110,9 @@ const InitialSetting = () => {
       return;
     }
 
-    // 백엔드에서 토큰 가져와서 회원가입 진행
-    console.log("=== 회원가입 시작 - 백엔드 토큰 요청 ===");
+    // isNew에 따라 다른 API 호출
+    console.log("=== 사용자 정보 처리 시작 ===");
+    console.log("isNew:", isNew);
     console.log("HttpOnly 쿠키를 통해 백엔드에서 토큰 요청");
 
     setIsLoading(true);
@@ -107,6 +130,7 @@ const InitialSetting = () => {
       console.log("회원가입 시작:", {
         nickname: finalNickname,
         character: selectedCharacter,
+        isNew,
       });
 
       // API 호출하여 회원가입
@@ -132,8 +156,11 @@ const InitialSetting = () => {
         navigate("/home"); //홈으로 이동
       }
     } catch (error) {
-      console.error("회원가입 실패:", error);
-      alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+      console.error("사용자 정보 처리 실패:", error);
+      const errorMessage = isNew
+        ? "회원가입에 실패했습니다. 다시 시도해주세요."
+        : "회원 정보 수정에 실패했습니다. 다시 시도해주세요.";
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
