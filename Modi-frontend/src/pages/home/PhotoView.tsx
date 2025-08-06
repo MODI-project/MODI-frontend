@@ -13,7 +13,7 @@ import PhotoDiary from "../../components/HomePage/Diary/Photo/PhotoDiary";
 import { useCharacter } from "../../contexts/CharacterContext";
 import { mockDiaries, DiaryData } from "../../apis/diaryInfo";
 import Search from "../../components/HomePage/Diary/Photo/Search";
-import BottomSheet from "../../components/common/BottomSheet";
+import DatePickerBottomSheet from "../../components/common/DatePickerBottomSheet";
 
 interface PhotoViewProps {
   onSwitchView: () => void;
@@ -136,7 +136,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
         )}
 
         {/* 날짜 선택 모달 */}
-        <BottomSheet
+        <DatePickerBottomSheet
           isOpen={isSheetOpen}
           onClose={() => setIsSheetOpen(false)}
           minimizeOnDrag={false}
@@ -161,7 +161,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
               disabled={false}
             />
           </div>
-        </BottomSheet>
+        </DatePickerBottomSheet>
       </div>
     </div>
   );

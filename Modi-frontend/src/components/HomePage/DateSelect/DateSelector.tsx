@@ -77,10 +77,10 @@ const DateSelector: React.FC<Props> = ({
   }, [days, viewType]);
 
   const padCount = Math.floor(VISIBLE / 2);
-  const paddedDays =
-    viewType === "polaroid"
-      ? [...Array(padCount).fill(""), ...days, ...Array(padCount).fill("")]
-      : [];
+  const paddedDays = useMemo(() => {
+    const pad = Array(padCount).fill(null); // null로 패딩
+    return [...pad, ...days, ...pad];
+  }, [days, padCount]);
 
   const displayOptionGroups = useMemo(() => {
     const base = {
@@ -91,7 +91,7 @@ const DateSelector: React.FC<Props> = ({
       }),
     };
     if (viewType === "polaroid") {
-      return { ...base, day: days.map((d) => `${Number(d)}일`) };
+      return { ...base, day: days.map((d) => (d ? `${Number(d)}일` : "")) };
     }
     return base;
   }, [years, months, days, viewType]);
@@ -111,6 +111,8 @@ const DateSelector: React.FC<Props> = ({
   // 사용자가 스크롤로 선택하면, “숫자”만 떼서 state에 저장
   const handleChange = (name: string, displayVal: string) => {
     // 숫자만 남기고, 연(year)은 4자리, 월/일은 2자리로 패딩
+    if (!displayVal || displayVal === "") return;
+
     const raw = displayVal
       .replace(/\D/g, "")
       .padStart(name === "year" ? 4 : 2, "0");
