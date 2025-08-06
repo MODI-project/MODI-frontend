@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-oauth/google": "^0.12.2",
     "axios": "^1.11.0",
+    "babel-runtime": "^6.26.0",
     "exif-js": "^2.3.0",
     "exifreader": "^4.31.1",
     "html2canvas": "^1.4.1",
