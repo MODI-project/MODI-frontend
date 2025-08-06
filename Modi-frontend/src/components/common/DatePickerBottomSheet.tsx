@@ -26,19 +26,6 @@ const BottomSheet = ({
 
   const isDragging = useRef(false);
 
-  useEffect(() => {
-    const sheet = sheetRef.current;
-    if (!sheet) return;
-
-    // 시트 영역에서만 스크롤 전파 막기
-    const blockScroll = (e: TouchEvent) => e.preventDefault();
-
-    sheet.addEventListener("touchmove", blockScroll, { passive: false });
-    return () => {
-      sheet.removeEventListener("touchmove", blockScroll);
-    };
-  }, [isOpen]); // isOpen이 바뀔 때마다(열고 닫을 때마다) 리스너 갱신
-
   // 창 크기 바뀔 때 maxHeight 다시 계산
   useEffect(() => {
     const updateMaxHeight = () => setMaxHeight(window.innerHeight * 0.55);

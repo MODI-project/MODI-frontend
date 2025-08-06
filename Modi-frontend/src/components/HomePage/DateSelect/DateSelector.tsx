@@ -31,6 +31,7 @@ const DateSelector: React.FC<Props> = ({
 }) => {
   const ITEM_HEIGHT = 40;
   const VISIBLE = viewType === "polaroid" ? 3 : 2;
+  const PICKER_HEIGHT = ITEM_HEIGHT * VISIBLE;
   const pad = Math.floor(VISIBLE / 2);
 
   // 파싱
@@ -110,13 +111,13 @@ const DateSelector: React.FC<Props> = ({
       style={{ "--picker-highlight": highlight } as any}
     >
       <div className={styles.selectionOverlay} />
-      <div className={styles.option}>
+      <div className={styles.columnWrapper}>
         <WheelPicker
           scrollerId="year-picker"
           data={yearOpts}
           animation="wheel"
-          height={ITEM_HEIGHT}
-          parentHeight={yearOpts.length * ITEM_HEIGHT}
+          height={PICKER_HEIGHT}
+          parentHeight={PICKER_HEIGHT}
           fontSize={14}
           defaultSelection={years.indexOf(year)}
           updateSelection={(idx: number) => setYear(years[idx])}
@@ -127,8 +128,8 @@ const DateSelector: React.FC<Props> = ({
           scrollerId="month-picker"
           data={monthOpts}
           animation="wheel"
-          height={ITEM_HEIGHT}
-          parentHeight={monthOpts.length * ITEM_HEIGHT}
+          height={PICKER_HEIGHT}
+          parentHeight={PICKER_HEIGHT}
           fontSize={14}
           defaultSelection={months.indexOf(month)}
           updateSelection={(idx: number) =>
@@ -142,8 +143,8 @@ const DateSelector: React.FC<Props> = ({
             scrollerId="day-picker"
             data={dayOpts}
             animation="wheel"
-            height={ITEM_HEIGHT}
-            parentHeight={dayOpts.length * ITEM_HEIGHT}
+            height={PICKER_HEIGHT}
+            parentHeight={PICKER_HEIGHT}
             fontSize={14}
             defaultSelection={days.indexOf(day)}
             updateSelection={(idx: number) =>
