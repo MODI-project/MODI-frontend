@@ -2,6 +2,7 @@
   padding-top: 40px !important;
   padding-bottom: 40px !important;
   margin-top: -40px !important;
+  overscroll-behavior-y: contain !important;
 }
 
 /* 2) 라이브러리 기본 하이라이트 바 숨기기 */
