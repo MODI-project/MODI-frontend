@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import MapSearchBar from "./MapSearchBar";
-import Geolocation from "./Geolocation";
+import MapSearchBar from "../SearchPlace/MapSearchBar";
+import Geolocation from "../setCurrentPosition/Geolocation";
 
 interface KakaoMapProps {
   latitude: number;
@@ -85,7 +85,7 @@ const KakaoMap = ({
     } catch (error) {
       console.error("지도 생성 중 오류 발생:", error);
     }
-  }, [latitude, longitude, level]); // onMapReady 제거
+  }, [latitude, longitude, level]);
 
   return (
     <div

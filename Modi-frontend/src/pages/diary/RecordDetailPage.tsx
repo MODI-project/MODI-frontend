@@ -63,77 +63,62 @@ const RecordDetailPage = () => {
     if (!frameRef.current) return;
 
     try {
-      const canvas = await html2canvas(frameRef.current!, {
+      const canvas = await html2canvas(frameRef.current, {
         useCORS: true,
         allowTaint: false,
-        backgroundColor: null, // 투명 배경
+        backgroundColor: null,
         scale: 2,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: document.documentElement.offsetWidth,
-        windowHeight: document.documentElement.offsetHeight,
       });
 
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          setMessageText("이미지 저장용 변환 실패");
-          setShowMessage(true);
-          setTimeout(() => setShowMessage(false), 3000);
+      const imageUrl = canvas.toDataURL("image/png"); // toBlob 대신
+
+      const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+      if (isMobile) {
+        const newWindow = window.open();
+        if (!newWindow) {
+          alert("팝업 차단이 감지되었습니다. 브라우저 설정을 확인해주세요.");
           return;
         }
 
-        const blobUrl = URL.createObjectURL(blob);
-        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+        newWindow.document.write(`
+        <html>
+          <head>
+            <title>이미지 저장</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body {
+                margin: 0;
+                background: white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+              }
+              img {
+                max-width: 100%;
+                height: auto;
+              }
+            </style>
+          </head>
+          <body>
+            <img src="${imageUrl}" alt="diary" />
+          </body>
+        </html>
+      `);
+        newWindow.document.close();
+        setMessageText("이미지를 길게 눌러 저장하세요.");
+      } else {
+        const link = document.createElement("a");
+        link.href = imageUrl;
+        link.download = "diary.png";
+        link.click();
+        setMessageText("사진이 갤러리에 저장되었습니다.");
+      }
 
-        if (isMobile) {
-          // 모바일: 새 탭에 이미지 띄우고 길게 눌러 저장
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const newWindow = window.open();
-            if (newWindow) {
-              newWindow.document.write(`
-              <html>
-                <head>
-                  <title>이미지 저장</title>
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                  <style>
-                    body {
-                      margin: 0;
-                      background: white;
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      height: 100vh;
-                    }
-                    img {
-                      max-width: 100%;
-                      height: auto;
-                      display: block;
-                    }
-                  </style>
-                </head>
-                <body>
-                  <img src="${reader.result}" alt="diary" />
-                </body>
-              </html>
-            `);
-            }
-          };
-          reader.readAsDataURL(blob);
-          setMessageText("이미지를 길게 눌러 저장하세요.");
-        } else {
-          // 데스크탑: 자동 다운로드
-          const link = document.createElement("a");
-          link.href = blobUrl;
-          link.download = "diary.png";
-          link.click();
-          setMessageText("사진이 갤러리에 저장되었습니다.");
-        }
-
-        setShowMessage(true);
-        setTimeout(() => setShowMessage(false), 3000);
-      }, "image/png");
-    } catch {
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000);
+    } catch (err) {
+      console.error(err);
       setMessageText("저장에 실패했습니다.");
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 3000);
@@ -169,49 +154,56 @@ const RecordDetailPage = () => {
   };
 
   return (
-    <div className={styles.RecordDetailPage}>
-      <div
-        className={styles.page_detail_container}
-        style={{
-          backgroundImage: `url(${pageBackgrounds.frameId[frameId]})`,
-        }}
-      ></div>
-      <Header
-        left="/icons/arrow_left.svg"
-        middle="일기 상세보기"
-        right="/icons/home.svg"
-        LeftClick={() => {
-          navigate(-1);
-        }}
-        RightClick={() => {
-          navigate("/home");
-        }}
-      />
-      <div className={styles.btn_container}>
-        <SaveButton onClick={handleSaveClick} />
-        <FavoriteButton onClick={handleFavoriteClick} isFavorite={isFavorite} />
-        <EditButton onClick={handleEditClick} />
-        <DeleteButton onClick={handleDeleteClick} />
-      </div>
-      <div className={styles.frame_container} ref={frameRef}>
-        <Frame
-          isAbled={true}
-          diaryData={diaryData}
-          // diaryData가 없을 때 사용할 기본값들
-          photoUrl={diaryData?.photoUrl || "https://placehold.co/215x286"}
-          date={diaryData?.date || "2025/01/01"}
-          emotion={diaryData?.emotion || "기쁨"}
-          summary={diaryData?.summary || "일기 내용 한 줄 요약"}
-          placeInfo={diaryData?.address || "장소 정보"}
-          tags={diaryData?.tags || []}
-          content={diaryData?.content || "일기 내용이 여기에 표시됩니다."}
-        />
-      </div>
-      {showMessage && (
-        <div className={styles.message_container}>
-          <span className={styles.message_text}>{messageText}</span>
+    <div className={styles.RecordDetailPage_wrapper}>
+      <div className={styles.RecordDetailPage}>
+        <div
+          className={styles.page_detail_container}
+          style={{
+            backgroundImage: `url(${pageBackgrounds.frameId[frameId]})`,
+          }}
+        >
+          <Header
+            left="/icons/arrow_left.svg"
+            middle="일기 상세보기"
+            right="/icons/home.svg"
+            LeftClick={() => {
+              navigate(-1);
+            }}
+            RightClick={() => {
+              navigate("/home");
+            }}
+          />
+          <div className={styles.btn_container}>
+            <SaveButton onClick={handleSaveClick} />
+            <FavoriteButton
+              onClick={handleFavoriteClick}
+              isFavorite={isFavorite}
+            />
+            <EditButton onClick={handleEditClick} />
+            <DeleteButton onClick={handleDeleteClick} />
+          </div>
+          <div className={styles.frame_container} ref={frameRef}>
+            <Frame
+              isAbled={true}
+              diaryData={diaryData}
+              // diaryData가 없을 때 사용할 기본값들
+              photoUrl={diaryData?.photoUrl || "https://placehold.co/215x286"}
+              date={diaryData?.date || "2025/01/01"}
+              emotion={diaryData?.emotion || "기쁨"}
+              summary={diaryData?.summary || "일기 내용 한 줄 요약"}
+              placeInfo={diaryData?.address || "장소 정보"}
+              tags={diaryData?.tags || []}
+              content={diaryData?.content || "일기 내용이 여기에 표시됩니다."}
+            />
+
+            {showMessage && (
+              <div className={styles.message_container}>
+                <span className={styles.message_text}>{messageText}</span>
+              </div>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

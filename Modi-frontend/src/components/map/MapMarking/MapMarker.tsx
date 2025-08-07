@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react";
 import styles from "./MapMarker.module.css";
-import { getMapMarkerIcon } from "../../utils/MapMarkerImages";
-import type { CharacterKey } from "../../utils/MapMarkerImages";
-import type { Emotion } from "../../data/diaries";
+import { getMapMarkerIcon } from "../../../utils/MapMarkerImages";
+import type { CharacterKey } from "../../../utils/MapMarkerImages";
+import type { Emotion } from "../../../data/diaries";
 
 interface MapMarkerProps {
   map: any; // kakao.maps.Map 인스턴스

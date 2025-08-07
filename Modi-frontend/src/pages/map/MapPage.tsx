@@ -2,10 +2,10 @@ import styles from "./MapPage.module.css";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { mockDiaries } from "../../apis/diaryInfo";
 import { DiaryData } from "../../apis/diaryInfo";
-import MapMarker from "../../components/map/MapMarker";
+import MapMarker from "../../components/map/MapMarking/MapMarker";
 import { loadKakaoMapAPI } from "../../utils/kakaoMapLoader";
-import KakaoMap from "../../components/map/KakaoMap";
-import MapSearchBar from "../../components/map/MapSearchBar";
+import KakaoMap from "../../components/map/LoadMap/KakaoMap";
+import MapSearchBar from "../../components/map/SearchPlace/MapSearchBar";
 import Footer from "../../components/common/Footer";
 import { useCharacter } from "../../contexts/CharacterContext";
 

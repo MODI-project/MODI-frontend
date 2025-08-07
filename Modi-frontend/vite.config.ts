@@ -7,6 +7,10 @@ export default defineConfig({
   plugins: [svgr({ exportAsDefault: true }), react()],
   server: {
     open: true,
+    https: {
+      key: fs.readFileSync("./ssl/key.pem"),
+      cert: fs.readFileSync("./ssl/cert.pem"),
+    },
     proxy: {
       "/api": {
         target: "https://modidiary.store",
@@ -15,10 +19,13 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
     },
+<<<<<<< HEAD
     https: {
       key: fs.readFileSync("./ssl/key.pem"),
       cert: fs.readFileSync("./ssl/cert.pem"),
     },
+=======
+>>>>>>> origin/main
   },
   define: {
     global: "globalThis",
