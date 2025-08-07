@@ -2,7 +2,7 @@
   height: 100%;
   max-height: 80vh;
   align-self: stretch;
-
+  justify-content: center;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -16,91 +16,21 @@
   flex-direction: row;
   align-items: stretch;
   height: 340px;
-  gap: 40px;
+  gap: 18px;
   z-index: 20;
   overflow: visible;
   overflow-x: hidden;
 
-  margin-top: 160px;
-  margin-left: 30px;
-}
-
-.column {
-  display: flex;
-  width: 70px;
-  height: 150px;
-  z-index: 2;
-
-  flex-direction: column;
-  gap: 8px;
-
-  box-sizing: content-box;
-
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  scroll-snap-type: y mandatory;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
-
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 20%,
-    black 80%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    black 20%,
-    black 80%,
-    transparent 100%
-  );
+  margin-top: 80px;
 }
 
 .column::-webkit-scrollbar {
   display: none;
 }
 
-.option {
-  height: 40px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  scroll-snap-align: center;
-  color: #9c9c9c;
-  text-align: center;
-  font-feature-settings: "liga" off, "clig" off;
-
-  font-family: "NanumSquareRoundBold", "NanumSquareRound", sans-serif;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 22px;
-  letter-spacing: -0.43px;
-  cursor: pointer;
-
-  scroll-snap-align: center;
-}
-
-.option.selected {
-  color: #2c2c2c;
-  text-align: center;
-  font-feature-settings: "liga" off, "clig" off;
-  font-family: "NanumSquareRoundBold", "NanumSquareRound", sans-serif;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 20px;
-  letter-spacing: -0.23px;
-}
-
 .selectionOverlay {
   position: absolute;
-  top: 143px;
+  top: 124px;
   left: 50%;
   transform: translateX(-50%);
   width: 310px;
@@ -112,17 +42,72 @@
   z-index: 0;
 }
 
-/* 1) WheelPicker 전체 wrapper 배경 제거 */
-#year-picker,
-#month-picker,
-#day-picker {
+/* 1) Picker 전체 래퍼 배경/테두리 제거 */
+:global(.scroll-select-container) {
   background: transparent !important;
   box-shadow: none !important;
+  border: none !important;
+  font-family: var(--font-nanum-squareB);
 }
 
-/* 2) 내부 item 컨테이너들(리스트, 프레임)도 모두 투명하게 */
-#year-picker > *,
-#month-picker > *,
-#day-picker > * {
+/* 2) 중앙 선택 영역 (highlight) 뒤의 기본 박스 제거 */
+:global(.scroll-selector-area) {
+  border: none !important;
   background: transparent !important;
+  text-align: center !important;
+}
+
+:global(#year-picker-scroll-selector-area),
+:global(#month-picker-scroll-selector-area),
+:global(#day-picker-scroll-selector-area) {
+  background: transparent !important;
+  border: none !important;
+  text-align: center !important;
+}
+
+/* 3) 실제 옵션 리스트와 각 아이템 배경 제거 */
+:global(.scroll-select-list),
+:global(.scroll-select-list > *),
+:global(.scroll-select-list > div) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  text-align: center !important;
+}
+
+/* 4) 상단/하단 페이드 마스크(만약 있다면) 제거 */
+:global(.picker-mask),
+:global(.picker-mask-top),
+:global(.picker-mask-bottom) {
+  background: transparent !important;
+}
+
+:global(.wheel-item),
+:global(.scroll-item-container),
+:global(.scroll-select-list),
+:global(.scroll-select-container) {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 70px !important;
+  text-align: center !important;
+}
+
+:global(.scroll-item-container),
+:global(.scroll-select-list > *) {
+  display: flex !important;
+  justify-content: center !important; /* 가로 중앙 */
+  align-items: center !important; /* 세로 중앙 */
+}
+
+:global(.wheel-item) {
+  width: 100% !important;
+  text-align: center !important;
+}
+
+:global(.scroll-item.wheel-item) {
+  width: 100% !important; /* calc() 를 무력화 */
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  text-align: center !important;
 }
