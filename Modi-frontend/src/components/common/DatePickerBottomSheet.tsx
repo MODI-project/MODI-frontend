@@ -17,7 +17,7 @@ const BottomSheet = ({
   const startY = useRef(0);
   const [translateY, setTranslateY] = useState(0);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [maxHeight, setMaxHeight] = useState(window.innerHeight * 0.8);
+  const [maxHeight, setMaxHeight] = useState(window.innerHeight * 0.55);
   const minHeight = 220;
   const translateYRef = useRef(0);
   const sheetRef = useRef<HTMLDivElement | null>(null);
@@ -28,16 +28,20 @@ const BottomSheet = ({
 
   // 창 크기 바뀔 때 maxHeight 다시 계산
   useEffect(() => {
-    const updateMaxHeight = () => setMaxHeight(window.innerHeight * 0.8);
+    const updateMaxHeight = () => setMaxHeight(window.innerHeight * 0.55);
     window.addEventListener("resize", updateMaxHeight);
     return () => window.removeEventListener("resize", updateMaxHeight);
   }, []);
 
   useEffect(() => {
     if (isOpen) {
-      setIsMinimized(false);
-      setTranslateY(0);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isOpen]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -77,6 +81,8 @@ const BottomSheet = ({
   };
 
   useEffect(() => {
+    const sheet = sheetRef.current;
+    if (!sheet) return;
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
@@ -141,13 +147,20 @@ const BottomSheet = ({
     <div className={styles.overlay} onClick={onClose}>
       <div
         ref={sheetRef}
-        className={`${styles.sheet}`}
+        className={styles.sheet}
+        style={{
+          transform: `translateY(${translateY}px)`,
+          height: isMinimized ? `${minHeight}px` : `${maxHeight}px`,
+        }}
         onClick={(e) => e.stopPropagation()}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
-        <div className={styles.handle} onMouseDown={handleMouseDown} />
+        <div
+          className={styles.handle}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        />
         <div className={styles.content}>{children}</div>
       </div>
     </div>

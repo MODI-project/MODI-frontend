@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-oauth/google": "^0.12.2",
     "axios": "^1.11.0",
+    "babel-runtime": "^6.26.0",
     "exif-js": "^2.3.0",
     "exifreader": "^4.31.1",
     "html2canvas": "^1.4.1",
@@ -21,7 +22,8 @@
     "react-dom": "^18.3.1",
     "react-mobile-picker-scroll": "^0.2.14",
     "react-router-dom": "^7.7.1",
-    "react-tag-input": "^6.10.6"
+    "react-tag-input": "^6.10.6",
+    "react-wheelpicker": "^1.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
