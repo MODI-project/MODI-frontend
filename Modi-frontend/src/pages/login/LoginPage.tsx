@@ -8,7 +8,7 @@ const LoginPage = () => {
 
   const handleGoogleLogin = () => {
     // 백엔드 API 호출하여 Google 로그인 페이지로 리다이렉트
-    const backendOAuthUrl = `http://ec2-3-38-55-66.ap-northeast-2.compute.amazonaws.com/api/oauth2/authorize/google`;
+    const backendOAuthUrl = `https://modidiary.store/api/oauth2/authorize/google`;
 
     console.log("Google 로그인 URL:", backendOAuthUrl);
 
