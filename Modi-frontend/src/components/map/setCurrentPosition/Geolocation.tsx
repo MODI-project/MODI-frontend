@@ -94,18 +94,6 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
               map: mapRef.current,
             });
 
-            // 인포윈도우 생성 (선택사항)
-            const infowindow = new kakao.maps.InfoWindow({
-              content:
-                "<div style='padding: 8px 45px 8px 45px; font-size: 15px; font-family: var(--font-nanum-square, 'NanumSquareRound');'>현재 위치</div>",
-            });
-            infowindow.open(mapRef.current, markerRef.current);
-
-            // 3초 후 인포윈도우 자동 닫기
-            setTimeout(() => {
-              infowindow.close();
-            }, 3000);
-
             setCurrentPosition({ lat: latitude, lng: longitude });
             setIsLoading(false);
             // 성공 시 권한 거부 상태 제거
