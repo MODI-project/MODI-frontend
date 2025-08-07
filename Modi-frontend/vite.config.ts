@@ -9,16 +9,16 @@ export default defineConfig({
     open: true,
     proxy: {
       "/api": {
-        target: "https://modidiary.store/",
+        target: "https://modidiary.store",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
     },
-     https: {
-       key: fs.readFileSync("./ssl/key.pem"),
-       cert: fs.readFileSync("./ssl/cert.pem"),
-     },
-
+    https: {
+      key: fs.readFileSync("./ssl/key.pem"),
+      cert: fs.readFileSync("./ssl/cert.pem"),
+    },
   },
   define: {
     global: "globalThis",

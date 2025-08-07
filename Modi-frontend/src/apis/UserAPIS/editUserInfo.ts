@@ -6,6 +6,6 @@ export interface EditUserInfoParams {
 }
 
 export const editUserInfo = async (params: EditUserInfoParams) => {
-  const response = await apiClient.put("/users/me", params);
+  const response = await apiClient.put("/members/me", params);
   return response.data;
 };
