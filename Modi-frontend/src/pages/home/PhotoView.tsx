@@ -76,6 +76,19 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
     }
   }, [isSheetOpen]);
 
+  const [tempDate, setTempDate] = useState(viewDate);
+
+  useEffect(() => {
+    if (isSheetOpen) {
+      setTempDate(viewDate);
+    }
+  }, [isSheetOpen, viewDate]);
+
+  const handleConfirm = () => {
+    setViewDate(tempDate);
+    setIsSheetOpen(false);
+  };
+
   const handleChange = (newDate: string) => {
     setViewDate(newDate);
 
@@ -147,8 +160,16 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
             <DateSelector
               viewType="photo"
               items={dateItems}
-              initialDate={viewDate}
-              onChange={handleChange}
+              initialDate={tempDate}
+              onChange={(d) => {
+                setTempDate(d);
+                if (hasOpened.current) {
+                  // 두 번째부터는 선택 즉시 닫기
+                  setIsSheetOpen(false);
+                } else {
+                  hasOpened.current = true;
+                }
+              }}
               userCharacter={character!}
             />
           </div>
@@ -156,7 +177,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
             <ButtonBar
               location="modal"
               label="확인"
-              onClick={() => setIsSheetOpen(false)}
+              onClick={handleConfirm}
               size="primary"
               disabled={false}
             />

@@ -27,39 +27,44 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const hasOpened = useRef(false);
   const { character } = useCharacter();
 
-  const allDates = useMemo(
-    // () => allDiaries.map((d) => d.date).sort((a, b) => a.localeCompare(b)),
-    // []
-    () => {
-      const dates = mockDiaries
-        .map((d) => d.date)
-        .sort((a, b) => a.localeCompare(b));
-      console.log("allDates 계산:", dates);
-      return dates;
-    },
-    [mockDiaries]
-  );
+  const allDates = useMemo(() => {
+    return mockDiaries
+      .map((d) => {
+        const [y, m, dd] = d.date.split("-");
+        return `${y}-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+      })
+      .sort((a, b) => a.localeCompare(b));
+  }, [mockDiaries]);
+
+  const diaryMap = useMemo(() => {
+    return mockDiaries.reduce<Record<string, DiaryData>>((acc, d) => {
+      const [y, m, dd] = d.date.split("-");
+      const key = `${y}-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+      acc[key] = d;
+      return acc;
+    }, {});
+  }, [mockDiaries]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const viewDate = allDates[currentIndex] || allDates[0] || "";
-  // 현재 인덱스 (안전하게 처리)
+  const [tempDate, setTempDate] = useState<string>(viewDate);
+
+  useEffect(() => {
+    if (isSheetOpen) {
+      setTempDate(viewDate);
+    }
+  }, [isSheetOpen, viewDate]);
+
   const currentIdx = allDates.length > 0 ? allDates.indexOf(viewDate) : -1;
 
   // 보여줄 날짜: 가장 최근이 오른쪽 (목업 데이터 사용! allDiaries 대신 mockDiaries만 바꾼 것!)
-  const slots =
-    allDates.length > 0
-      ? [
-          currentIdx > 0
-            ? mockDiaries.find((d) => d.date === allDates[currentIdx - 1]) ||
-              null
-            : null,
-          mockDiaries.find((d) => d.date === viewDate) || null,
-          currentIdx < allDates.length - 1
-            ? mockDiaries.find((d) => d.date === allDates[currentIdx + 1]) ||
-              null
-            : null,
-        ]
-      : [null, null, null];
-
+  const prevKey = allDates[currentIdx - 1];
+  const nextKey = allDates[currentIdx + 1];
+  const slots: (DiaryData | null)[] = [
+    prevKey ? diaryMap[prevKey] ?? null : null,
+    diaryMap[viewDate] ?? null,
+    nextKey ? diaryMap[nextKey] ?? null : null,
+  ];
   console.log("slots 계산:", {
     allDatesLength: allDates.length,
     currentIdx,
@@ -87,9 +92,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     loadMockData();
   }, []);
 
-  // 현재 일기 데이터 (목업 데이터 사용)
-  const currentDiary =
-    mockDiaries.find((d) => d.date === viewDate) || mockDiaries[0];
+  const currentDiary = diaryMap[viewDate] ?? mockDiaries[0];
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -111,10 +114,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   }, [isSheetOpen]);
 
   const handleChange = (newDate: string) => {
-    const newIndex = allDates.indexOf(newDate);
-    if (newIndex !== -1) {
-      setCurrentIndex(newIndex);
-    }
+    setTempDate(newDate);
   };
 
   const touchStartX = useRef<number | null>(null);
@@ -222,7 +222,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
           <DateSelector
             viewType="polaroid"
             items={allDates.map((d) => ({ date: d }))}
-            initialDate={viewDate}
+            initialDate={tempDate}
             onChange={handleChange}
             userCharacter={character!}
           />
@@ -231,7 +231,11 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
           <ButtonBar
             location="modal"
             label="확인"
-            onClick={() => setIsSheetOpen(false)}
+            onClick={() => {
+              const newIdx = allDates.indexOf(tempDate);
+              if (newIdx !== -1) setCurrentIndex(newIdx);
+              setIsSheetOpen(false);
+            }}
             size="primary"
             disabled={false}
           />

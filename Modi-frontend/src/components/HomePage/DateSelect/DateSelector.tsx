@@ -41,6 +41,15 @@ const DateSelector: React.FC<Props> = ({
     viewType === "polaroid" ? initialDate.slice(8, 10) : ""
   );
 
+  useEffect(() => {
+    const parts = initialDate.split("-");
+    setYear(parts[0]);
+    setMonth(parts[1] ?? month);
+    if (viewType === "polaroid" && parts[2]) {
+      setDay(parts[2]);
+    }
+  }, [initialDate, viewType]);
+
   // 옵션 계산
   const years = useMemo(
     () => Array.from(new Set(items.map((d) => d.date.slice(0, 4)))).sort(),
@@ -89,6 +98,13 @@ const DateSelector: React.FC<Props> = ({
     }
     return g;
   }, [years, months, days, viewType]);
+
+  const handleChange = (name: string, displayVal: string) => {
+    const raw = displayVal.replace(/\D/g, "");
+    if (name === "year") setYear(raw);
+    if (name === "month") setMonth(raw.padStart(2, "0"));
+    if (name === "day") setDay(raw.padStart(2, "0"));
+  };
 
   useEffect(() => {
     const date =
