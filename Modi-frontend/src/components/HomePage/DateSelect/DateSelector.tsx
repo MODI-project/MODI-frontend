@@ -87,25 +87,6 @@ const DateSelector: React.FC<Props> = ({
     }
   }, [days, viewType]);
 
-  const displayOptionGroups = useMemo(() => {
-    const g: Record<string, string[]> = {
-      year: years.map((y) => `${y}년`),
-      month: months.map((m) => `${Number(m)}월`),
-    };
-    if (viewType === "polaroid") {
-      // ★ paddedDays 제거, 순수 days 만 넘겨줌
-      g.day = days.map((d) => `${Number(d)}일`);
-    }
-    return g;
-  }, [years, months, days, viewType]);
-
-  const handleChange = (name: string, displayVal: string) => {
-    const raw = displayVal.replace(/\D/g, "");
-    if (name === "year") setYear(raw);
-    if (name === "month") setMonth(raw.padStart(2, "0"));
-    if (name === "day") setDay(raw.padStart(2, "0"));
-  };
-
   useEffect(() => {
     const date =
       viewType === "polaroid" ? `${year}-${month}-${day}` : `${year}-${month}`;
