@@ -1,14 +1,52 @@
 import axios from "axios";
-import type {
-  MapMarkerResponse,
-  ViewportParams,
-  ErrorResponse,
-} from "../../types/map-marker";
+import type { MapMarkerResponse, ViewportParams } from "../../types/map-marker";
 
-const API_BASE_URL = "https://modidiary.store/api";
+// 환경변수에서 API URL 가져오기 (개발환경에서는 localhost 사용)
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
-const accessToken =
-  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMyIsImlhdCI6MTc1NDMwNzc3NCwiZXhwIjoxNzU0MzExMzc0fQ.MfjtQsxMU4sEPOwiMoNVAl-3nTQioJFZHoPydt1HEx0";
+// 개발환경에서는 하드코딩된 토큰 사용하지 않음
+const accessToken = import.meta.env.VITE_ACCESS_TOKEN || "";
+
+// 개발환경에서 사용할 mock 데이터
+const mockMapMarkers: MapMarkerResponse[] = [
+  {
+    id: 1,
+    datetime: "2024-01-15T10:30:00",
+    emotion: "happy",
+    location: {
+      id: 1,
+      address: "서울특별시 강남구 테헤란로 123",
+      latitude: 37.5407923,
+      longitude: 127.0710699,
+    },
+    thumbnailUrl: "https://example.com/thumbnail1.jpg",
+  },
+  {
+    id: 2,
+    datetime: "2024-01-15T14:20:00",
+    emotion: "sad",
+    location: {
+      id: 2,
+      address: "서울특별시 강남구 역삼동 456",
+      latitude: 37.5507923,
+      longitude: 127.0810699,
+    },
+    thumbnailUrl: "https://example.com/thumbnail2.jpg",
+  },
+  {
+    id: 3,
+    datetime: "2024-01-15T18:45:00",
+    emotion: "excited",
+    location: {
+      id: 3,
+      address: "서울특별시 강남구 삼성동 789",
+      latitude: 37.5307923,
+      longitude: 127.0610699,
+    },
+    thumbnailUrl: "https://example.com/thumbnail3.jpg",
+  },
+];
 
 export const loadMapMarkers = async (
   viewport: ViewportParams
@@ -17,15 +55,22 @@ export const loadMapMarkers = async (
   console.log("API URL:", `${API_BASE_URL}/diaries/nearby`);
   console.log("Viewport 파라미터:", viewport);
 
-  // 개발 환경에서 테스트용 기본 viewport
-  const testViewport = {
-    swLat: 37.123,
-    swLng: 127.123,
-    neLat: 37.456,
-    neLng: 127.456,
-  };
+  // 개발환경에서는 mock 데이터 사용
+  const isDevelopment = import.meta.env.DEV;
+  if (isDevelopment) {
+    console.log("🔄 개발환경 - Mock 데이터 사용");
+    console.log("Mock 마커 데이터:", mockMapMarkers);
+
+    // 실제 API 호출 대신 mock 데이터 반환
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(mockMapMarkers);
+      }, 500); // 0.5초 지연으로 실제 API 호출 시뮬레이션
+    });
+  }
 
   try {
+    console.log("🌐 프로덕션 환경 - 실제 API 호출");
     console.log("HttpOnly 쿠키 방식으로 인증 진행");
     console.log("현재 모든 쿠키:", document.cookie);
     console.log("쿠키 존재 여부:", document.cookie ? "있음" : "없음");
@@ -39,9 +84,9 @@ export const loadMapMarkers = async (
       },
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       },
-      //   withCredentials: true, // HttpOnly 쿠키 자동 전송
+      withCredentials: true, // HttpOnly 쿠키 자동 전송
       timeout: 10000, // 10초 타임아웃
     });
 
@@ -59,9 +104,7 @@ export const loadMapMarkers = async (
 
       // 400 에러 처리 (Invalid viewport parameters)
       if (error.response.status === 400) {
-        const errorData: ErrorResponse = error.response.data;
-        console.error("Viewport 파라미터 오류:", errorData.message);
-        throw new Error(`Viewport 파라미터 오류: ${errorData.message}`);
+        console.error("Viewport 파라미터 오류");
       }
     } else if (error.request) {
       console.error("요청은 보냈지만 응답 없음:", error.request);

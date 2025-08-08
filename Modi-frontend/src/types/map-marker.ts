@@ -19,9 +19,3 @@ export interface ViewportParams {
   neLat: number; // northeast latitude (북동쪽 위도)
   neLng: number; // northeast longitude (북동쪽 경도)
 }
-
-// 에러 응답 인터페이스
-export interface ErrorResponse {
-  message: string;
-  status: number;
-}
