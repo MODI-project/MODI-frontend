@@ -5,7 +5,7 @@ import DateSelector, {
   DiaryItem,
 } from "../../components/HomePage/DateSelect/DateSelector";
 import ButtonBar from "../../components/common/button/ButtonBar/PrimaryButton";
-import BottomSheet from "../../components/common/BottomSheet";
+import DatePickerBottomSheet from "../../components/common/DatePickerBottomSheet";
 import PolaroidFrame from "../../components/HomePage/Diary/Polaroid/PolaroidFrame";
 import EmotionCharacter from "../../components/HomePage/Diary/Polaroid/EmotionCharacter";
 import EmotionTagList from "../../components/HomePage/Diary/Polaroid/EmotionTagList";
@@ -27,45 +27,51 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const hasOpened = useRef(false);
   const { character } = useCharacter();
 
-  const allDates = useMemo(
-    // () => allDiaries.map((d) => d.date).sort((a, b) => a.localeCompare(b)),
-    // []
-    () => {
-      const dates = mockDiaries
-        .map((d) => d.date)
-        .sort((a, b) => a.localeCompare(b));
-      console.log("allDates 계산:", dates);
-      return dates;
-    },
-    [mockDiaries]
+  const allDates = useMemo(() => {
+    return mockDiaries
+      .map((d) => {
+        const [y, m, dd] = d.date.split("-");
+        return `${y}-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+      })
+      .sort((a, b) => a.localeCompare(b));
+  }, [mockDiaries]);
+
+  const dateItems = useMemo(
+    () => allDates.map((d) => ({ date: d })),
+    [allDates]
   );
+
+  const diaryMap = useMemo(() => {
+    return mockDiaries.reduce<Record<string, DiaryData>>((acc, d) => {
+      const [y, m, dd] = d.date.split("-");
+      const key = `${y}-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+      acc[key] = d;
+      return acc;
+    }, {});
+  }, [mockDiaries]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const viewDate = allDates[currentIndex] || allDates[0] || "";
-  // 현재 인덱스 (안전하게 처리)
+  const [tempDate, setTempDate] = useState<string>(viewDate);
+
+  const prevOpen = useRef(false);
+  useEffect(() => {
+    if (isSheetOpen && !prevOpen.current) {
+      setTempDate(viewDate);
+    }
+    prevOpen.current = isSheetOpen;
+  }, [isSheetOpen, viewDate]);
+
   const currentIdx = allDates.length > 0 ? allDates.indexOf(viewDate) : -1;
 
   // 보여줄 날짜: 가장 최근이 오른쪽 (목업 데이터 사용! allDiaries 대신 mockDiaries만 바꾼 것!)
-  const slots =
-    allDates.length > 0
-      ? [
-          currentIdx > 0
-            ? mockDiaries.find((d) => d.date === allDates[currentIdx - 1]) ||
-              null
-            : null,
-          mockDiaries.find((d) => d.date === viewDate) || null,
-          currentIdx < allDates.length - 1
-            ? mockDiaries.find((d) => d.date === allDates[currentIdx + 1]) ||
-              null
-            : null,
-        ]
-      : [null, null, null];
-
-  console.log("slots 계산:", {
-    allDatesLength: allDates.length,
-    currentIdx,
-    viewDate,
-    slots: slots.map((slot) => (slot ? slot.summary : null)),
-  });
+  const prevKey = allDates[currentIdx - 1];
+  const nextKey = allDates[currentIdx + 1];
+  const slots: (DiaryData | null)[] = [
+    prevKey ? diaryMap[prevKey] ?? null : null,
+    diaryMap[viewDate] ?? null,
+    nextKey ? diaryMap[nextKey] ?? null : null,
+  ];
 
   // 목업 데이터 로드
   useEffect(() => {
@@ -87,9 +93,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     loadMockData();
   }, []);
 
-  // 현재 일기 데이터 (목업 데이터 사용)
-  const currentDiary =
-    mockDiaries.find((d) => d.date === viewDate) || mockDiaries[0];
+  const currentDiary = diaryMap[viewDate] ?? mockDiaries[0];
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -103,18 +107,9 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     }
   };
 
-  // 모달 열릴 때마다 초기화
-  useEffect(() => {
-    if (isSheetOpen) {
-      hasOpened.current = false;
-    }
-  }, [isSheetOpen]);
-
   const handleChange = (newDate: string) => {
-    const newIndex = allDates.indexOf(newDate);
-    if (newIndex !== -1) {
-      setCurrentIndex(newIndex);
-    }
+    console.log("[Parent] onChange from DateSelector:", newDate);
+    setTempDate(newDate);
   };
 
   const touchStartX = useRef<number | null>(null);
@@ -123,10 +118,14 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.changedTouches[0].clientX;
   };
-
   const handleTouchEnd = (e: React.TouchEvent) => {
     touchEndX.current = e.changedTouches[0].clientX;
-    handleSwipeGesture();
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const distance = touchStartX.current - touchEndX.current;
+    if (distance > 50) handleNext();
+    else if (distance < -50) handlePrev();
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   const handleSwipeGesture = () => {
@@ -178,8 +177,14 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       <div className={pageStyles.content}>
         <div
           className={pageStyles.carousel}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+          onTouchStart={(e) => {
+            if (isSheetOpen) return;
+            handleTouchStart(e);
+          }}
+          onTouchEnd={(e) => {
+            if (isSheetOpen) return;
+            handleTouchEnd(e);
+          }}
         >
           <div
             className={pageStyles.carouselInner}
@@ -211,7 +216,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       </div>
 
       {/* 날짜 선택 모달 */}
-      <BottomSheet
+      <DatePickerBottomSheet
         isOpen={isSheetOpen}
         onClose={() => setIsSheetOpen(false)}
         minimizeOnDrag={false} // 드래그 시 최소화 기능 원하면 true
@@ -221,7 +226,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
 
           <DateSelector
             viewType="polaroid"
-            items={allDates.map((d) => ({ date: d }))}
+            items={dateItems}
             initialDate={viewDate}
             onChange={handleChange}
             userCharacter={character!}
@@ -231,12 +236,18 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
           <ButtonBar
             location="modal"
             label="확인"
-            onClick={() => setIsSheetOpen(false)}
+            onClick={() => {
+              console.log("[Parent] confirm click", { tempDate });
+              const newIdx = allDates.indexOf(tempDate);
+              console.log("[Parent] resolve index", { newIdx });
+              if (newIdx !== -1) setCurrentIndex(newIdx);
+              setIsSheetOpen(false);
+            }}
             size="primary"
             disabled={false}
           />
         </div>
-      </BottomSheet>
+      </DatePickerBottomSheet>
     </div>
   );
 }

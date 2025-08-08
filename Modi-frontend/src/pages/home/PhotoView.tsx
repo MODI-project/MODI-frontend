@@ -6,15 +6,14 @@ import DateSelector, {
   DiaryItem,
 } from "../../components/HomePage/DateSelect/DateSelector";
 import ButtonBar from "../../components/common/button/ButtonBar/PrimaryButton";
-import Modal from "../../components/common/Modal";
 import EmotionTab, {
   Emotion,
 } from "../../components/HomePage/EmotionTab/EmotionTab";
 import PhotoDiary from "../../components/HomePage/Diary/Photo/PhotoDiary";
 import { useCharacter } from "../../contexts/CharacterContext";
-import { allDiaries, Diary } from "../../data/diaries";
+import { mockDiaries, DiaryData } from "../../apis/diaryInfo";
 import Search from "../../components/HomePage/Diary/Photo/Search";
-import BottomSheet from "../../components/common/BottomSheet";
+import DatePickerBottomSheet from "../../components/common/DatePickerBottomSheet";
 
 interface PhotoViewProps {
   onSwitchView: () => void;
@@ -28,7 +27,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
 
   const availableMonths = useMemo(() => {
     return Array.from(
-      new Set(allDiaries.map((d) => d.date.slice(0, 7)))
+      new Set(mockDiaries.map((d) => d.date.slice(0, 7)))
     ).sort();
   }, []);
   const dateItems = availableMonths.map((d) => ({ date: d }));
@@ -44,15 +43,13 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
   });
 
   const monthDiaries = useMemo(
-    () => allDiaries.filter((d) => d.date.startsWith(viewDate)),
+    () => mockDiaries.filter((d) => d.date.startsWith(viewDate)),
     [viewDate]
   );
 
-  const emotionList: Emotion[] = Array.from(
+  const emotionList = Array.from(
     new Set(monthDiaries.map((d) => d.emotion))
-  );
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  ) as Emotion[];
 
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
 
@@ -73,20 +70,25 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
     ? monthDiaries.filter((d) => d.emotion === selectedEmotion)
     : monthDiaries;
 
+  const [tempDate, setTempDate] = useState(viewDate);
+
+  const handleConfirm = () => {
+    setViewDate(tempDate);
+    setIsSheetOpen(false);
+  };
+
   useEffect(() => {
     if (isSheetOpen) {
-      hasOpened.current = false;
+      setTempDate(viewDate);
     }
-  }, [isSheetOpen]);
+  }, [isSheetOpen, viewDate]);
 
-  const handleChange = (newDate: string) => {
-    setViewDate(newDate);
-
-    if (hasOpened.current) {
-      setIsSheetOpen(false); // 두 번째 이후부터 닫힘
-    } else {
-      hasOpened.current = true; // 첫 호출은 무시
-    }
+  const handleDiaryClick = (diary: DiaryData) => {
+    navigate(`/recorddetail/`, {
+      state: {
+        diaryData: diary,
+      },
+    });
   };
 
   return (
@@ -120,6 +122,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
                 date={d.date}
                 emotion={d.emotion}
                 clicked={false}
+                onClick={() => handleDiaryClick(d)}
               />
             ))}
           </div>
@@ -130,10 +133,10 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
         )}
 
         {/* 날짜 선택 모달 */}
-        <BottomSheet
+        <DatePickerBottomSheet
           isOpen={isSheetOpen}
           onClose={() => setIsSheetOpen(false)}
-          minimizeOnDrag={true}
+          minimizeOnDrag={false}
         >
           <div className={pageStyles.modalInner}>
             <h3 className={pageStyles.modalTitle}>다른 날짜 일기 보기</h3>
@@ -141,11 +144,8 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
             <DateSelector
               viewType="photo"
               items={dateItems}
-              initialDate={viewDate}
-              onChange={(newDate) => {
-                setViewDate(newDate);
-                setIsModalOpen(false);
-              }}
+              initialDate={tempDate}
+              onChange={(d) => setTempDate(d)}
               userCharacter={character!}
             />
           </div>
@@ -153,12 +153,12 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
             <ButtonBar
               location="modal"
               label="확인"
-              onClick={() => setIsSheetOpen(false)}
+              onClick={handleConfirm}
               size="primary"
               disabled={false}
             />
           </div>
-        </BottomSheet>
+        </DatePickerBottomSheet>
       </div>
     </div>
   );

@@ -13,7 +13,13 @@ const dummyKeywords = [
   "서울",
 ];
 
-const FrequentKeywords = ({ Bigmargin }: { Bigmargin: boolean }) => {
+const FrequentKeywords = ({
+  Bigmargin,
+  onKeywordClick,
+}: {
+  Bigmargin: boolean;
+  onKeywordClick?: (keyword: string) => void;
+}) => {
   return (
     <div className={styles.wrapper}>
       <p
@@ -25,7 +31,11 @@ const FrequentKeywords = ({ Bigmargin }: { Bigmargin: boolean }) => {
       </p>
       <div className={styles.keyword_container}>
         {dummyKeywords.map((keyword, index) => (
-          <span key={index} className={styles.keyword_chip}>
+          <span
+            key={index}
+            className={styles.keyword_chip}
+            onClick={() => onKeywordClick?.(keyword)}
+          >
             {keyword}
           </span>
         ))}

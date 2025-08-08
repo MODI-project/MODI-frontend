@@ -6,21 +6,28 @@ import TabBar from "../../components/MyPage/TabBar";
 import Footer from "../../components/common/Footer";
 import FavoriteView from "./FavoriteView";
 import StatsView from "./StatsView";
-import { allDiaries, Diary } from "../../data/diaries";
 import { useNavigate } from "react-router-dom";
+import apiClient from "../../apis/apiClient";
 
 const TAB_LABELS = ["즐겨찾기", "월간 일기"] as const;
 type TabLabel = (typeof TAB_LABELS)[number];
 
 const MyPage = () => {
   const [selectedTab, setSelectedTab] = useState<TabLabel>("즐겨찾기");
-  const [nickname, setNickname] = useState<string>("user123@email.com");
+  const [nickname, setNickname] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const navigate = useNavigate();
+
   useEffect(() => {
-    const savedNickname = localStorage.getItem("nickname");
-    if (savedNickname) {
-      setNickname(savedNickname);
-    }
+    apiClient
+      .get("/users/me")
+      .then((res) => {
+        setNickname(res.data.nickname);
+        setEmail(res.data.email);
+      })
+      .catch((err) => {
+        console.error("유저 정보 불러오기 실패:", err);
+      });
   }, []);
 
   return (
@@ -39,7 +46,7 @@ const MyPage = () => {
         />
         <div className={style.fixedHeader}>
           <div className={style.content}>
-            <ProfileCard nickname={nickname} email="user123@email.com" />
+            <ProfileCard nickname={nickname} email={email} />
           </div>
           <div className={style.tab_bar}>
             <TabBar selected={selectedTab} onSelect={setSelectedTab} />

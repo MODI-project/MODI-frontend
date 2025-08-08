@@ -2,17 +2,17 @@ import styles from "./MapPage.module.css";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { mockDiaries } from "../../apis/diaryInfo";
 import { DiaryData } from "../../apis/diaryInfo";
-import MapMarker from "../../components/map/MapMarker";
+import MapMarker from "../../components/map/MapMarking/MapMarker";
 import { loadKakaoMapAPI } from "../../utils/kakaoMapLoader";
-import KakaoMap from "../../components/map/KakaoMap";
-import MapSearchBar from "../../components/map/MapSearchBar";
+import KakaoMap from "../../components/map/LoadMap/KakaoMap";
+import MapSearchBar from "../../components/map/SearchPlace/MapSearchBar";
 import Footer from "../../components/common/Footer";
 import { useCharacter } from "../../contexts/CharacterContext";
 
 interface Diary {
   id: number;
-  lat: number;
-  lng: number;
+  lat?: number;
+  lng?: number;
   emotion: string;
   postCount: number;
 }
@@ -60,10 +60,10 @@ const MapPage = () => {
     loadMap();
   }, []);
   useEffect(() => {
-    const mapped: Diary[] = mockDiaries.map((d: DiaryData) => ({
+    const mapped: Diary[] = mockDiaries.map((d) => ({
       id: d.id,
-      lat: d.latitude as number,
-      lng: d.longitude as number,
+      lat: d.latitude, // number 인 것이 보장됨
+      lng: d.longitude,
       emotion: d.emotion,
       postCount: 1,
     }));
@@ -175,9 +175,9 @@ const MapPage = () => {
                   />
                 </div>
                 {/* 마커 렌더링 */}
-                {diaries.map((d) => (
+                {diaries.map((d, idx) => (
                   <MapMarker
-                    key={d.id}
+                    key={`${d.id}-${idx}`}
                     map={mapInstance}
                     diary={d}
                     character={character!}

@@ -40,15 +40,16 @@
 .modalInner {
   display: flex;
   width: auto;
-  max-width: 400px;
-  height: 373px;
   flex-direction: column;
   align-items: flex-start;
-  gap: 32px;
+  gap: 0px;
   padding: 16px;
   padding-top: 32px;
   padding-bottom: 100px;
   margin: 0 auto;
+
+  height: auto; /* 고정 높이 없애기 */
+  max-height: calc(100vh - 1000px); /* 핸들바 + footer 높이를 뺀 값 */
 }
 
 .modalTitle {

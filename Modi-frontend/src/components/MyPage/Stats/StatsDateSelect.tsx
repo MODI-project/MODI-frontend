@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import styles from "./StatsDateSelect.module.css";
-import BottomSheet from "../../common/BottomSheet";
+import DatePickerBottomSheet from "../../common/DatePickerBottomSheet";
 import downArrowIcon from "../../../assets/arrow_icons/down_arrow.svg";
 import DateSelector, {
   DiaryItem,
@@ -86,8 +86,7 @@ export default function StatsDateSelect({
         </div>
       </div>
       <div className={styles.wrapper}>
-        {" "}
-        <BottomSheet
+        <DatePickerBottomSheet
           isOpen={open}
           onClose={() => setOpen(false)}
           minimizeOnDrag={false}
@@ -117,7 +116,7 @@ export default function StatsDateSelect({
               disabled={false}
             />
           </div>
-        </BottomSheet>
+        </DatePickerBottomSheet>
       </div>
     </>
   );

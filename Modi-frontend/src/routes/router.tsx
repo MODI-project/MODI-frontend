@@ -12,9 +12,9 @@ import DiaryKeywordPage from "../pages/diary/DiaryKeywordPage";
 import DiaryStylePage from "../pages/diary/DiaryStylePage";
 import NotificationPage from "../pages/notification/NotificationPage";
 import Setting from "../pages/setting/Setting";
-import MapMarker from "../components/map/MapMarker";
+import MapMarker from "../components/map/MapMarking/MapMarker";
 import Popup from "../components/common/Popup";
-import MapSearchBar from "../components/map/MapSearchBar";
+import MapSearchBar from "../components/map/SearchPlace/MapSearchBar";
 import NotiPopUp from "../components/notification/NotiPopUp";
 import OAuthCallback from "../pages/login/OAuthCallback";
 
@@ -73,12 +73,8 @@ const Router = () => {
       element: <Setting />,
     },
     {
-      path: "/map-marker",
-      element: <MapMarker />,
-    },
-    {
       path: "/popup",
-      element: <NotiPopUp />,
+      element: <NotiPopUp isVisible={true} onClose={() => {}} />,
     },
     {
       path: "/map-search-bar",

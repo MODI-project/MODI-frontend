@@ -1,18 +1,24 @@
 .map_page_wrapper {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: 100vw;
   height: 100vh;
-  max-width: 400px;
-  max-height: auto;
-  background-color: #f5f5f5;
+  overflow: hidden;
 }
 
 .map_page_container {
-  flex: 1;
   display: flex;
-  flex-direction: column;
   position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 400px;
+  flex-direction: column;
+  flex: 1;
+  background-image: url("/images/background/normal-bg.svg");
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
 }
 
 .map_container {
@@ -31,9 +37,11 @@
 .search_bar_container {
   position: absolute;
   top: 39px;
-  left: 16px;
+  left: 35.5px;
+  width: 100vw;
+  max-width: 329px;
+  height: 41px;
   z-index: 1000;
-  width: 100%;
 }
 
 /* 로딩 상태 스타일 */

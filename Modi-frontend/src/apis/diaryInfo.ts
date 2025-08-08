@@ -131,7 +131,7 @@ export const deleteDiary = async (id: string): Promise<void> => {
 // Mock 데이터 (개발용) - 새로운 명세서에 맞게 수정
 export const mockDiaries: DiaryData[] = [
   {
-    id: 8,
+    id: 1,
     date: "2025-07-26",
     photoUrl:
       "https://cdn.pixabay.com/photo/2019/09/09/05/14/seoul-4462638_1280.jpg",
@@ -148,7 +148,7 @@ export const mockDiaries: DiaryData[] = [
     frame: "11",
   },
   {
-    id: 14,
+    id: 2,
     date: "2025-07-29",
     photoUrl:
       "https://cdn.pixabay.com/photo/2018/10/06/11/22/coffee-3727673_1280.jpg",
@@ -165,7 +165,7 @@ export const mockDiaries: DiaryData[] = [
     frame: "2",
   },
   {
-    id: 15,
+    id: 3,
     date: "2025-08-01",
     photoUrl:
       "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
@@ -182,7 +182,7 @@ export const mockDiaries: DiaryData[] = [
     frame: "12",
   },
   {
-    id: 17,
+    id: 4,
     date: "2025-08-02",
     photoUrl:
       "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
@@ -199,7 +199,7 @@ export const mockDiaries: DiaryData[] = [
     frame: "12",
   },
   {
-    id: 17,
+    id: 5,
     date: "2025-08-03",
     photoUrl:
       "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
@@ -216,7 +216,7 @@ export const mockDiaries: DiaryData[] = [
     frame: "12",
   },
   {
-    id: 17,
+    id: 6,
     date: "2025-07-30",
     photoUrl:
       "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
@@ -233,7 +233,7 @@ export const mockDiaries: DiaryData[] = [
     frame: "12",
   },
   {
-    id: 17,
+    id: 7,
     date: "2025-06-30",
     photoUrl:
       "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
@@ -250,7 +250,7 @@ export const mockDiaries: DiaryData[] = [
     frame: "12",
   },
   {
-    id: 17,
+    id: 8,
     date: "2024-07-30",
     photoUrl:
       "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
