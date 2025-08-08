@@ -164,7 +164,7 @@ const RecordDetailPage = () => {
         >
           <Header
             left="/icons/arrow_left.svg"
-            middle="일기 상세보기"
+            middle="기록 상세보기"
             right="/icons/home.svg"
             LeftClick={() => {
               navigate(-1);
