@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "https://modidiary.store/api",
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },

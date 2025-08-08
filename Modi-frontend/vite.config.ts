@@ -19,13 +19,6 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
     },
-<<<<<<< HEAD
-    https: {
-      key: fs.readFileSync("./ssl/key.pem"),
-      cert: fs.readFileSync("./ssl/cert.pem"),
-    },
-=======
->>>>>>> origin/main
   },
   define: {
     global: "globalThis",
