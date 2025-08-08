@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import WheelPicker from "react-wheelpicker";
 import styles from "./DateSelector.module.css";
 import { CharacterType } from "../../../contexts/CharacterContext";
@@ -41,7 +41,12 @@ const DateSelector: React.FC<Props> = ({
     viewType === "polaroid" ? initialDate.slice(8, 10) : ""
   );
 
+  console.log("[DS] render", { initialDate, year, month, day });
+
+  const prevYMRef = useRef({ year, month });
+
   useEffect(() => {
+    console.log("[DS] initialDate effect", { initialDate, viewType });
     const parts = initialDate.split("-");
     setYear(parts[0]);
     setMonth(parts[1] ?? month);
@@ -81,15 +86,25 @@ const DateSelector: React.FC<Props> = ({
   );
 
   useEffect(() => {
-    // days 초기화
-    if (viewType === "polaroid" && days.length > 0) {
-      setDay(days[0]);
+    console.log("[DS] days recalculated", { year, month, days });
+    if (viewType !== "polaroid") return;
+    if (days.length === 0) return;
+    const changedYM =
+      prevYMRef.current.year !== year || prevYMRef.current.month !== month;
+    if (changedYM) {
+      // 기존 day가 새 days에 없으면 첫째 날로 보정
+      setDay((prev) => (prev && days.includes(prev) ? prev : days[0]));
+      prevYMRef.current = { year, month };
     }
-  }, [days, viewType]);
+  }, [days, year, month, viewType]);
 
   useEffect(() => {
+    if (viewType === "polaroid") {
+      if (!day || day.length !== 2) return;
+    }
     const date =
       viewType === "polaroid" ? `${year}-${month}-${day}` : `${year}-${month}`;
+    console.log("[DS] emit onChange", date);
     onChange(date);
   }, [year, month, day, viewType, onChange]);
 
@@ -105,11 +120,19 @@ const DateSelector: React.FC<Props> = ({
   return (
     <div
       className={styles.picker}
-      style={{ "--picker-highlight": highlight } as any}
+      style={
+        {
+          "--picker-highlight": highlight,
+          "--ds-item-h": `${ITEM_HEIGHT}px`, // 40px
+          "--ds-visible": VISIBLE, // 3 (polaroid) or 2 (photo)
+          "--ds-picker-h": `${PICKER_HEIGHT}px`,
+        } as React.CSSProperties
+      }
     >
       <div className={styles.selectionOverlay} />
       <div className={styles.columnWrapper}>
         <WheelPicker
+          key="year"
           scrollerId="year-picker"
           data={yearOpts}
           animation="wheel"
@@ -117,11 +140,18 @@ const DateSelector: React.FC<Props> = ({
           parentHeight={PICKER_HEIGHT}
           fontSize={14}
           defaultSelection={years.indexOf(year)}
-          updateSelection={(idx: number) => setYear(years[idx])}
+          updateSelection={(idx: number) => {
+            console.log("[DS] year updateSelection", {
+              idx,
+              value: years[idx],
+            });
+            setYear(years[idx]);
+          }}
         />
 
         {/* Month Picker */}
         <WheelPicker
+          key={`month-${year}`}
           scrollerId="month-picker"
           data={monthOpts}
           animation="wheel"
@@ -129,14 +159,19 @@ const DateSelector: React.FC<Props> = ({
           parentHeight={PICKER_HEIGHT}
           fontSize={14}
           defaultSelection={months.indexOf(month)}
-          updateSelection={(idx: number) =>
-            setMonth(months[idx].padStart(2, "0"))
-          }
+          updateSelection={(idx: number) => {
+            console.log("[DS] month updateSelection", {
+              idx,
+              value: months[idx],
+            });
+            setMonth(months[idx].padStart(2, "0"));
+          }}
         />
 
         {/* Day Picker (폴라로이드 모드) */}
         {viewType === "polaroid" && (
           <WheelPicker
+            key={`day-${year}-${month}`}
             scrollerId="day-picker"
             data={dayOpts}
             animation="wheel"
@@ -144,9 +179,13 @@ const DateSelector: React.FC<Props> = ({
             parentHeight={PICKER_HEIGHT}
             fontSize={14}
             defaultSelection={days.indexOf(day)}
-            updateSelection={(idx: number) =>
-              setDay(days[idx].padStart(2, "0"))
-            }
+            updateSelection={(idx: number) => {
+              console.log("[DS] day updateSelection", {
+                idx,
+                value: days[idx],
+              });
+              setDay(days[idx].padStart(2, "0"));
+            }}
           />
         )}
       </div>

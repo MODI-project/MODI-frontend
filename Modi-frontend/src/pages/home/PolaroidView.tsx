@@ -36,6 +36,11 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       .sort((a, b) => a.localeCompare(b));
   }, [mockDiaries]);
 
+  const dateItems = useMemo(
+    () => allDates.map((d) => ({ date: d })),
+    [allDates]
+  );
+
   const diaryMap = useMemo(() => {
     return mockDiaries.reduce<Record<string, DiaryData>>((acc, d) => {
       const [y, m, dd] = d.date.split("-");
@@ -49,10 +54,12 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const viewDate = allDates[currentIndex] || allDates[0] || "";
   const [tempDate, setTempDate] = useState<string>(viewDate);
 
+  const prevOpen = useRef(false);
   useEffect(() => {
-    if (isSheetOpen) {
+    if (isSheetOpen && !prevOpen.current) {
       setTempDate(viewDate);
     }
+    prevOpen.current = isSheetOpen;
   }, [isSheetOpen, viewDate]);
 
   const currentIdx = allDates.length > 0 ? allDates.indexOf(viewDate) : -1;
@@ -65,12 +72,6 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     diaryMap[viewDate] ?? null,
     nextKey ? diaryMap[nextKey] ?? null : null,
   ];
-  console.log("slots 계산:", {
-    allDatesLength: allDates.length,
-    currentIdx,
-    viewDate,
-    slots: slots.map((slot) => (slot ? slot.summary : null)),
-  });
 
   // 목업 데이터 로드
   useEffect(() => {
@@ -106,14 +107,8 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     }
   };
 
-  // 모달 열릴 때마다 초기화
-  useEffect(() => {
-    if (isSheetOpen) {
-      hasOpened.current = false;
-    }
-  }, [isSheetOpen]);
-
   const handleChange = (newDate: string) => {
+    console.log("[Parent] onChange from DateSelector:", newDate);
     setTempDate(newDate);
   };
 
@@ -123,10 +118,14 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.changedTouches[0].clientX;
   };
-
   const handleTouchEnd = (e: React.TouchEvent) => {
     touchEndX.current = e.changedTouches[0].clientX;
-    handleSwipeGesture();
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const distance = touchStartX.current - touchEndX.current;
+    if (distance > 50) handleNext();
+    else if (distance < -50) handlePrev();
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   const handleSwipeGesture = () => {
@@ -178,8 +177,14 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       <div className={pageStyles.content}>
         <div
           className={pageStyles.carousel}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+          onTouchStart={(e) => {
+            if (isSheetOpen) return;
+            handleTouchStart(e);
+          }}
+          onTouchEnd={(e) => {
+            if (isSheetOpen) return;
+            handleTouchEnd(e);
+          }}
         >
           <div
             className={pageStyles.carouselInner}
@@ -221,8 +226,8 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
 
           <DateSelector
             viewType="polaroid"
-            items={allDates.map((d) => ({ date: d }))}
-            initialDate={tempDate}
+            items={dateItems}
+            initialDate={viewDate}
             onChange={handleChange}
             userCharacter={character!}
           />
@@ -232,7 +237,9 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
             location="modal"
             label="확인"
             onClick={() => {
+              console.log("[Parent] confirm click", { tempDate });
               const newIdx = allDates.indexOf(tempDate);
+              console.log("[Parent] resolve index", { newIdx });
               if (newIdx !== -1) setCurrentIndex(newIdx);
               setIsSheetOpen(false);
             }}

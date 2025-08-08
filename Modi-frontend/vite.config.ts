@@ -13,9 +13,10 @@ export default defineConfig({
     },
     proxy: {
       "/api": {
-        target: "https://modidiary.store/",
+        target: "https://modidiary.store",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
     },
   },

@@ -6,7 +6,6 @@ import TabBar from "../../components/MyPage/TabBar";
 import Footer from "../../components/common/Footer";
 import FavoriteView from "./FavoriteView";
 import StatsView from "./StatsView";
-import { allDiaries, Diary } from "../../data/diaries";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../apis/apiClient";
 
@@ -20,18 +19,15 @@ const MyPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await apiClient.get("/users/me");
-        const { nickname, email } = response.data;
-        setNickname(nickname);
-        setEmail(email);
-      } catch (error) {
-        console.error("유저 정보 불러오기 실패:", error);
-      }
-    };
-
-    fetchUserInfo();
+    apiClient
+      .get("/users/me")
+      .then((res) => {
+        setNickname(res.data.nickname);
+        setEmail(res.data.email);
+      })
+      .catch((err) => {
+        console.error("유저 정보 불러오기 실패:", err);
+      });
   }, []);
 
   return (

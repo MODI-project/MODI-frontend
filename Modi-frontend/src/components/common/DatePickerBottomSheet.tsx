@@ -157,11 +157,27 @@ const BottomSheet = ({
         <div
           className={styles.handle}
           onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onTouchStart={(e) => {
+            e.stopPropagation(); // 드래그 이벤트가 내부 컴포넌트로 전달되지 않게
+            handleTouchStart(e);
+          }}
+          onTouchMove={(e) => {
+            e.stopPropagation();
+            handleTouchMove(e);
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation();
+            handleTouchEnd();
+          }}
         />
-        <div className={styles.content}>{children}</div>
+        <div
+          className={styles.content}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
