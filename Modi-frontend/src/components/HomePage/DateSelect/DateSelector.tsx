@@ -120,7 +120,14 @@ const DateSelector: React.FC<Props> = ({
   return (
     <div
       className={styles.picker}
-      style={{ "--picker-highlight": highlight } as any}
+      style={
+        {
+          "--picker-highlight": highlight,
+          "--ds-item-h": `${ITEM_HEIGHT}px`, // 40px
+          "--ds-visible": VISIBLE, // 3 (polaroid) or 2 (photo)
+          "--ds-picker-h": `${PICKER_HEIGHT}px`,
+        } as React.CSSProperties
+      }
     >
       <div className={styles.selectionOverlay} />
       <div className={styles.columnWrapper}>
