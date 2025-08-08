@@ -70,34 +70,18 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
     ? monthDiaries.filter((d) => d.emotion === selectedEmotion)
     : monthDiaries;
 
-  useEffect(() => {
-    if (isSheetOpen) {
-      hasOpened.current = false;
-    }
-  }, [isSheetOpen]);
-
   const [tempDate, setTempDate] = useState(viewDate);
-
-  useEffect(() => {
-    if (isSheetOpen) {
-      setTempDate(viewDate);
-    }
-  }, [isSheetOpen, viewDate]);
 
   const handleConfirm = () => {
     setViewDate(tempDate);
     setIsSheetOpen(false);
   };
 
-  const handleChange = (newDate: string) => {
-    setViewDate(newDate);
-
-    if (hasOpened.current) {
-      setIsSheetOpen(false); // 두 번째 이후부터 닫힘
-    } else {
-      hasOpened.current = true; // 첫 호출은 무시
+  useEffect(() => {
+    if (isSheetOpen) {
+      setTempDate(viewDate);
     }
-  };
+  }, [isSheetOpen, viewDate]);
 
   const handleDiaryClick = (diary: DiaryData) => {
     navigate(`/recorddetail/`, {
@@ -161,15 +145,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
               viewType="photo"
               items={dateItems}
               initialDate={tempDate}
-              onChange={(d) => {
-                setTempDate(d);
-                if (hasOpened.current) {
-                  // 두 번째부터는 선택 즉시 닫기
-                  setIsSheetOpen(false);
-                } else {
-                  hasOpened.current = true;
-                }
-              }}
+              onChange={(d) => setTempDate(d)}
               userCharacter={character!}
             />
           </div>
