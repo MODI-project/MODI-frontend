@@ -22,7 +22,7 @@ const SearchPage = () => {
   return (
     <div className={styles.SearchPage_wrapper}>
       <div className={styles.SearchPage_container}>
-        <Header middle="일기 검색하기" />
+        <Header middle="기록 검색하기" />
         <div className={styles.main_container}>
           <div className={styles.search_container}>
             <input
