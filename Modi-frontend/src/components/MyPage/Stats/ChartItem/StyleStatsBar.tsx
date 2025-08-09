@@ -16,6 +16,7 @@ interface Props {
   maxColor?: string;
   maxBorderColor?: string;
   character: string;
+  multilineAfterSi?: boolean;
 }
 
 export default function StyleBar({
@@ -26,11 +27,17 @@ export default function StyleBar({
   isMax,
   maxColor,
   character,
+  multilineAfterSi = false,
 }: Props) {
   const hasValue = typeof value === "number";
   const isZuni = character === "zuni";
   const clampedH = Math.max(0, Math.min(height, ZUNI_MAX_HEIGHT));
   const offset = ZUNI_MAX_HEIGHT - height;
+
+  const displayLabel = (label ?? "").replace(
+    multilineAfterSi ? /시\s+/ : /$^/, // 조건일 때만 매칭
+    "시\n"
+  );
   return (
     <div className={style.barItem}>
       <div className={style.iconAndBar}>
@@ -83,11 +90,12 @@ export default function StyleBar({
         className={style.label}
         style={{
           visibility: hasValue && label ? "visible" : "hidden",
-          height: 18,
+          whiteSpace: "pre-line",
+          height: multilineAfterSi ? 36 : 18,
           lineHeight: "18px",
         }}
       >
-        {label} {hasValue ? value : ""}
+        {displayLabel} {hasValue ? value : ""}
       </div>
     </div>
   );

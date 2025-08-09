@@ -113,6 +113,7 @@ export default function VisitStatsBarList({
           isMax={item.isMax}
           maxColor={maxBarColorMap[character]}
           character={character}
+          multilineAfterSi
         />
       ))}
     </div>
