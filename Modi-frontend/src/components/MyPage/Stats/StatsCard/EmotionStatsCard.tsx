@@ -54,19 +54,26 @@ export default function EmotionStatsCard({
 
   if (!character) return null;
 
-  const enrichedData = data.map((item) => {
-    const iconPath = getEmotionIconPath(
-      character,
-      item.label,
-      item.value === maxValue
-    );
-    console.log("[디버깅] 감정:", item.label, "| 아이콘 경로:", iconPath);
-    return {
-      ...item,
-      icon: iconPath,
-    };
-  });
-  const sortedData = [...enrichedData].sort((a, b) => b.value - a.value);
+  const enrichedData = data.map((item) => ({
+    label: item.label,
+    value: item.value,
+    icon: getEmotionIconPath(character, item.label, item.value === maxValue),
+  }));
+
+  const MAX_ITEMS = 4;
+
+  const topReal = [...enrichedData]
+    .sort((a, b) => b.value - a.value)
+    .slice(0, MAX_ITEMS);
+
+  const fillerIcon = `/emotion_tag/${character}/${character}-normal.svg`;
+  while (topReal.length < MAX_ITEMS) {
+    topReal.push({ icon: fillerIcon, label: "", value: undefined as any });
+  }
+
+  const sortedData = [...enrichedData].sort(
+    (a, b) => (b.value ?? -1) - (a.value ?? -1)
+  );
   const monthNumber = parseInt(month.split("-")[1], 10);
   const isEnglishLabel = maxEmotion && emotionTextMap[maxEmotion] !== undefined;
   const maxEmotionText = isEnglishLabel
@@ -78,7 +85,7 @@ export default function EmotionStatsCard({
       <h3 className={styles.title}>
         {monthNumber}월은 {maxEmotionText}을 가장 많이 느꼈어요
       </h3>
-      <EmotionCircleList data={sortedData} />
+      <EmotionCircleList data={topReal} />
     </div>
   );
 }

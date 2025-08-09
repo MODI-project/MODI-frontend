@@ -1,11 +1,12 @@
 interface Props {
-  label: string;
+  label?: string;
   size: number;
-  value: number;
+  value?: number;
   icon: string; // SVG 경로
 }
 
 export default function EmotionCircle({ label, size, value, icon }: Props) {
+  const hasText = label && typeof value === "number";
   return (
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
@@ -30,9 +31,12 @@ export default function EmotionCircle({ label, size, value, icon }: Props) {
           fontSize: "12px",
           textAlign: "center",
           fontFamily: "NanumSquareRound",
+          height: 18, // 고정 높이
+          lineHeight: "18px",
+          visibility: hasText ? "visible" : "hidden", // 보이지만 않게
         }}
       >
-        {label} {value}
+        {hasText ? `${label} ${value}` : ""}
       </div>
     </div>
   );

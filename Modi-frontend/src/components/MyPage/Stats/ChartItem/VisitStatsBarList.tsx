@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import StyleBar from "./StyleStatsBar";
 import style from "./StyleStatsBar.module.css";
 import { useCharacter } from "../../../../contexts/CharacterContext";
-import { getVisitStatsByMonth } from "../../../../utils/getVisitStatsByMonth";
 
 const MAX_BAR_HEIGHT = 70;
 
