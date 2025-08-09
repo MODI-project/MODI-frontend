@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styles from "./ProfileCard.module.css";
 import EditButton from "../../../components/common/button/ButtonIcon/EditButton";
-import profileImg from "../../../../public/icons/profile_img.svg";
 import { useCharacter } from "../../../contexts/CharacterContext";
 
 export interface ProfileCardProps {
