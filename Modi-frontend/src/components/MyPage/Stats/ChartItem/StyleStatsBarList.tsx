@@ -4,6 +4,7 @@ import style from "./StyleStatsBar.module.css";
 import { useCharacter } from "../../../../contexts/CharacterContext";
 
 const MAX_BAR_HEIGHT = 70;
+const MAX_ITEMS = 4;
 
 interface StyleDataItem {
   label: string;
@@ -52,16 +53,64 @@ export default function StyleBarList({
       icon: iconPath,
     }));
 
+  if (data.length === 0) {
+    // 전부 placeholder (아이콘만)
+    return (
+      <div className={style.barList}>
+        {Array.from({ length: MAX_ITEMS }).map((_, i) => (
+          <StyleBar
+            key={`placeholder-${i}`}
+            label=""
+            value={undefined}
+            height={0}
+            icon={iconPath}
+            isMax={false}
+            character={character}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  // 실제 데이터 정렬 → 상한 N개로 자르기
+  const realTop = [...data]
+    .sort((a, b) => b.value - a.value)
+    .slice(0, MAX_ITEMS)
+    .map((d) => ({
+      ...d,
+      height: (d.value / (max || 1)) * MAX_BAR_HEIGHT,
+      isMax: d.value === max,
+      icon: d.value === max ? coloredIcon : iconPath,
+    }));
+
+  // 부모에 최대 라벨 전달(실제 데이터가 있을 때만)
+  useEffect(() => {
+    if (onMaxLabelChange && realTop.length > 0) {
+      onMaxLabelChange(realTop[0].label);
+    }
+  }, [onMaxLabelChange, realTop]);
+
+  // 부족하면 placeholder로 채우기(아이콘만)
+  while (realTop.length < MAX_ITEMS) {
+    realTop.push({
+      label: "",
+      value: undefined as any,
+      height: 0,
+      isMax: false,
+      icon: iconPath,
+    });
+  }
+
   return (
     <div className={style.barList}>
-      {normalized.map(({ label, value, height, icon, isMax }) => (
+      {realTop.map((item, idx) => (
         <StyleBar
-          key={label}
-          label={label}
-          value={value}
-          height={height}
-          icon={isMax ? coloredIcon : icon}
-          isMax={isMax}
+          key={item.label || `placeholder-${idx}`}
+          label={item.label}
+          value={item.value}
+          height={item.height}
+          icon={item.icon}
+          isMax={item.isMax}
           maxColor={maxBarColorMap[character]}
           character={character}
         />
