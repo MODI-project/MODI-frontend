@@ -1,4 +1,5 @@
 import { mockDiaries } from "../apis/diaryInfo";
+import { extractSiDong } from "./address";
 
 export function getVisitStatsByMonth(ym: string) {
   const filtered = mockDiaries.filter((d) => d.date.startsWith(ym));
@@ -6,13 +7,12 @@ export function getVisitStatsByMonth(ym: string) {
 
   filtered.forEach((d) => {
     if (!d.address) return;
-    counter[d.address] = (counter[d.address] || 0) + 1;
+    const label = extractSiDong(d.address);
+    if (!label) return;
+    counter[label] = (counter[label] || 0) + 1;
   });
 
-  const result = Object.entries(counter).map(([label, value]) => ({
-    label,
-    value,
-  }));
-
-  return result.sort((a, b) => b.value - a.value);
+  return Object.entries(counter)
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value);
 }
