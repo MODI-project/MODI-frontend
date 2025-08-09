@@ -183,7 +183,7 @@ export const mockDiaries: DiaryData[] = [
   },
   {
     id: 4,
-    date: "2025-08-02",
+    date: "2025-08-09",
     photoUrl:
       "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
     summary: "한여름에는 즐거운 물놀이!",

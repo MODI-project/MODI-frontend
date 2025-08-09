@@ -6,7 +6,7 @@ import PolaroidView from "./PolaroidView";
 import PhotoView from "./PhotoView";
 
 import Header from "../../components/common/Header";
-import { allDiaries } from "../../data/diaries"; // 또는 상태 관리 데이터
+import { mockDiaries } from "../../apis/diaryInfo"; // 또는 상태 관리 데이터
 import EmptyDiaryView from "./EmptyDiaryView";
 import { useNavigate } from "react-router-dom";
 
@@ -25,7 +25,7 @@ export default function HomePage() {
         />
 
         <main className={style.mainContent}>
-          {allDiaries.length === 0 ? (
+          {mockDiaries.length === 0 ? (
             <EmptyDiaryView />
           ) : viewType === "photo" ? (
             <PhotoView onSwitchView={() => setViewType("polaroid")} />
@@ -33,7 +33,7 @@ export default function HomePage() {
             <PolaroidView onSwitchView={() => setViewType("photo")} />
           )}
         </main>
-        <Footer showBalloon={allDiaries.length === 0} />
+        <Footer showBalloon={mockDiaries.length === 0} />
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ const MyPage = () => {
 
   useEffect(() => {
     apiClient
-      .get("/users/me")
+      .get("/members/me")
       .then((res) => {
         setNickname(res.data.nickname);
         setEmail(res.data.email);
