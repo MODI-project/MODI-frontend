@@ -4,7 +4,8 @@ import type { SignUpRequest, SignUpResponse } from "../../types/UserInfo";
 const API_BASE_URL = "https://modidiary.store/api";
 
 export const signUp = async (
-  userInfo: SignUpRequest
+  userInfo: SignUpRequest,
+  code?: string | null
 ): Promise<SignUpResponse> => {
   console.log("=== signUp API 호출 시작 ===");
   console.log("API URL:", `${API_BASE_URL}/users`);
@@ -15,7 +16,12 @@ export const signUp = async (
     console.log("HttpOnly 쿠키 방식으로 인증 진행");
     console.log("현재 모든 쿠키:", document.cookie);
 
-    const response = await axios.post(`${API_BASE_URL}/users`, userInfo, {
+    // code가 있으면 request body에 포함
+    const requestBody = code ? { ...userInfo, code } : userInfo;
+
+    console.log("최종 request body:", requestBody);
+
+    const response = await axios.post(`${API_BASE_URL}/members`, requestBody, {
       headers: {
         "Content-Type": "application/json",
         // HttpOnly 쿠키는 자동으로 전송되므로 Authorization 헤더 불필요
@@ -44,7 +50,11 @@ export const signUp = async (
   }
 };
 
-export const handleUserSignUp = async (nickname: string, character: string) => {
+export const handleUserSignUp = async (
+  nickname: string,
+  character: string,
+  code?: string | null
+) => {
   try {
     console.log("=== handleUserSignUp 시작 ===");
 
@@ -53,7 +63,7 @@ export const handleUserSignUp = async (nickname: string, character: string) => {
       character,
     };
 
-    const response = await signUp(userInfo);
+    const response = await signUp(userInfo, code);
     localStorage.setItem("userInfo", JSON.stringify(response));
     console.log("✅ 회원가입 완료 - localStorage에 사용자 정보 저장");
 
