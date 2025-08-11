@@ -37,7 +37,7 @@ const DiaryEmotionTag = () => {
         <Header
           left="/icons/back.svg"
           LeftClick={() => setIsPopupOpen(true)} // ✅ 팝업 열기
-          middle="일기 기록하기"
+          middle="기록 작성하기"
           right="/icons/X.svg"
           RightClick={() => setIsPopupOpen(true)} // ✅ 팝업 열기
         />

@@ -141,8 +141,8 @@ export const mockDiaries: DiaryData[] = [
     // 추가 필드들 (기본값)
     content: "오늘은 날씨가 좋아서 여자친구랑 산책을 했다. 기분이 정말 좋았다!",
     address: "서울특별시 용산구 한강로동",
-    latitude: 37.111111,
-    longitude: 127.111111,
+    latitude: 37.5407923,
+    longitude: 127.0710699,
     tone: "행복",
     font: "NanumSquareNeo",
     frame: "11",
@@ -158,8 +158,8 @@ export const mockDiaries: DiaryData[] = [
     // 추가 필드들 (기본값)
     content: "새로운 카페를 발견했다. 분위기가 정말 좋고 커피도 맛있었다.",
     address: "서울특별시 강남구 역삼동",
-    latitude: 37.222222,
-    longitude: 127.222222,
+    latitude: 37.5507923,
+    longitude: 127.0810699,
     tone: "즐거움",
     font: "NanumSquareNeo",
     frame: "2",
@@ -175,15 +175,15 @@ export const mockDiaries: DiaryData[] = [
     // 추가 필드들 (기본값)
     content: "한여름에는 즐거운 물놀이!",
     address: "인천광역시 중구 을왕동",
-    latitude: 37.44637098924813,
-    longitude: 126.37234085890937,
+    latitude: 37.5307923,
+    longitude: 127.0610699,
     tone: "즐거움",
     font: "NanumSquareNeo",
     frame: "12",
   },
   {
     id: 4,
-    date: "2025-08-02",
+    date: "2025-08-09",
     photoUrl:
       "https://media.istockphoto.com/id/1337257093/ko/%EC%82%AC%EC%A7%84/%ED%96%89%EB%B3%B5%ED%95%9C-%EC%A0%8A%EC%9D%80-%EB%B6%80%EB%B6%80-%EC%99%80-%ED%92%8D%EC%84%A0-%EB%8F%84%EB%84%9B-%EC%97%90-%EB%B0%94%EB%8B%A4-%ED%95%B4%EB%B3%80.jpg?s=2048x2048&w=is&k=20&c=GBQgx_dDUIbwZ2FWBWsM3fmykEp6CmxLFyGWDHrYLvo=",
     summary: "한여름에는 즐거운 물놀이!",
@@ -226,8 +226,8 @@ export const mockDiaries: DiaryData[] = [
     // 추가 필드들 (기본값)
     content: "한여름에는 즐거운 물놀이!",
     address: "인천광역시 중구 을왕동",
-    latitude: 37.44637098924813,
-    longitude: 126.37234085890937,
+    latitude: 37.446,
+    longitude: 126.5,
     tone: "즐거움",
     font: "NanumSquareNeo",
     frame: "12",
@@ -243,8 +243,8 @@ export const mockDiaries: DiaryData[] = [
     // 추가 필드들 (기본값)
     content: "한여름에는 즐거운 물놀이!",
     address: "인천광역시 중구 을왕동",
-    latitude: 37.44637098924813,
-    longitude: 126.37234085890937,
+    latitude: 37.426,
+    longitude: 126.45,
     tone: "즐거움",
     font: "NanumSquareNeo",
     frame: "12",

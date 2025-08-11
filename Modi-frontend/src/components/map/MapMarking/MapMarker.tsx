@@ -18,15 +18,36 @@ interface MapMarkerProps {
 
 const MapMarker: React.FC<MapMarkerProps> = ({ map, diary, character }) => {
   useEffect(() => {
-    if (!map) return;
+    console.log("MapMarker useEffect 실행:", {
+      map: !!map,
+      diary,
+      character,
+    });
+
+    if (!map) {
+      console.warn("지도 객체가 없습니다.");
+      return;
+    }
+
+    if (!diary.lat || !diary.lng) {
+      console.warn("마커 좌표가 없습니다:", { lat: diary.lat, lng: diary.lng });
+      return;
+    }
+
     const kakao = (window as any).kakao;
 
     // 1) 위치 객체
     const position = new kakao.maps.LatLng(diary.lat, diary.lng);
+    console.log("마커 위치 생성:", {
+      lat: diary.lat,
+      lng: diary.lng,
+      position: position,
+    });
 
     // 2) Marker용 DOM 컨테이너 생성
     const container = document.createElement("div");
     container.className = styles.mapMarker_container;
+    console.log("마커 컨테이너 생성:", container);
 
     // 3) 캐릭터 이미지
     const charImg = document.createElement("img");
@@ -60,7 +81,9 @@ const MapMarker: React.FC<MapMarkerProps> = ({ map, diary, character }) => {
       content: container,
       yAnchor: 1, // marker 하단 기준으로 위치 맞추기
     });
+    console.log("CustomOverlay 생성:", overlay);
     overlay.setMap(map);
+    console.log("마커를 지도에 추가 완료");
 
     return () => {
       overlay.setMap(null);

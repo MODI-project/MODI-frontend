@@ -60,6 +60,18 @@ const MapPage = () => {
     loadMap();
   }, []);
   useEffect(() => {
+    console.log("=== mockDiaries 원본 데이터 ===");
+    console.log("mockDiaries 개수:", mockDiaries.length);
+    mockDiaries.forEach((diary, index) => {
+      console.log(`원본 데이터 ${index + 1}:`, {
+        id: diary.id,
+        latitude: diary.latitude,
+        longitude: diary.longitude,
+        emotion: diary.emotion,
+        address: diary.address,
+      });
+    });
+
     const mapped: Diary[] = mockDiaries.map((d) => ({
       id: d.id,
       lat: d.latitude, // number 인 것이 보장됨
@@ -67,7 +79,48 @@ const MapPage = () => {
       emotion: d.emotion,
       postCount: 1,
     }));
-    setDiaries(mapped);
+
+    console.log("=== 변환된 마커 데이터 ===");
+    console.log("마커 데이터 설정:", mapped);
+    console.log("마커 개수:", mapped.length);
+    mapped.forEach((diary, index) => {
+      console.log(`마커 ${index + 1}:`, {
+        id: diary.id,
+        lat: diary.lat,
+        lng: diary.lng,
+        emotion: diary.emotion,
+        postCount: diary.postCount,
+      });
+    });
+
+    // 좌표 유효성 검사
+    const validMarkers = mapped.filter((diary) => {
+      const isValid =
+        diary.lat &&
+        diary.lng &&
+        !isNaN(diary.lat) &&
+        !isNaN(diary.lng) &&
+        diary.lat !== 0 &&
+        diary.lng !== 0;
+
+      if (!isValid) {
+        console.warn(`유효하지 않은 마커 좌표:`, diary);
+      }
+      return isValid;
+    });
+
+    console.log("=== 유효한 마커 데이터 ===");
+    console.log("유효한 마커 개수:", validMarkers.length);
+    validMarkers.forEach((diary, index) => {
+      console.log(`유효한 마커 ${index + 1}:`, {
+        id: diary.id,
+        lat: diary.lat,
+        lng: diary.lng,
+        emotion: diary.emotion,
+      });
+    });
+
+    setDiaries(validMarkers);
   }, []);
 
   const handlePlaceSelect = useCallback(
@@ -111,6 +164,17 @@ const MapPage = () => {
   const handleMapReady = useCallback((map: any) => {
     console.log("지도 인스턴스 생성 완료:", map);
     setMapInstance(map);
+
+    // 지도 이벤트 리스너 추가 (선택사항)
+    const kakao = (window as any).kakao;
+    if (kakao && kakao.maps) {
+      // 지도 이동/줌 이벤트 리스너 (현재는 비활성화)
+      // kakao.maps.event.addListener(map, "bounds_changed", async () => {
+      //   console.log("지도 영역 변경됨 - 마커 업데이트");
+      // });
+    }
+
+    console.log("mockDiaries 데이터를 사용하여 마커 표시");
   }, []);
 
   if (loading) {

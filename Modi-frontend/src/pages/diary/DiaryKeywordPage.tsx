@@ -24,7 +24,7 @@ const DiaryKeywordPage = () => {
         <Header
           left="/icons/back.svg"
           LeftClick={() => navigate(-1)}
-          middle="일기 기록하기"
+          middle="기록 작성하기"
           right="/icons/X.svg"
           RightClick={() => setIsPopupOpen(true)}
         />

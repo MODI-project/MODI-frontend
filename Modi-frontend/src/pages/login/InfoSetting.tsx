@@ -6,6 +6,13 @@ import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButto
 import { useCharacter } from "../../contexts/CharacterContext";
 import { handleUserSignUp } from "../../apis/UserAPIS/signUp";
 import { handleEditUserInfo } from "../../apis/UserAPIS/editUserInfo";
+import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
+
+// URL에서 code 파라미터 추출 함수
+const getCodeFromURL = (): string | null => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get("code");
+};
 
 interface LocationState {
   from?: string;
@@ -18,24 +25,7 @@ const InitialSetting = () => {
   const location = useLocation();
   const from = (location.state as LocationState)?.from;
 
-  // isNew 값 확인: URL state > 로컬 스토리지 > 기본값 순서로 확인
-  const getIsNew = (): boolean => {
-    const stateIsNew = (location.state as LocationState)?.isNew;
-    if (stateIsNew !== undefined) {
-      return stateIsNew;
-    }
-
-    // 2. 로컬 스토리지에서 확인
-    const localStorageIsNew = localStorage.getItem("isNew");
-    if (localStorageIsNew) {
-      return localStorageIsNew === "true";
-    }
-
-    // 3. 기본값 (기존 사용자)
-    return false;
-  };
-
-  const isNew = getIsNew();
+  // 백엔드에서 신규/기존 여부를 분기하므로 프론트에서는 별도 분기 없이 처리
   const [selectedCharacter, setSelectedCharacter] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
   const [showPreview, setShowPreview] = useState<boolean>(false);
@@ -50,6 +40,27 @@ const InitialSetting = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nicknameError, setNicknameError] = useState<string>("");
   const completeBtnRef = useRef<HTMLButtonElement>(null);
+
+  // 페이지 로드 시 code 파라미터 확인 및 토큰 요청 (기존 회원인 경우)
+  useEffect(() => {
+    const code = getCodeFromURL();
+    if (code) {
+      console.log("=== 회원가입 페이지에서 code 파라미터 감지 ===");
+      console.log("code:", code);
+
+      // 기존 회원이 회원가입 페이지에 온 경우 토큰 요청
+      handleTokenRequest(code)
+        .then(() => {
+          console.log("✅ 기존 회원 토큰 요청 완료");
+          // 토큰이 있으면 홈으로 리다이렉트
+          navigate("/home");
+        })
+        .catch((error) => {
+          console.error("❌ 토큰 요청 실패:", error);
+          // 실패해도 회원가입 페이지에서 계속 진행 가능
+        });
+    }
+  }, [navigate]);
 
   // 닉네임 입력 규칙 검증
   const validateNickname = (value: string): boolean => {
@@ -108,9 +119,10 @@ const InitialSetting = () => {
       return;
     }
 
-    // isNew에 따라 다른 API 호출
+    // URL에서 code 파라미터 추출
+    const code = getCodeFromURL();
     console.log("=== 사용자 정보 처리 시작 ===");
-    console.log("isNew:", isNew);
+    console.log("URL code 파라미터:", code);
     console.log("HttpOnly 쿠키를 통해 백엔드에서 토큰 요청");
 
     setIsLoading(true);
@@ -121,6 +133,7 @@ const InitialSetting = () => {
       const payload = {
         nickname: finalNickname,
         character: selectedCharacter,
+        code: code, // code 파라미터 추가
       };
 
       let userInfo;
@@ -128,7 +141,7 @@ const InitialSetting = () => {
       console.log("회원가입 시작:", {
         nickname: finalNickname,
         character: selectedCharacter,
-        isNew,
+        code: code,
       });
 
       // API 호출하여 회원가입
@@ -143,8 +156,19 @@ const InitialSetting = () => {
       } else {
         // ✅ 최초 회원가입인 경우
         console.log("회원가입 시작:", payload);
-        userInfo = await handleUserSignUp(finalNickname, selectedCharacter);
+        userInfo = await handleUserSignUp(
+          finalNickname,
+          selectedCharacter,
+          code
+        );
         console.log("회원가입 완료:", userInfo);
+
+        // 회원가입 후 토큰 요청 (code가 있는 경우)
+        if (code) {
+          console.log("회원가입 후 토큰 요청 시작");
+          await handleTokenRequest(code);
+          console.log("회원가입 후 토큰 요청 완료");
+        }
       }
 
       // 닉네임을 localStorage에 저장 (기존 코드와의 호환성을 위해)
@@ -158,9 +182,10 @@ const InitialSetting = () => {
       }
     } catch (error) {
       console.error("사용자 정보 처리 실패:", error);
-      const errorMessage = isNew
-        ? "회원가입에 실패했습니다. 다시 시도해주세요."
-        : "회원 정보 수정에 실패했습니다. 다시 시도해주세요.";
+      const isEditing = from === "/mypage";
+      const errorMessage = isEditing
+        ? "회원 정보 수정에 실패했습니다. 다시 시도해주세요."
+        : "회원가입에 실패했습니다. 다시 시도해주세요.";
       alert(errorMessage);
     } finally {
       setIsLoading(false);

@@ -18,7 +18,8 @@ function getParticle(
   particleWithoutConsonant: string
 ): string {
   if (!word) return "";
-  const lastChar = word[word.length - 1];
+  const trimmed = word.trim();
+  const lastChar = trimmed[trimmed.length - 1];
   return hasFinalConsonant(lastChar)
     ? particleWithConsonant
     : particleWithoutConsonant;
