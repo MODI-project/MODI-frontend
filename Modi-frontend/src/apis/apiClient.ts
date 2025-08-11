@@ -1,9 +1,8 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "/api",
-  // ❌ 전역 Content-Type 제거!
-  // headers: { "Content-Type": "application/json" },
+  baseURL: "https://modidiary.store/api",
+  withCredentials: true,
 });
 
 // 토큰 + FormData 헤더 처리

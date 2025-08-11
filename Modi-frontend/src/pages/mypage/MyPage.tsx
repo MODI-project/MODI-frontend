@@ -7,7 +7,7 @@ import Footer from "../../components/common/Footer";
 import FavoriteView from "./FavoriteView";
 import StatsView from "./StatsView";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../../apis/apiClient";
+import { loadUserInfo } from "../../apis/UserAPIS/loadUserInfo";
 
 const TAB_LABELS = ["즐겨찾기", "월간 일기"] as const;
 type TabLabel = (typeof TAB_LABELS)[number];
@@ -16,19 +16,28 @@ const MyPage = () => {
   const [selectedTab, setSelectedTab] = useState<TabLabel>("즐겨찾기");
   const [nickname, setNickname] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    apiClient
-      .get("/members/me")
-      .then((res) => {
-        setNickname(res.data.nickname);
-        setEmail(res.data.email);
-      })
-      .catch((err) => {
+    (async () => {
+      try {
+        const me = await loadUserInfo();
+        setNickname(me.nickname);
+        setEmail(me.email);
+      } catch (err: any) {
         console.error("유저 정보 불러오기 실패:", err);
-      });
-  }, []);
+        if (err?.response?.status === 401) {
+          // 쿠키 만료/미로그인
+          navigate("/login", { replace: true });
+        }
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [navigate]);
+
+  if (loading) return <div className={style.skeleton}>로딩중...</div>;
 
   return (
     <div className={style.mypage_wrapper}>
