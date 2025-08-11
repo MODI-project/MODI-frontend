@@ -11,6 +11,8 @@ export interface DiaryDraft {
   templateId: number | null;
   font: string;
   noEmotionSummary: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface DiaryDraftContextType {
@@ -32,4 +34,6 @@ export const defaultDraft: DiaryDraft = {
   templateId: null,
   font: "",
   noEmotionSummary: "",
+  latitude: undefined,
+  longitude: undefined,
 };

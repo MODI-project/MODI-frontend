@@ -12,12 +12,14 @@ import { DiaryDraftContext } from "../../contexts/DiaryDraftContext";
 import { useNavigate } from "react-router-dom";
 import Popup from "../../components/common/Popup";
 import Preview from "../../components/DiaryPage/StylePage/Preview";
+import { postDiary } from "../../apis/Diary/postDiary";
 
 const DiaryStylePage = () => {
   const [selectedTab, setSelectedTab] = useState("한줄요약");
   const { draft } = useContext(DiaryDraftContext);
   const navigate = useNavigate();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handlePopupConfirm = () => {
     setIsPopupOpen(false);
@@ -26,7 +28,8 @@ const DiaryStylePage = () => {
 
   // 버튼 활성화 여부 결정
   const isNextEnabled =
-    selectedTab === "한줄요약"
+    !submitting &&
+    (selectedTab === "한줄요약"
       ? !!(draft.font && draft.noEmotionSummary)
       : selectedTab === "언어스타일"
       ? !!(draft.emotion && draft.summary)
@@ -36,16 +39,31 @@ const DiaryStylePage = () => {
           draft.emotion &&
           draft.summary &&
           draft.templateId !== null
-        );
+        ));
 
   // 버튼 클릭 시 동작
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedTab === "한줄요약") {
       setSelectedTab("언어스타일");
-    } else if (selectedTab === "언어스타일") {
+      return;
+    }
+    if (selectedTab === "언어스타일") {
       setSelectedTab("템플릿");
-    } else if (selectedTab === "템플릿") {
-      navigate("/recorddetail");
+      return;
+    }
+    if (selectedTab === "템플릿") {
+      try {
+        setSubmitting(true);
+        const res = await postDiary(draft);
+        console.log(res.message);
+
+        navigate("/recorddetail");
+      } catch (e) {
+        console.error(e);
+        alert("기록 생성에 실패했어요. 잠시 후 다시 시도해주세요.");
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
