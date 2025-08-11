@@ -18,7 +18,6 @@ export const editUserInfo = async (
     const response = await axios.put(`${API_BASE_URL}/members/me`, userInfo, {
       headers: {
         "Content-Type": "application/json",
-        // HttpOnly 쿠키는 자동으로 전송되므로 Authorization 헤더 불필요
       },
       withCredentials: true, // HttpOnly 쿠키 자동 전송
     });
