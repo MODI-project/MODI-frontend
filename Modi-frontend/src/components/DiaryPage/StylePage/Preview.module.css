@@ -6,8 +6,8 @@
 
 .frame_container {
   position: relative;
-  width: 260px;
-  height: 338px;
+  width: 230px;
+  height: 299px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -35,9 +35,9 @@
 
 .preview_text {
   position: absolute;
-  width: 240px;
-  height: 44px;
-  top: 283px;
+  width: 212px;
+  height: 39px;
+  top: 252px;
   padding: 0 14px;
   display: flex;
   margin-bottom: 10px;
@@ -53,8 +53,8 @@
 .image_placeholder {
   position: absolute;
   top: 10px;
-  width: 227px;
-  height: 262px;
+  width: 201px;
+  height: 232px;
   background-color: #bbb;
   border-radius: 6px;
   z-index: 1;
