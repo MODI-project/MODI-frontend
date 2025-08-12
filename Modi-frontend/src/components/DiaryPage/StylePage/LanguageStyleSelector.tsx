@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import style from "./LanguageStyleSelector.module.css";
 
 interface LanguageStyleSelectorProps {
@@ -6,6 +7,8 @@ interface LanguageStyleSelectorProps {
   isPreviewed: boolean;
   isSelected: boolean;
   onPreviewClick: () => void;
+  loading?: boolean;
+  disabled?: boolean;
 }
 
 const LanguageStyleSelector = ({
@@ -14,7 +17,24 @@ const LanguageStyleSelector = ({
   isPreviewed,
   isSelected,
   onPreviewClick,
+  loading = false,
+  disabled = false,
 }: LanguageStyleSelectorProps) => {
+  const isBtnDisabled = loading || disabled;
+
+  const clickLockRef = useRef(false);
+
+  const handlePreview = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (isBtnDisabled || clickLockRef.current) return;
+    clickLockRef.current = true;
+    onPreviewClick();
+  };
+
+  useEffect(() => {
+    if (!loading) clickLockRef.current = false;
+  }, [loading]);
+
   return (
     <div
       className={`${style.LanguageStyleSelector_container} ${
@@ -29,13 +49,13 @@ const LanguageStyleSelector = ({
         <p className={style.emotion}>{emotion}</p>
         {!isPreviewed && (
           <button
+            type="button"
             className={style.previewButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              onPreviewClick();
-            }}
+            onClick={handlePreview}
+            disabled={isBtnDisabled}
+            aria-busy={loading}
           >
-            미리보기
+            {loading ? "불러오는 중" : "미리보기"}
           </button>
         )}
       </div>

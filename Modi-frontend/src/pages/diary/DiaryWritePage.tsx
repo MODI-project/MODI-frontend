@@ -17,6 +17,7 @@ const DiaryWritePage = () => {
   const [showEmptyContentPopup, setShowEmptyContentPopup] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [popupGenerating, setPopupGenerating] = useState(false);
 
   const handlePopupConfirm = () => {
     setIsPopupOpen(false);
@@ -221,12 +222,7 @@ const DiaryWritePage = () => {
           label="다음"
           onClick={async () => {
             if (draft.content.trim() === "") {
-              const content = await autoGenerateContent();
-              if (content && content.trim() !== "") {
-                navigate("/style");
-              } else {
-                setShowEmptyContentPopup(true);
-              }
+              setShowEmptyContentPopup(true);
             } else {
               navigate("/style");
             }
@@ -260,13 +256,24 @@ const DiaryWritePage = () => {
           buttons={[
             {
               label: "아니요",
-              onClick: () => setShowEmptyContentPopup(false),
+              onClick: () => {
+                if (popupGenerating) return; // 진행 중이면 막기
+                setShowEmptyContentPopup(false);
+              },
             },
             {
-              label: "예",
-              onClick: () => {
-                setShowEmptyContentPopup(false);
-                navigate("/style");
+              label: popupGenerating ? "생성 중..." : "예",
+              onClick: async () => {
+                if (popupGenerating) return;
+                setPopupGenerating(true);
+                const content = await autoGenerateContent();
+                if (content && content.trim() !== "") {
+                  setPopupGenerating(false);
+                  setShowEmptyContentPopup(false);
+                  navigate("/style");
+                } else {
+                  setPopupGenerating(false);
+                }
               },
             },
           ]}

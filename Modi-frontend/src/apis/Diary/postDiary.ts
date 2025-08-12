@@ -87,7 +87,6 @@ export async function postDiary(
   draft: DiaryDraft,
   date: Date | string = new Date()
 ): Promise<PostDiaryResponse> {
-  // 감정값을 서버 스펙(한글)로 변환
   const emotionForServer =
     (draft.emotion && EMOTION_EN_TO_KO[draft.emotion]) || draft.emotion || "";
 
@@ -106,7 +105,6 @@ export async function postDiary(
   };
 
   const form = new FormData();
-  // ✅ data 파트를 application/json 으로 명시
   form.append(
     "data",
     new Blob([JSON.stringify(data)], { type: "application/json" })

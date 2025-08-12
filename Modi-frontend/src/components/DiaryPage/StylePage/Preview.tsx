@@ -76,8 +76,15 @@ const Preview = () => {
           </>
         )}
 
-        {/* 회색 이미지 영역 (공통) */}
-        <div className={styles.image_placeholder} />
+        {draft.image ? (
+          <img
+            src={draft.image}
+            alt="일기 사진"
+            className={styles.preview_photo}
+          />
+        ) : (
+          <div className={styles.image_placeholder} />
+        )}
 
         {/* 최상단 캐릭터 프레임 (캐릭터만) */}
         {isCharacterTemplate && (
