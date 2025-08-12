@@ -9,7 +9,7 @@ import { useState } from "react";
 const emotionList = [
   { en: "happy", ko: "기쁨" },
   { en: "surprised", ko: "놀람" },
-  { en: "nervous", ko: "긴장" },
+  { en: "nervous", ko: "떨림" },
   { en: "normal", ko: "보통" },
   { en: "love", ko: "사랑" },
   { en: "excited", ko: "신남" },
@@ -45,7 +45,7 @@ const DiaryEmotionTag = () => {
           <p className={styles.ask}>오늘은 어떤 하루였나요?</p>
           <div className={styles.img_container}>
             {emotionList.map((emotion) => {
-              const isSelected = draft.emotion === emotion.en;
+              const isSelected = draft.emotion === emotion.ko;
               const imageName = isSelected
                 ? `clicked_${characterName}-${emotion.en}.svg`
                 : `${characterName}-${emotion.en}.svg`;
@@ -55,7 +55,7 @@ const DiaryEmotionTag = () => {
                     src={`/emotion_tag/${characterName}/${imageName}`}
                     alt={emotion.ko}
                     className={styles.emotion_image}
-                    onClick={() => setDraft({ emotion: emotion.en })}
+                    onClick={() => setDraft({ emotion: emotion.ko })}
                   />
                   <span className={styles.emotion_label}>{emotion.ko}</span>
                 </div>
