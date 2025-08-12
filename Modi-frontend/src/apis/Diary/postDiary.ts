@@ -94,11 +94,11 @@ export async function postDiary(
   const data = {
     content: String(draft.content ?? ""),
     summary: String(draft.summary ?? ""),
-    date: toLocalDateTimeString(date), // e.g. 2025-07-28T15:30:00
+    date: toLocalDateTimeString(date),
     address: String(draft.address ?? ""),
     latitude: Number(draft.latitude ?? 0),
     longitude: Number(draft.longitude ?? 0),
-    emotion: String(emotionForServer), // ✅ 한글로 전송
+    emotion: String(emotionForServer),
     tone: String(draft.tone ?? ""),
     tags: Array.isArray(draft.keywords) ? draft.keywords.map(String) : [],
     font: String(draft.font ?? ""),
@@ -128,9 +128,7 @@ export async function postDiary(
   }
 
   const res = await apiClient.post<PostDiaryResponse>("/diaries", form, {
-    // @ts-ignore
     maxBodyLength: Infinity,
-    // @ts-ignore
     maxContentLength: Infinity,
   });
   return res.data;
