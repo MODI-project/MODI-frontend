@@ -51,7 +51,7 @@ const Summary = () => {
         className={styles.content}
         value={draft.noEmotionSummary ?? ""}
         onChange={(e) => setDraft({ noEmotionSummary: e.target.value })}
-        placeholder="한 줄 요약이 여기에 표시돼요"
+        placeholder="일기 내용 한 줄 요약"
       />
 
       <div className={styles.autogen_button_wrapper}>

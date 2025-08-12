@@ -13,6 +13,7 @@ export interface DiaryDraft {
   noEmotionSummary: string;
   latitude?: number;
   longitude?: number;
+  style?: string;
 }
 
 export interface DiaryDraftContextType {
@@ -36,4 +37,5 @@ export const defaultDraft: DiaryDraft = {
   noEmotionSummary: "",
   latitude: undefined,
   longitude: undefined,
+  style: "",
 };
