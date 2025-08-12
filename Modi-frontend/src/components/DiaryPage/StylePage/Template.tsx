@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import styles from "./Template.module.css";
 import { DiaryDraftContext } from "../../../contexts/DiaryDraftContext";
-
 const Template = () => {
   const [selectedTab, setSelectedTab] = useState<"basic" | "character">(
     "basic"

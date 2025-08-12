@@ -58,9 +58,11 @@ const DiaryStylePage = () => {
         console.log(res.message);
 
         navigate("/recorddetail");
-      } catch (e) {
-        console.error(e);
-        alert("기록 생성에 실패했어요. 잠시 후 다시 시도해주세요.");
+      } catch (e: any) {
+        console.error("status:", e?.response?.status);
+        console.error("headers:", e?.response?.headers);
+        console.error("data:", e?.response?.data); // ← 여기에 어떤 필드가 문제인지 나옵니다
+        alert(e?.response?.data?.message ?? "등록 실패(400) - 콘솔 확인");
       } finally {
         setSubmitting(false);
       }
