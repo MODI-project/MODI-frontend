@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import Popup from "../../components/common/Popup";
 import Preview from "../../components/DiaryPage/StylePage/Preview";
 import { postDiary } from "../../apis/Diary/postDiary";
+import { DiaryData } from "../../components/common/frame/Frame";
 
 const DiaryStylePage = () => {
   const [selectedTab, setSelectedTab] = useState("한줄요약");
@@ -56,12 +57,11 @@ const DiaryStylePage = () => {
         setSubmitting(true);
         const res = await postDiary(draft);
         console.log(res.message);
-
         navigate("/recorddetail");
       } catch (e: any) {
         console.error("status:", e?.response?.status);
         console.error("headers:", e?.response?.headers);
-        console.error("data:", e?.response?.data); // ← 여기에 어떤 필드가 문제인지 나옵니다
+        console.error("data:", e?.response?.data);
         alert(e?.response?.data?.message ?? "등록 실패(400) - 콘솔 확인");
       } finally {
         setSubmitting(false);
