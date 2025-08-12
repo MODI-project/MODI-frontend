@@ -31,13 +31,17 @@ const FrequentKeywords = ({
       </p>
       <div className={styles.keyword_container}>
         {dummyKeywords.map((keyword, index) => (
-          <span
-            key={index}
+          <button
+            key={`${keyword}-${index}`}
+            type="button"
             className={styles.keyword_chip}
-            onClick={() => onKeywordClick?.(keyword)}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              onKeywordClick?.(keyword);
+            }}
           >
             {keyword}
-          </span>
+          </button>
         ))}
       </div>
     </div>
