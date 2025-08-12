@@ -1,14 +1,14 @@
-import { useMemo, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import styles from "./SearchPage.module.css";
 import Header from "../../components/common/Header";
 import Footer from "../../components/common/Footer";
 import FrequentKeywords from "../../components/common/keyword/FrequentKeywords";
 import { useCharacter } from "../../contexts/CharacterContext";
+import { searchDiaries } from "../../apis/Diary/searchDiary";
 
-// 1) 더미 데이터
 type Diary = {
   id: number;
-  date: string; // "2025-07-29"
+  date: string;
   photoUrl: string | null;
   summary: string;
   emotion: string;
@@ -16,163 +16,50 @@ type Diary = {
   created_at: string;
 };
 
-const DUMMY_DIARIES: Diary[] = [
-  {
-    id: 8,
-    date: "2025-07-26",
-    photoUrl:
-      "https://images.unsplash.com/photo-1520975922296-3f734c3f7f4b?q=80&w=800",
-    summary: "테스트",
-    emotion: "기쁨",
-    tags: ["야호", "토큰"],
-    created_at: "2025-07-26T11:52:45.463216",
-  },
-  {
-    id: 10,
-    date: "2025-07-29",
-    photoUrl:
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800",
-    summary: "생성1",
-    emotion: "사랑",
-    tags: ["야호", "와하"],
-    created_at: "2025-07-29T12:06:29.956077",
-  },
-  {
-    id: 11,
-    date: "2025-07-29",
-    photoUrl:
-      "https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6?q=80&w=800",
-    summary: "생성2",
-    emotion: "사랑",
-    tags: ["메롱", "어쩌고"],
-    created_at: "2025-07-29T12:07:35.138932",
-  },
-  {
-    id: 12,
-    date: "2025-07-29",
-    photoUrl:
-      "https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?q=80&w=800",
-    summary: "생성3",
-    emotion: "기쁨",
-    tags: ["커피", "어쩌고"],
-    created_at: "2025-07-29T12:08:17.780477",
-  },
-  {
-    id: 13,
-    date: "2025-07-29",
-    photoUrl:
-      "https://images.unsplash.com/photo-1514515489015-4c2b27c1d5b9?q=80&w=800",
-    summary: "생성4",
-    emotion: "사랑",
-    tags: ["커피", "어쩌고"],
-    created_at: "2025-07-29T12:08:59.538256",
-  },
-  {
-    id: 14,
-    date: "2025-07-29",
-    photoUrl:
-      "https://images.unsplash.com/photo-1518112166137-85f9979a43aa?q=80&w=800",
-    summary: "생성5",
-    emotion: "슬픔",
-    tags: ["야호", "커피"],
-    created_at: "2025-07-29T12:09:34.244764",
-  },
-  {
-    id: 15,
-    date: "2025-07-29",
-    photoUrl:
-      "https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?q=80&w=800",
-    summary: "생성6",
-    emotion: "신남",
-    tags: ["산책", "커피"],
-    created_at: "2025-07-29T12:11:00.072653",
-  },
-  {
-    id: 16,
-    date: "2025-07-31",
-    photoUrl:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800",
-    summary: "생성",
-    emotion: "지루함",
-    tags: ["메롱", "커피"],
-    created_at: "2025-07-31T18:38:52.640012",
-  },
-  {
-    id: 17,
-    date: "2025-08-31",
-    photoUrl: null, // fallback 이미지로 대체됨
-    summary: "id반환",
-    emotion: "보통",
-    tags: ["메롱", "커피"],
-    created_at: "2025-07-31T18:54:40.510371",
-  },
-];
-
 const fallbackImg =
-  "https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=800"; // 포토URL 없을 때
-
-const formatDateK = (isoDate: string) => {
-  const d = new Date(isoDate + "T00:00:00");
-  const y = d.getFullYear();
-  const m = d.getMonth() + 1;
-  const day = d.getDate();
-  return `${y}. ${m}. ${day}`;
-};
-
-const matchDiary = (diary: Diary, term: string) => {
-  const tokens = term.trim().toLowerCase().split(/\s+/);
-  const hay = [
-    diary.summary,
-    diary.emotion,
-    ...diary.tags,
-    formatDateK(diary.date),
-  ]
-    .join(" ")
-    .toLowerCase();
-  return tokens.every((t) => hay.includes(t));
-};
+  "https://images.unsplash.com/photo-1526045612212-70caf35c14df?q=80&w=800";
 
 const SearchPage = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [searchStarted, setSearchStarted] = useState(false);
   const [query, setQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
-  const { character } = useCharacter();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [isComposing, setIsComposing] = useState(false);
 
-  const doSearch = (term: string) => {
+  const [grouped, setGrouped] = useState<Record<string, Diary[]>>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { character } = useCharacter();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // 검색 실행 (API 호출)
+  const doSearch = async (term: string) => {
     const t = term.trim();
     if (!t) return;
-    setQuery(t);
-    setHasSearched(true);
-    setSearchStarted(true);
-    setIsFocused(false);
+
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await searchDiaries(t);
+      setGrouped(result);
+      setHasSearched(true);
+      setSearchStarted(true);
+      setIsFocused(false);
+    } catch {
+      setError("검색에 실패했어요. 잠시 후 다시 시도해 주세요.");
+      setGrouped({});
+      setHasSearched(false);
+      setSearchStarted(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSearch = () => {
-    doSearch(query);
+  const handleSearch = async () => {
+    await doSearch(query);
     inputRef.current?.blur();
   };
-
-  // 2) 필터 + 3) 날짜별 그룹 (최신 날짜 먼저)
-  const grouped = useMemo(() => {
-    if (!searchStarted || !query.trim()) return {};
-    const filtered = DUMMY_DIARIES.filter((d) => matchDiary(d, query));
-
-    // 최신 created_at 순으로 정렬 (동일 날짜 내 카드 순서 안정화)
-    filtered.sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-
-    // 날짜별 묶기
-    return filtered.reduce<Record<string, Diary[]>>((acc, d) => {
-      const key = formatDateK(d.date);
-      acc[key] = acc[key] ? [...acc[key], d] : [d];
-      return acc;
-    }, {});
-  }, [searchStarted, query]);
 
   const noResult =
     searchStarted &&
@@ -197,6 +84,8 @@ const SearchPage = () => {
                 if (!val.trim()) {
                   setSearchStarted(false);
                   setHasSearched(false);
+                  setGrouped({});
+                  setError(null);
                 }
               }}
               onCompositionStart={() => setIsComposing(true)}
@@ -215,15 +104,17 @@ const SearchPage = () => {
                   if (!val.trim()) {
                     setSearchStarted(false);
                     setHasSearched(false);
+                    setGrouped({});
+                    setError(null);
                   } else if (hasSearched) {
                     setSearchStarted(true);
                   }
                 }, 100);
               }}
-              onKeyDown={(e) => {
+              onKeyDown={async (e) => {
                 if (e.key === "Enter") {
                   if (isComposing || e.nativeEvent?.isComposing) return;
-                  handleSearch();
+                  await handleSearch();
                 }
               }}
             />
@@ -239,48 +130,64 @@ const SearchPage = () => {
           {isFocused && (
             <FrequentKeywords
               Bigmargin={false}
-              onKeywordClick={(keyword) => {
-                doSearch(keyword);
+              onKeywordClick={async (keyword) => {
+                setQuery(keyword);
+                await doSearch(keyword);
                 inputRef.current?.blur();
               }}
             />
           )}
 
-          {/* 결과 리스트 */}
-          {searchStarted && !noResult && (
+          {loading && (
             <div className={styles.result_wrapper}>
-              {Object.entries(grouped).map(([dateLabel, items]) => (
-                <section key={dateLabel} className={styles.section}>
-                  <h3 className={styles.date_heading}>{dateLabel}</h3>
-                  <div className={styles.grid}>
-                    {items.map((d) => (
-                      <button
-                        key={d.id}
-                        className={styles.card}
-                        onClick={() => {
-                          // 상세로 이동 연결되면 여기서 라우팅
-                          // navigate(`/diaries/${d.id}`)
-                        }}
-                      >
-                        <img
-                          src={d.photoUrl || fallbackImg}
-                          alt={d.summary}
-                          className={styles.card_img}
-                          onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src =
-                              fallbackImg;
-                          }}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </section>
-              ))}
+              <div className={styles.loading}>불러오는 중…</div>
+            </div>
+          )}
+          {error && (
+            <div className={styles.result_wrapper}>
+              <div className={styles.error}>{error}</div>
             </div>
           )}
 
-          {/* 결과 없음 이미지 */}
-          {noResult && (
+          {/* 결과 리스트 */}
+          {searchStarted &&
+            query.trim() !== "" &&
+            !loading &&
+            !error &&
+            !noResult && (
+              <div className={styles.result_wrapper}>
+                {Object.entries(grouped).map(([dateLabel, items]) => (
+                  <section key={dateLabel} className={styles.section}>
+                    <h3 className={styles.date_heading}>{dateLabel}</h3>
+                    <div className={styles.grid}>
+                      {items.map((d) => (
+                        <button
+                          key={d.id}
+                          className={styles.card}
+                          onClick={() => {
+                            // TODO: 상세 라우팅
+                            // navigate(`/diaries/${d.id}`)
+                          }}
+                        >
+                          <img
+                            src={d.photoUrl || fallbackImg}
+                            alt={d.summary}
+                            className={styles.card_img}
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src =
+                                fallbackImg;
+                            }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            )}
+
+          {/* 결과 없음 */}
+          {noResult && !loading && !error && (
             <div className={styles.no_result}>
               <img
                 src={`/images/no-search/${character ?? "momo"}.svg`}
