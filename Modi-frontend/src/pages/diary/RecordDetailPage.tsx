@@ -12,11 +12,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { DiaryData } from "../../components/common/frame/Frame";
 import { updateFavorite } from "../../apis/MyPageAPIS/favorites";
 import { overflow } from "html2canvas/dist/types/css/property-descriptors/overflow";
-import { updateFavorite } from "../../apis/favorites";
+import { useCharacter } from "../../contexts/CharacterContext";
 import { getDiaryById } from "../../apis/Diary/searchDiary";
 import { deleteDiary } from "../../apis/Diary/deleteDiary";
 import Popup from "../../components/common/Popup";
-
 
 const pageBackgrounds = {
   frameId: {
