@@ -87,18 +87,17 @@ export async function postDiary(
   draft: DiaryDraft,
   date: Date | string = new Date()
 ): Promise<PostDiaryResponse> {
-  // 감정값을 서버 스펙(한글)로 변환
   const emotionForServer =
     (draft.emotion && EMOTION_EN_TO_KO[draft.emotion]) || draft.emotion || "";
 
   const data = {
     content: String(draft.content ?? ""),
     summary: String(draft.summary ?? ""),
-    date: toLocalDateTimeString(date), // e.g. 2025-07-28T15:30:00
+    date: toLocalDateTimeString(date),
     address: String(draft.address ?? ""),
     latitude: Number(draft.latitude ?? 0),
     longitude: Number(draft.longitude ?? 0),
-    emotion: String(emotionForServer), // ✅ 한글로 전송
+    emotion: String(emotionForServer),
     tone: String(draft.tone ?? ""),
     tags: Array.isArray(draft.keywords) ? draft.keywords.map(String) : [],
     font: String(draft.font ?? ""),
@@ -106,7 +105,6 @@ export async function postDiary(
   };
 
   const form = new FormData();
-  // ✅ data 파트를 application/json 으로 명시
   form.append(
     "data",
     new Blob([JSON.stringify(data)], { type: "application/json" })
@@ -128,9 +126,7 @@ export async function postDiary(
   }
 
   const res = await apiClient.post<PostDiaryResponse>("/diaries", form, {
-    // @ts-ignore
     maxBodyLength: Infinity,
-    // @ts-ignore
     maxContentLength: Infinity,
   });
   return res.data;

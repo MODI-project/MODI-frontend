@@ -2,7 +2,7 @@ import styles from "./DiaryStylePage.module.css";
 import Header from "../../components/common/Header";
 import BottomSheet from "../../components/common/BottomSheet";
 import Tab from "../../components/common/tab/Tab";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Summary from "../../components/DiaryPage/StylePage/Summary";
 import LanguageStyle from "../../components/DiaryPage/StylePage/LanguageStyle";
 import Template from "../../components/DiaryPage/StylePage/Template";
@@ -13,22 +13,50 @@ import { useNavigate } from "react-router-dom";
 import Popup from "../../components/common/Popup";
 import Preview from "../../components/DiaryPage/StylePage/Preview";
 import { postDiary } from "../../apis/Diary/postDiary";
+import { generateSummary } from "../../apis/Diary/summary";
 
 const DiaryStylePage = () => {
   const [selectedTab, setSelectedTab] = useState("한줄요약");
-  const { draft } = useContext(DiaryDraftContext);
+  const { draft, setDraft } = useContext(DiaryDraftContext);
   const navigate = useNavigate();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const [summarizing, setSummarizing] = useState(false);
+  const triedRef = useRef(false);
 
   const handlePopupConfirm = () => {
     setIsPopupOpen(false);
     navigate("/home");
   };
 
+  useEffect(() => {
+    const needSummary =
+      !!draft.content?.trim() && !draft.noEmotionSummary?.trim();
+
+    // 한 번만 시도하거나, 탭이 "한줄요약"일 때만 시도하고 싶으면 조건 조절 가능
+    if (!summarizing && needSummary && !triedRef.current) {
+      triedRef.current = true;
+      (async () => {
+        try {
+          setSummarizing(true);
+          const s = await generateSummary(draft.content!);
+          if (s) {
+            setDraft({ noEmotionSummary: s });
+          }
+        } catch (e) {
+          console.error("요약 자동 생성 실패:", e);
+        } finally {
+          setSummarizing(false);
+        }
+      })();
+    }
+  }, [draft.content, draft.noEmotionSummary, summarizing, setDraft]);
+
   // 버튼 활성화 여부 결정
   const isNextEnabled =
     !submitting &&
+    !summarizing &&
     (selectedTab === "한줄요약"
       ? !!(draft.font && draft.noEmotionSummary)
       : selectedTab === "언어스타일"
@@ -56,12 +84,11 @@ const DiaryStylePage = () => {
         setSubmitting(true);
         const res = await postDiary(draft);
         console.log(res.message);
-
         navigate("/recorddetail");
       } catch (e: any) {
         console.error("status:", e?.response?.status);
         console.error("headers:", e?.response?.headers);
-        console.error("data:", e?.response?.data); // ← 여기에 어떤 필드가 문제인지 나옵니다
+        console.error("data:", e?.response?.data);
         alert(e?.response?.data?.message ?? "등록 실패(400) - 콘솔 확인");
       } finally {
         setSubmitting(false);
@@ -99,6 +126,7 @@ const DiaryStylePage = () => {
                 onClick={() => setSelectedTab("템플릿")}
               />
             </div>
+
             {selectedTab === "한줄요약" ? (
               <Summary />
             ) : selectedTab === "언어스타일" ? (
@@ -106,9 +134,18 @@ const DiaryStylePage = () => {
             ) : (
               <Template />
             )}
+
             <PrimaryButton
               location="next"
-              label={selectedTab === "템플릿" ? "완료" : "다음"}
+              label={
+                selectedTab === "템플릿"
+                  ? submitting
+                    ? "등록 중..."
+                    : "완료"
+                  : summarizing
+                  ? "요약 생성 중..."
+                  : "다음"
+              }
               onClick={handleNext}
               disabled={!isNextEnabled}
             />
@@ -121,14 +158,8 @@ const DiaryStylePage = () => {
         <Popup
           title={["작성한 일기가 저장되지 않아요!", "화면을 닫을까요?"]}
           buttons={[
-            {
-              label: "아니오",
-              onClick: () => setIsPopupOpen(false),
-            },
-            {
-              label: "예",
-              onClick: handlePopupConfirm,
-            },
+            { label: "아니오", onClick: () => setIsPopupOpen(false) },
+            { label: "예", onClick: handlePopupConfirm },
           ]}
         />
       )}
