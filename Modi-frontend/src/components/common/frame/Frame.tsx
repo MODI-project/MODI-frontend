@@ -3,7 +3,7 @@ import {
   frameIdMapping,
 } from "../../../contexts/FrameTemplate";
 import styles from "./Frame.module.css";
-import { useState } from "react";
+import React, { useState, forwardRef } from "react";
 
 // 프레임별 background 이미지 경로 예시
 const frameWrapperBackgrounds = {
@@ -102,21 +102,23 @@ interface FrameProps {
   content?: string;
 }
 
-const Frame = ({
-  isAbled = true,
-  onClick,
-  diaryData,
-  photoUrl,
-  date,
-  emotion,
-  summary,
-  placeInfo,
-  tags = [],
-  content,
-}: FrameProps) => {
+const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
+  {
+    isAbled = true,
+    onClick,
+    diaryData,
+    photoUrl,
+    date,
+    emotion,
+    summary,
+    placeInfo,
+    tags = [],
+    content,
+  }: FrameProps,
+  ref
+) {
   const { frameId } = useFrameTemplate();
   const [isFlipped, setIsFlipped] = useState(false);
-
   // diaryData가 있으면 해당 일기의 frame을 사용, 없으면 전역 frameId 사용
   const currentFrameId = diaryData?.frame || frameId;
 
@@ -210,6 +212,7 @@ const Frame = ({
 
   return (
     <div
+      ref={ref}
       className={`${styles.frame_wrapper} ${!isAbled ? styles.disabled : ""}`}
       style={wrapperStyle}
       onClick={handleFrameClick}
@@ -222,6 +225,7 @@ const Frame = ({
         <div className={styles.image_container}>
           <img
             className={styles.image}
+            data-role="photo"
             src={displayData.photoUrl}
             alt="일기 사진"
             crossOrigin="anonymous"
@@ -259,6 +263,6 @@ const Frame = ({
       </div>
     </div>
   );
-};
+});
 
 export default Frame;

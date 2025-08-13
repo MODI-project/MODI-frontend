@@ -14,6 +14,8 @@ import Popup from "../../components/common/Popup";
 import Preview from "../../components/DiaryPage/StylePage/Preview";
 import { postDiary } from "../../apis/Diary/postDiary";
 import { generateSummary } from "../../apis/Diary/summary";
+import apiClient from "../../apis/apiClient";
+import type { DiaryData } from "../../components/common/frame/Frame";
 
 const DiaryStylePage = () => {
   const [selectedTab, setSelectedTab] = useState("한줄요약");
@@ -34,7 +36,6 @@ const DiaryStylePage = () => {
     const needSummary =
       !!draft.content?.trim() && !draft.noEmotionSummary?.trim();
 
-    // 한 번만 시도하거나, 탭이 "한줄요약"일 때만 시도하고 싶으면 조건 조절 가능
     if (!summarizing && needSummary && !triedRef.current) {
       triedRef.current = true;
       (async () => {
@@ -82,9 +83,50 @@ const DiaryStylePage = () => {
     if (selectedTab === "템플릿") {
       try {
         setSubmitting(true);
-        const res = await postDiary(draft);
-        console.log(res.message);
-        navigate("/recorddetail");
+
+        // 1) 생성
+        const res = await postDiary(draft); // { diaryId, message }
+        const id = res.diaryId;
+
+        const detail = await apiClient.get(`/diaries/${id}`);
+        const d = detail.data;
+
+        const rawTags = d.tags ?? d.keywords ?? draft.keywords ?? [];
+        const tags: string[] = Array.isArray(rawTags)
+          ? rawTags
+              .map(
+                (t: any) => (typeof t === "string" ? t : t?.name ?? String(t)) // 객체면 name, 그래도 아니면 String 처리
+              )
+              .filter(Boolean)
+          : [];
+
+        const diaryData: DiaryData = {
+          id,
+          photoUrl: d.photoUrl ?? d.imageUrl ?? draft.image ?? "",
+          date:
+            d.date ?? d.createdDate ?? new Date().toISOString().slice(0, 10),
+          emotion:
+            typeof d.emotion === "string"
+              ? d.emotion
+              : d.emotion?.name ?? draft.emotion ?? "기쁨",
+          summary:
+            typeof d.summary === "string"
+              ? d.summary
+              : draft.summary ?? draft.noEmotionSummary ?? "",
+          address:
+            typeof d.address === "string" ? d.address : draft.address ?? "",
+          tags,
+          content:
+            typeof d.content === "string" ? d.content : draft.content ?? "",
+          frame: String(d.frame ?? draft.templateId ?? "1"),
+        };
+        navigate("/recorddetail", {
+          state: {
+            diaryData,
+            diaryId: String(id),
+            isFavorited: !!d.isFavorited,
+          },
+        });
       } catch (e: any) {
         console.error("status:", e?.response?.status);
         console.error("headers:", e?.response?.headers);
