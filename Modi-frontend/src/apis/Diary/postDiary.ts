@@ -2,6 +2,7 @@ import apiClient from "../apiClient";
 import type { DiaryDraft } from "../../types/DiaryDraftTypes";
 
 export interface PostDiaryResponse {
+  diaryId: number;
   message: string;
 }
 
@@ -87,6 +88,7 @@ export async function postDiary(
   draft: DiaryDraft,
   date: Date | string = new Date()
 ): Promise<PostDiaryResponse> {
+  //필요 없을 수도 나중에 다시 확인
   const emotionForServer =
     (draft.emotion && EMOTION_EN_TO_KO[draft.emotion]) || draft.emotion || "";
 

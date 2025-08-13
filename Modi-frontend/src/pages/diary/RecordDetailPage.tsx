@@ -11,6 +11,7 @@ import { useFrameTemplate } from "../../contexts/FrameTemplate";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DiaryData } from "../../components/common/frame/Frame";
 import { updateFavorite } from "../../apis/favorites";
+import { overflow } from "html2canvas/dist/types/css/property-descriptors/overflow";
 
 const pageBackgrounds = {
   frameId: {
@@ -34,7 +35,8 @@ const RecordDetailPage = () => {
   const [isPending, setIsPending] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
-  const frameRef = useRef<HTMLDivElement>(null);
+  const frameContainerRef = useRef<HTMLDivElement>(null);
+  const frameCardRef = useRef<HTMLDivElement>(null);
 
   const { frameId, setFrameId } = useFrameTemplate();
   const navigate = useNavigate();
@@ -61,66 +63,86 @@ const RecordDetailPage = () => {
   }, [diaryData]);
 
   const handleSaveClick = async () => {
-    if (!frameRef.current) return;
+    const original = frameCardRef.current;
+    if (!original) return;
+
+    const FRAME_W = 230;
+    const FRAME_H = 299;
+    const SCALE = Math.min(3, window.devicePixelRatio || 2);
+
+    const clone = original.cloneNode(true) as HTMLElement;
+    Object.assign(clone.style, {
+      position: "fixed",
+      left: "0px",
+      top: "0px",
+      width: `${FRAME_W}px`,
+      height: `${FRAME_H}px`,
+      zIndex: "-1",
+      transform: "none",
+      margin: "0",
+      borderRadius: "15px",
+      overflow: "hidden",
+    });
+    document.body.appendChild(clone);
+
+    const photos = Array.from(
+      clone.querySelectorAll<HTMLImageElement>('[data-role="photo"]')
+    );
+    photos.forEach((img) => {
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.maxWidth = "none";
+      img.style.maxHeight = "none";
+      img.style.objectFit = "cover";
+      img.style.objectPosition = "center";
+      (
+        img.style as CSSStyleDeclaration & { imageOrientation?: string }
+      ).imageOrientation = "from-image";
+    });
+
+    // 로드/디코드 대기 (최신 브라우저 기준)
+    await Promise.all(
+      photos.map(async (img) => {
+        if (!img.complete) {
+          await new Promise<void>((res) => {
+            img.onload = () => res();
+            img.onerror = () => res();
+          });
+        }
+        if (typeof img.decode === "function") {
+          try {
+            await img.decode();
+          } catch {
+            /* empty */
+          }
+        }
+      })
+    );
 
     try {
-      const canvas = await html2canvas(frameRef.current, {
+      const canvas = await html2canvas(clone, {
+        width: FRAME_W,
+        height: FRAME_H,
+        scale: SCALE,
         useCORS: true,
         allowTaint: false,
         backgroundColor: null,
-        scale: 2,
+        scrollX: 0,
+        scrollY: 0,
+        imageTimeout: 15000,
       });
 
-      const imageUrl = canvas.toDataURL("image/png"); // toBlob 대신
-
-      const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-      if (isMobile) {
-        const newWindow = window.open();
-        if (!newWindow) {
-          alert("팝업 차단이 감지되었습니다. 브라우저 설정을 확인해주세요.");
-          return;
-        }
-
-        newWindow.document.write(`
-        <html>
-          <head>
-            <title>이미지 저장</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <style>
-              body {
-                margin: 0;
-                background: white;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-              }
-              img {
-                max-width: 100%;
-                height: auto;
-              }
-            </style>
-          </head>
-          <body>
-            <img src="${imageUrl}" alt="diary" />
-          </body>
-        </html>
-      `);
-        newWindow.document.close();
-        setMessageText("이미지를 길게 눌러 저장하세요.");
-      } else {
-        const link = document.createElement("a");
-        link.href = imageUrl;
-        link.download = "diary.png";
-        link.click();
-        setMessageText("사진이 갤러리에 저장되었습니다.");
-      }
-
-      setShowMessage(true);
-      setTimeout(() => setShowMessage(false), 3000);
-    } catch (err) {
-      console.error(err);
+      const url = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "diary.png";
+      a.click();
+      setMessageText("사진이 갤러리에 저장되었습니다.");
+    } catch (e) {
+      console.error(e);
       setMessageText("저장에 실패했습니다.");
+    } finally {
+      document.body.removeChild(clone);
       setShowMessage(true);
       setTimeout(() => setShowMessage(false), 3000);
     }
@@ -168,7 +190,11 @@ const RecordDetailPage = () => {
         <div
           className={styles.page_detail_container}
           style={{
-            backgroundImage: `url(${pageBackgrounds.frameId[frameId]})`,
+            backgroundImage: `url(${
+              pageBackgrounds.frameId[
+                String(frameId) as keyof typeof pageBackgrounds.frameId
+              ]
+            })`,
           }}
         >
           <Header
@@ -176,7 +202,7 @@ const RecordDetailPage = () => {
             middle="기록 상세보기"
             right="/icons/home.svg"
             LeftClick={() => {
-              navigate(-1);
+              navigate("/home");
             }}
             RightClick={() => {
               navigate("/home");
@@ -191,8 +217,9 @@ const RecordDetailPage = () => {
             <EditButton onClick={handleEditClick} />
             <DeleteButton onClick={handleDeleteClick} />
           </div>
-          <div className={styles.frame_container} ref={frameRef}>
+          <div className={styles.frame_container} ref={frameContainerRef}>
             <Frame
+              ref={frameCardRef}
               isAbled={true}
               diaryData={diaryData}
               // diaryData가 없을 때 사용할 기본값들

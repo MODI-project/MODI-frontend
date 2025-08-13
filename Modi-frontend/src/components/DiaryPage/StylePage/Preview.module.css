@@ -58,4 +58,6 @@
   background-color: #bbb;
   border-radius: 6px;
   z-index: 1;
+  object-fit: cover;
+  object-position: center;
 }
