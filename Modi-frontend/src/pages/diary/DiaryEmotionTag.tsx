@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 import { useState, useEffect } from "react";
 import { getDiaryById } from "../../apis/Diary/searchDiary";
+import { useCharacter } from "../../contexts/CharacterContext";
 
 const emotionList = [
   { en: "happy", ko: "기쁨" },
@@ -20,13 +21,12 @@ const emotionList = [
   { en: "angry", ko: "화남" },
 ];
 
-const characterName = "momo"; //캐릭터 momo로 임시 설정
-
 const DiaryEmotionTag = () => {
   const { draft, setDraft, resetDraft } = useDiaryDraft();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { character } = useCharacter();
 
   const handlePopupConfirm = () => {
     setIsPopupOpen(false);
@@ -99,12 +99,12 @@ const DiaryEmotionTag = () => {
             {emotionList.map((emotion) => {
               const isSelected = draft.emotion === emotion.ko;
               const imageName = isSelected
-                ? `clicked_${characterName}-${emotion.en}.svg`
-                : `${characterName}-${emotion.en}.svg`;
+                ? `clicked_${character}-${emotion.en}.svg`
+                : `${character}-${emotion.en}.svg`;
               return (
                 <div key={emotion.en} className={styles.emotion_item}>
                   <img
-                    src={`/emotion_tag/${characterName}/${imageName}`}
+                    src={`/emotion_tag/${character}/${imageName}`}
                     alt={emotion.ko}
                     className={styles.emotion_image}
                     onClick={() => setDraft({ emotion: emotion.ko })}

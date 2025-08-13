@@ -1,3 +1,9 @@
+export interface DiaryDraftContextType {
+  draft: DiaryDraft;
+  setDraft: (updates: Partial<DiaryDraft>) => void;
+  resetDraft: () => void;
+}
+
 export interface DiaryDraft {
   mode: "create" | "edit";
   diaryId?: number;

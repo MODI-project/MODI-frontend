@@ -53,3 +53,8 @@
   font-size: var(--font-caption1);
   cursor: pointer;
 }
+
+.previewButton:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}

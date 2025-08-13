@@ -86,7 +86,7 @@ const DiaryStylePage = () => {
       (o.keywords?.length ?? 0) === (draft.keywords?.length ?? 0) &&
       (o.keywords ?? []).every((k, i) => k === draft.keywords[i]);
 
-    const imageChanged = !!draft.imageChanged; // 새 이미지 선택 시 변경으로 간주
+    const imageChanged = !!draft.imageChanged;
 
     return sameStrings && sameTemplate && sameKeywords && !imageChanged;
   };
@@ -247,7 +247,7 @@ const DiaryStylePage = () => {
         <Header
           left="/icons/back.svg"
           LeftClick={() => navigate(-1)}
-          middle={draft.mode === "edit" ? "기록 수정하기" : "기록 작성하기"}
+          middle={"기록하기"}
           right="/icons/X.svg"
           RightClick={() => setIsPopupOpen(true)}
         />
