@@ -12,6 +12,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { DiaryData } from "../../components/common/frame/Frame";
 import { updateFavorite } from "../../apis/favorites";
 import { getDiaryById } from "../../apis/Diary/searchDiary";
+import { deleteDiary } from "../../apis/Diary/deleteDiary";
+import Popup from "../../components/common/Popup";
 
 const pageBackgrounds = {
   frameId: {
@@ -37,6 +39,10 @@ const RecordDetailPage = () => {
   const [isPending, setIsPending] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string>("");
   const frameContainerRef = useRef<HTMLDivElement>(null);
   const frameCardRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +52,6 @@ const RecordDetailPage = () => {
 
   const diaryId = location.state?.diaryId as string | undefined;
 
-  // ✅ 서버에서 가져온 단건 데이터
   const [fetched, setFetched] = useState<{
     id: number;
     date: string;
@@ -226,9 +231,31 @@ const RecordDetailPage = () => {
   };
 
   const handleDeleteClick = () => {
-    setMessageText("삭제 버튼이 클릭되었습니다.");
-    setShowMessage(true);
-    setTimeout(() => setShowMessage(false), 3000);
+    if (!diaryId || isDeleting) return;
+    setConfirmOpen(true);
+  };
+
+  const runDelete = async () => {
+    if (!diaryId || isDeleting) return;
+    try {
+      setIsDeleting(true);
+      const res = await deleteDiary(Number(diaryId));
+      setConfirmOpen(false);
+      setAlertMessage(res?.message || "일기가 삭제되었습니다.");
+      setAlertOpen(true);
+    } catch (e) {
+      console.error(e);
+      setConfirmOpen(false);
+      setAlertMessage("삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+      setAlertOpen(true);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleAlertClose = () => {
+    setAlertOpen(false);
+    navigate("/home");
   };
 
   return (
@@ -297,6 +324,46 @@ const RecordDetailPage = () => {
               <div className={styles.message_container}>
                 <span className={styles.message_text}>{messageText}</span>
               </div>
+            )}
+            {/* 확인 팝업: 예/아니요 */}
+            {confirmOpen && (
+              <Popup
+                title={["소중한 일기가 사라져요!", "정말 삭제 하시겠어요?"]}
+                // imageUrl="/images/whatever.svg"  // 필요하면 넣기
+                showCloseButton={false}
+                onClose={() => setConfirmOpen(false)}
+                buttons={[
+                  {
+                    label: isDeleting ? "삭제 중…" : "예",
+                    onClick: () => {
+                      if (isDeleting) return;
+                      runDelete();
+                    },
+                  },
+                  {
+                    label: "아니요",
+                    onClick: () => {
+                      if (isDeleting) return;
+                      setConfirmOpen(false);
+                    },
+                  },
+                ]}
+              />
+            )}
+
+            {/* 알림 팝업: 확인버튼 */}
+            {alertOpen && (
+              <Popup
+                title={"일기가 삭제되었습니다"}
+                showCloseButton={false}
+                onClose={handleAlertClose}
+                buttons={[
+                  {
+                    label: "확인",
+                    onClick: handleAlertClose,
+                  },
+                ]}
+              />
             )}
           </div>
         </div>

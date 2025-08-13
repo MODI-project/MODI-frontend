@@ -48,7 +48,7 @@
 }
 
 .popup_title {
-  font-family: var(--font-);
+  font-family: var(--font-nanum-squareB);
   font-size: var(--font-headline);
   font-weight: 700;
   color: var(--color-gray4);
@@ -59,7 +59,7 @@
 }
 
 .popup_description {
-  font-family: var(--font-nanum-squareR);
+  font-family: var(--font-nanum-square);
   font-size: 14px;
   color: var(--color-gray3);
   line-height: 22px;
