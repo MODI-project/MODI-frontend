@@ -11,17 +11,13 @@ import { useFrameTemplate } from "../../contexts/FrameTemplate";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DiaryData } from "../../components/common/frame/Frame";
 import { updateFavorite } from "../../apis/MyPageAPIS/favorites";
-<<<<<<< HEAD
 import { overflow } from "html2canvas/dist/types/css/property-descriptors/overflow";
 import { useCharacter } from "../../contexts/CharacterContext";
-=======
->>>>>>> origin/main
+
 import { getDiaryById } from "../../apis/Diary/searchDiary";
 import { deleteDiary } from "../../apis/Diary/deleteDiary";
 import Popup from "../../components/common/Popup";
 
-<<<<<<< HEAD
-=======
 type DiaryApi = {
   id: number;
   content: string;
@@ -56,7 +52,6 @@ const normalizeDiary = (api: DiaryApi) => ({
   frame: String(api.frameId ?? 1),
 });
 
->>>>>>> origin/main
 const pageBackgrounds = {
   frameId: {
     "1": "/images/background/recordDetailPage/basicDetail/pink-detail.svg",

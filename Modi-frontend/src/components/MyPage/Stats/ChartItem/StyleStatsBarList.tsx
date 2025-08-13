@@ -6,6 +6,21 @@ import { useCharacter } from "../../../../contexts/CharacterContext";
 const MAX_BAR_HEIGHT = 70;
 const MAX_ITEMS = 4;
 
+const toneTextMap: Record<string, string> = {
+  happy: "기쁨",
+  surprised: "놀람",
+  normal: "보통",
+  nervous: "떨림",
+  love: "사랑",
+  excited: "신남",
+  sick: "아픔",
+  sad: "슬픔",
+  bored: "지루함",
+  angry: "화남",
+  calm: "차분함",
+};
+const toKo = (label: string) => toneTextMap[label] ?? label;
+
 interface StyleDataItem {
   label: string;
   value: number;
@@ -44,15 +59,6 @@ export default function StyleBarList({
     zuni: "#93D1E0",
   };
 
-  const normalized = [...data]
-    .sort((a, b) => b.value - a.value) // 내림차순 정렬
-    .map((d) => ({
-      ...d,
-      height: (d.value / max) * MAX_BAR_HEIGHT,
-      isMax: d.value === max,
-      icon: iconPath,
-    }));
-
   if (data.length === 0) {
     // 전부 placeholder (아이콘만)
     return (
@@ -78,6 +84,7 @@ export default function StyleBarList({
     .slice(0, MAX_ITEMS)
     .map((d) => ({
       ...d,
+      label: toKo(d.label), // ★ 감정/스타일 한글 변환 적용
       height: (d.value / (max || 1)) * MAX_BAR_HEIGHT,
       isMax: d.value === max,
       icon: d.value === max ? coloredIcon : iconPath,
