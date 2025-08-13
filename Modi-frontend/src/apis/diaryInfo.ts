@@ -114,12 +114,12 @@ export const updateDiary = async (
 export const deleteDiary = async (id: string): Promise<void> => {
   try {
     // 실제 API 구현 시 사용할 코드
-    // await axios.delete(`${API_BASE_URL}/diaries/${id}`, {
-    //   headers: {
-    //     Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-    //     "Content-Type": "application/json",
-    //   },
-    // });
+    await axios.delete(`${API_BASE_URL}/diaries/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        "Content-Type": "application/json",
+      },
+    });
 
     console.log(`목업: 일기 ${id} 삭제됨`);
   } catch (error) {

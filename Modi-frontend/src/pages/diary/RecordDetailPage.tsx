@@ -30,6 +30,8 @@ const pageBackgrounds = {
 };
 
 const RecordDetailPage = () => {
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [isPending, setIsPending] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
   const frameRef = useRef<HTMLDivElement>(null);
@@ -43,7 +45,6 @@ const RecordDetailPage = () => {
     isFavorited?: boolean;
   };
   const diaryId = location.state?.diaryId as string | undefined;
-  const [isFavorite, setIsFavorite] = useState<boolean>(false);
 
   // 일기 데이터의 frame 값을 FrameTemplate의 frameId로 설정
   useEffect(() => {
@@ -126,15 +127,23 @@ const RecordDetailPage = () => {
   };
 
   const handleFavoriteClick = async () => {
-    try {
-      await updateFavorite(Number(diaryId), !isFavorite);
-      setIsFavorite((prev) => !prev);
-      setMessageText(!isFavorite ? "즐겨찾기 추가됨!" : "즐겨찾기 해제됨!");
-    } catch (err) {
-      setMessageText("즐겨찾기 요청 실패!");
-    }
+    if (isPending) return;
+    const next = !isFavorite;
+
+    setIsPending(true);
+    setIsFavorite(next);
+    setMessageText(next ? "즐겨찾기 추가" : "즐겨찾기 해제");
     setShowMessage(true);
-    setTimeout(() => setShowMessage(false), 3000);
+
+    try {
+      await updateFavorite(Number(diaryId), next);
+    } catch (e) {
+      setIsFavorite(!next); // 실패 롤백
+      setMessageText("즐겨찾기 요청 실패!");
+    } finally {
+      setIsPending(false);
+      setTimeout(() => setShowMessage(false), 3000);
+    }
   };
 
   const handleEditClick = () => {
