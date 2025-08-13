@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FavoriteItem, getFavorites } from "../../apis/favorites";
+import { FavoriteItem, getFavorites } from "../../apis/MyPageAPIS/favorites";
 import FavoriteDiary from "../../components/MyPage/Favorite/FavoriteDiary";
 import styles from "./MyPage.module.css";
 

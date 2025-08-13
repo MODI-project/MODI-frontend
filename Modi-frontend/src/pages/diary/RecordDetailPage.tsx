@@ -10,7 +10,7 @@ import DeleteButton from "../../components/common/button/ButtonIcon/DeleteButton
 import { useFrameTemplate } from "../../contexts/FrameTemplate";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DiaryData } from "../../components/common/frame/Frame";
-import { updateFavorite } from "../../apis/favorites";
+import { updateFavorite } from "../../apis/MyPageAPIS/favorites";
 import { overflow } from "html2canvas/dist/types/css/property-descriptors/overflow";
 
 const pageBackgrounds = {
