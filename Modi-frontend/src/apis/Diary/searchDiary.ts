@@ -1,20 +1,19 @@
 import apiClient from "../apiClient";
 
-export type Diary = {
+export type DiaryCard = {
   id: number;
-  date: string;
   photoUrl: string | null;
-  summary: string;
-  emotion: string;
-  tags: string[];
-  created_at: string;
 };
 
-type DiariesResponse = {
-  diaries: Diary[];
+type ApiGroupItem = {
+  date: string;
+  diaries: Array<{
+    diaryId: number;
+    imageUrls: string[];
+  }>;
 };
 
-export const formatDateK = (isoDate: string) => {
+const formatDateK = (isoDate: string) => {
   const d = new Date(isoDate + "T00:00:00");
   const y = d.getFullYear();
   const m = d.getMonth() + 1;
@@ -22,49 +21,25 @@ export const formatDateK = (isoDate: string) => {
   return `${y}. ${m}. ${day}`;
 };
 
-export const matchDiary = (diary: Diary, term: string) => {
-  const tokens = term.trim().toLowerCase().split(/\s+/);
-  const hay = [
-    diary.summary,
-    diary.emotion,
-    ...diary.tags,
-    formatDateK(diary.date),
-  ]
-    .join(" ")
-    .toLowerCase();
-  return tokens.every((t) => hay.includes(t));
-};
-
-/* 사용자 일기 전체 조회 */
-export const getAllDiaries = async (): Promise<Diary[]> => {
-  const { data } = await apiClient.get<DiariesResponse>("/diaries", {
-    headers: { "Content-Type": "application/json" },
-  });
-  return data?.diaries ?? [];
-};
-
 export const searchDiaries = async (
-  query: string
-): Promise<Record<string, Diary[]>> => {
-  const q = query.trim();
-  if (!q) return {};
+  tagName: string
+): Promise<Record<string, DiaryCard[]>> => {
+  const t = tagName.trim();
+  if (!t) return {};
 
-  const all = await getAllDiaries();
+  const { data } = await apiClient.get<ApiGroupItem[]>(`/diaries`, {
+    params: { tagName: t },
+  });
 
-  const filtered = all
-    .filter((d) => matchDiary(d, q))
-    .sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-
-  const grouped = filtered.reduce<Record<string, Diary[]>>((acc, d) => {
-    const key = formatDateK(d.date);
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(d);
-    return acc;
-  }, {});
-
+  const grouped: Record<string, DiaryCard[]> = {};
+  for (const g of data ?? []) {
+    const key = formatDateK(g.date);
+    const items: DiaryCard[] = g.diaries.map((d) => ({
+      id: d.diaryId,
+      photoUrl: d.imageUrls?.[0] ?? null,
+    }));
+    grouped[key] = items;
+  }
   return grouped;
 };
 

@@ -261,7 +261,7 @@ const RecordDetailPage = () => {
     try {
       await updateFavorite(Number(diaryId), next);
     } catch {
-      setIsFavorite(!next); // 롤백
+      setIsFavorite(!next);
       setMessageText("즐겨찾기 요청 실패!");
     } finally {
       setIsPending(false);
@@ -317,8 +317,14 @@ const RecordDetailPage = () => {
           <Header
             left="/icons/arrow_left.svg"
             middle="기록 상세보기"
-            right="/icons/home.svg"
-            LeftClick={() => navigate(-1)}
+            right="/icons/header_home.svg"
+            LeftClick={() => {
+              if (location.state?.fromCreate) {
+                navigate("/home");
+              } else {
+                navigate(-1);
+              }
+            }}
             RightClick={() => navigate("/home")}
           />
 

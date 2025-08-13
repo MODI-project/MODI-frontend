@@ -7,14 +7,9 @@ import { useCharacter } from "../../contexts/CharacterContext";
 import { searchDiaries } from "../../apis/Diary/searchDiary";
 import { useNavigate } from "react-router-dom";
 
-type Diary = {
+type DiaryCard = {
   id: number;
-  date: string;
   photoUrl: string | null;
-  summary: string;
-  emotion: string;
-  tags: string[];
-  created_at: string;
 };
 
 const fallbackImg =
@@ -26,17 +21,14 @@ const SearchPage = () => {
   const [query, setQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
-
-  const navigate = useNavigate();
-
-  const [grouped, setGrouped] = useState<Record<string, Diary[]>>({});
+  const [grouped, setGrouped] = useState<Record<string, DiaryCard[]>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const navigate = useNavigate();
   const { character } = useCharacter();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 검색 실행 (API 호출)
   const doSearch = async (term: string) => {
     const t = term.trim();
     if (!t) return;
@@ -44,7 +36,7 @@ const SearchPage = () => {
     try {
       setLoading(true);
       setError(null);
-      const result = await searchDiaries(t);
+      const result = await searchDiaries(t); // ✅ 태그명으로 서버 검색
       setGrouped(result);
       setHasSearched(true);
       setSearchStarted(true);
@@ -114,16 +106,16 @@ const SearchPage = () => {
                   }
                 }, 100);
               }}
-              onKeyDown={async (e) => {
+              onKeyDown={async (e: React.KeyboardEvent<HTMLInputElement>) => {
                 if (e.key === "Enter") {
-                  if (isComposing || e.nativeEvent?.isComposing) return;
+                  if (isComposing || e.nativeEvent.isComposing) return;
                   await handleSearch();
                 }
               }}
             />
             <img
               className={styles.search_icon}
-              src="/icons/black_search.svg"
+              src="/icons/search.svg"
               alt="검색"
               style={{ cursor: "pointer" }}
               onClick={handleSearch}
@@ -176,7 +168,7 @@ const SearchPage = () => {
                           <img
                             crossOrigin="anonymous"
                             src={d.photoUrl || fallbackImg}
-                            alt={d.summary}
+                            alt="일기 미리보기"
                             className={styles.card_img}
                             onError={(e) => {
                               (e.currentTarget as HTMLImageElement).src =
