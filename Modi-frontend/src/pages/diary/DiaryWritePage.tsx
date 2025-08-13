@@ -18,6 +18,7 @@ const DiaryWritePage = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [popupGenerating, setPopupGenerating] = useState(false);
+  const [showUnchangedPopup, setShowUnchangedPopup] = useState(false);
 
   const handlePopupConfirm = () => {
     setIsPopupOpen(false);
@@ -33,6 +34,7 @@ const DiaryWritePage = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setDraft({ imageFile: file, imageChanged: true });
 
     // 1. 원본 File 객체 저장 (FormData 전송용)
     setDraft({ imageFile: file });
@@ -221,6 +223,14 @@ const DiaryWritePage = () => {
           location="next"
           label="다음"
           onClick={async () => {
+            if (
+              draft.mode === "edit" &&
+              (draft.originalContent ?? "").trim() === draft.content.trim()
+            ) {
+              setShowUnchangedPopup(true);
+              return;
+            }
+
             if (draft.content.trim() === "") {
               setShowEmptyContentPopup(true);
             } else {
@@ -231,19 +241,38 @@ const DiaryWritePage = () => {
         />
       </div>
 
-      {/* 팝업 */}
-      {isPopupOpen && (
+      {/* 내용 변경 없음 팝업 */}
+      {showUnchangedPopup && (
         <Popup
-          title={["작성한 일기가 저장되지 않아요!", "화면을 닫을까요?"]}
+          title={["일기 내용이 변경되지 않았어요!", "넘어가시겠어요?"]}
           buttons={[
             {
-              label: "아니오",
-              onClick: () => setIsPopupOpen(false),
+              label: "아니요",
+              onClick: () => setShowUnchangedPopup(false),
             },
             {
               label: "예",
-              onClick: handlePopupConfirm,
+              onClick: () => {
+                setShowUnchangedPopup(false);
+                navigate("/style");
+              },
             },
+          ]}
+        />
+      )}
+
+      {/* 팝업 */}
+      {isPopupOpen && (
+        <Popup
+          title={[
+            draft.mode === "edit"
+              ? "수정한 일기가 저장되지 않아요!"
+              : "작성한 일기가 저장되지 않아요!",
+            "화면을 닫을까요?",
+          ]}
+          buttons={[
+            { label: "아니오", onClick: () => setIsPopupOpen(false) },
+            { label: "예", onClick: handlePopupConfirm },
           ]}
         />
       )}

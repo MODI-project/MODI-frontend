@@ -57,16 +57,15 @@ const DiaryKeywordPage = () => {
       {/* 팝업 */}
       {isPopupOpen && (
         <Popup
-          title={["작성한 일기가 저장되지 않아요!", "화면을 닫을까요?"]}
+          title={[
+            draft.mode === "edit"
+              ? "수정한 일기가 저장되지 않아요!"
+              : "작성한 일기가 저장되지 않아요!",
+            "화면을 닫을까요?",
+          ]}
           buttons={[
-            {
-              label: "아니오",
-              onClick: () => setIsPopupOpen(false),
-            },
-            {
-              label: "예",
-              onClick: handlePopupConfirm,
-            },
+            { label: "아니오", onClick: () => setIsPopupOpen(false) },
+            { label: "예", onClick: handlePopupConfirm },
           ]}
         />
       )}

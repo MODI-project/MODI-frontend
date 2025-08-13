@@ -1,10 +1,14 @@
+// types/DiaryDraftTypes.ts
 export interface DiaryDraft {
+  mode: "create" | "edit";
+  diaryId?: number;
   emotion: string | null;
   address: string;
   dong: string;
   keywords: string[];
   content: string;
   image: string | null;
+  imageChanged?: boolean;
   imageFile?: File;
   summary: string;
   tone: string;
@@ -14,15 +18,11 @@ export interface DiaryDraft {
   latitude?: number;
   longitude?: number;
   style?: string;
-}
-
-export interface DiaryDraftContextType {
-  draft: DiaryDraft;
-  setDraft: (fields: Partial<DiaryDraft>) => void;
-  resetDraft: () => void;
+  date?: string;
 }
 
 export const defaultDraft: DiaryDraft = {
+  mode: "create",
   emotion: null,
   address: "",
   dong: "",
@@ -30,6 +30,7 @@ export const defaultDraft: DiaryDraft = {
   content: "",
   image: null,
   imageFile: undefined,
+  imageChanged: false,
   summary: "",
   tone: "",
   templateId: null,
@@ -38,4 +39,5 @@ export const defaultDraft: DiaryDraft = {
   latitude: undefined,
   longitude: undefined,
   style: "",
+  date: undefined,
 };

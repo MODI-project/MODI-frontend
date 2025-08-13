@@ -94,6 +94,7 @@ const RecordDetailPage = () => {
     tags: string[];
     created_at: string;
     favorites?: boolean;
+    frame?: string;
   } | null>(null);
   const [loading, setLoading] = useState<boolean>(!!diaryId);
   const [error, setError] = useState<string | null>(null);
@@ -107,6 +108,26 @@ const RecordDetailPage = () => {
   }, [diaryId]);
 
   useEffect(() => {
+    const initial = location.state?.diaryData as DiaryData | undefined;
+    if (initial) {
+      setFetched({
+        id: initial.id,
+        date: initial.date,
+        photoUrl: initial.photoUrl ?? null,
+        summary: initial.summary ?? "",
+        emotion: initial.emotion ?? "",
+        tags: initial.tags ?? [],
+        created_at: "",
+        favorites: location.state?.isFavorited ?? false,
+        frame: initial.frame,
+      } as typeof fetched);
+      setIsFavorite(!!location.state?.isFavorited);
+      setError(null);
+      setLoading(false);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
     let active = true;
     (async () => {
       if (!diaryId) return;
@@ -117,14 +138,12 @@ const RecordDetailPage = () => {
         const apiRes = (await getDiaryById(
           Number(diaryId)
         )) as unknown as DiaryApi;
-
         if (!active) return;
 
         if (!apiRes) {
           setError("기록을 찾을 수 없어요.");
         } else {
           const norm = normalizeDiary(apiRes);
-
           setFetched(norm);
           setIsFavorite(norm.favorites);
         }
@@ -137,7 +156,7 @@ const RecordDetailPage = () => {
     return () => {
       active = false;
     };
-  }, [diaryId]);
+  }, [diaryId, location.key]);
 
   const diaryForFrame: DiaryData | undefined = useMemo(() => {
     if (!fetched) return undefined;
@@ -150,7 +169,7 @@ const RecordDetailPage = () => {
       address: "",
       tags: fetched.tags ?? [],
       content: "",
-      frame: "1",
+      frame: fetched.frame ?? "1",
     };
   }, [fetched]);
 
@@ -270,9 +289,8 @@ const RecordDetailPage = () => {
   };
 
   const handleEditClick = () => {
-    setMessageText("수정 버튼이 클릭되었습니다.");
-    setShowMessage(true);
-    setTimeout(() => setShowMessage(false), 3000);
+    if (!diaryId) return;
+    navigate("/emotion", { state: { editDiaryId: Number(diaryId) } });
   };
 
   const handleDeleteClick = () => {
