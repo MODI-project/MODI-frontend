@@ -11,7 +11,8 @@ import EmotionTab, {
 } from "../../components/HomePage/EmotionTab/EmotionTab";
 import PhotoDiary from "../../components/HomePage/Diary/Photo/PhotoDiary";
 import { useCharacter } from "../../contexts/CharacterContext";
-import { mockDiaries, DiaryData } from "../../apis/diaryInfo";
+import type { DiaryData } from "../../components/common/frame/Frame";
+import { fetchMonthlyDiaries } from "../../apis/Diary/diaries.read"; // 아까 만든 조회 파일
 import Search from "../../components/HomePage/Diary/Photo/Search";
 import DatePickerBottomSheet from "../../components/common/DatePickerBottomSheet";
 
@@ -25,27 +26,51 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
   const hasOpened = useRef(false);
   const { character } = useCharacter();
 
-  const availableMonths = useMemo(() => {
-    return Array.from(
-      new Set(mockDiaries.map((d) => d.date.slice(0, 7)))
-    ).sort();
+  const dateItems = useMemo(() => {
+    const items: { date: string }[] = [];
+    const now = new Date();
+    for (let i = 0; i < 24; i++) {
+      const dt = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const ym = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+      items.push({ date: ym });
+    }
+    return items.reverse();
   }, []);
-  const dateItems = availableMonths.map((d) => ({ date: d }));
 
   const [viewDate, setViewDate] = useState(() => {
     const now = new Date();
-    const thisMonth = `${now.getFullYear()}-${String(
-      now.getMonth() + 1
-    ).padStart(2, "0")}`;
-    return availableMonths.includes(thisMonth)
-      ? thisMonth
-      : availableMonths.at(-1)!;
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
   });
 
-  const monthDiaries = useMemo(
-    () => mockDiaries.filter((d) => d.date.startsWith(viewDate)),
-    [viewDate]
-  );
+  const addMonths = (ym: string, delta: number) => {
+    const [y, m] = ym.split("-").map(Number);
+    const d = new Date(y, m - 1 + delta, 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  };
+
+  const [monthDiaries, setMonthDiaries] = useState<DiaryData[]>([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const [year, month] = viewDate.split("-").map(Number);
+        const list = await fetchMonthlyDiaries(year, month);
+        setMonthDiaries(list);
+      } catch (e) {
+        console.error("월별 일기 로드 실패:", e);
+        setMonthDiaries([]); // 실패 시 빈 배열
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [viewDate]);
 
   const emotionList = Array.from(
     new Set(monthDiaries.map((d) => d.emotion))
@@ -53,18 +78,8 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
 
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
 
-  const handlePrev = () => {
-    const idx = availableMonths.indexOf(viewDate);
-    if (idx > 0) {
-      setViewDate(availableMonths[idx - 1]);
-    }
-  };
-  const handleNext = () => {
-    const idx = availableMonths.indexOf(viewDate);
-    if (idx < availableMonths.length - 1) {
-      setViewDate(availableMonths[idx + 1]);
-    }
-  };
+  const handlePrev = () => setViewDate((d) => addMonths(d, -1));
+  const handleNext = () => setViewDate((d) => addMonths(d, +1));
 
   const filtered = selectedEmotion
     ? monthDiaries.filter((d) => d.emotion === selectedEmotion)
@@ -113,19 +128,21 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
         </div>
 
         {filtered.length > 0 ? (
-          <div className={pageStyles.photoGrid}>
-            {filtered.map((d) => (
-              <PhotoDiary
-                key={d.id}
-                id={d.id}
-                photoUrl={d.photoUrl}
-                date={d.date}
-                emotion={d.emotion}
-                clicked={false}
-                onClick={() => handleDiaryClick(d)}
-              />
-            ))}
-          </div>
+          !loading && (
+            <div className={pageStyles.photoGrid}>
+              {filtered.map((d) => (
+                <PhotoDiary
+                  key={d.id}
+                  id={d.id}
+                  photoUrl={d.photoUrl}
+                  date={d.date}
+                  emotion={d.emotion}
+                  clicked={false}
+                  onClick={() => handleDiaryClick(d)}
+                />
+              ))}
+            </div>
+          )
         ) : (
           <div className={pageStyles.emptyState}>
             <Search />

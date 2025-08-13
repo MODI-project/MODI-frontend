@@ -6,7 +6,7 @@ import PolaroidView from "./PolaroidView";
 import PhotoView from "./PhotoView";
 
 import Header from "../../components/common/Header";
-import { mockDiaries } from "../../apis/diaryInfo"; // 또는 상태 관리 데이터
+import { fetchMonthlyDiaries } from "../../apis/Diary/diaries.read";
 import EmptyDiaryView from "./EmptyDiaryView";
 import { useNavigate, useLocation } from "react-router-dom";
 import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
@@ -21,6 +21,8 @@ export default function HomePage() {
   const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
   const navigate = useNavigate();
   const location = useLocation();
+  const [loading, setLoading] = useState(true);
+  const [hasMonthData, setHasMonthData] = useState<boolean | null>(null); // 현재 달에 일기가 하나라도 있는지
 
   // code 파라미터가 있으면 토큰 요청 처리
   useEffect(() => {
@@ -46,6 +48,25 @@ export default function HomePage() {
         });
     }
   }, [location, navigate]);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const list = await fetchMonthlyDiaries(year, month);
+        setHasMonthData(list.length > 0);
+      } catch (e) {
+        console.error("월별 일기 조회 실패:", e);
+        setHasMonthData(false); // 실패 시 일단 빈 상태로 처리(원하면 에러 UI 분리)
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
   return (
     <div className={style.home_wrapper}>
       <div className={style.home_container}>
@@ -58,7 +79,18 @@ export default function HomePage() {
         />
 
         <main className={style.mainContent}>
-          {mockDiaries.length === 0 ? (
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "50vh",
+              }}
+            >
+              불러오는 중...
+            </div>
+          ) : hasMonthData === false ? (
             <EmptyDiaryView />
           ) : viewType === "photo" ? (
             <PhotoView onSwitchView={() => setViewType("polaroid")} />
@@ -66,7 +98,7 @@ export default function HomePage() {
             <PolaroidView onSwitchView={() => setViewType("photo")} />
           )}
         </main>
-        <Footer showBalloon={mockDiaries.length === 0} />
+        <Footer showBalloon={hasMonthData === false} />
       </div>
     </div>
   );
