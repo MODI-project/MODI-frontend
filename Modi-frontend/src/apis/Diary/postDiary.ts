@@ -73,7 +73,7 @@ async function compressToTarget(
 const EMOTION_EN_TO_KO: Record<string, string> = {
   happy: "기쁨",
   surprised: "놀람",
-  nervous: "긴장",
+  nervous: "떨림",
   normal: "보통",
   love: "사랑",
   excited: "신남",

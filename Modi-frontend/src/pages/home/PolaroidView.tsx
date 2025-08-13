@@ -10,8 +10,10 @@ import PolaroidFrame from "../../components/HomePage/Diary/Polaroid/PolaroidFram
 import EmotionCharacter from "../../components/HomePage/Diary/Polaroid/EmotionCharacter";
 import EmotionTagList from "../../components/HomePage/Diary/Polaroid/EmotionTagList";
 import { useCharacter } from "../../contexts/CharacterContext";
-// 목업 데이터 사용 (아래 3개)
-import { mockFetchDiaries } from "../../apis/diaryInfo";
+import {
+  fetchDailyGroups,
+  type DailyGroup,
+} from "../../apis/Diary/diaries.read";
 import { DiaryData } from "../../components/common/frame/Frame";
 import { Emotion } from "../../data/diaries";
 
@@ -21,20 +23,25 @@ interface PolaroidViewProps {
 
 export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  // 목업 데이터 사용 (아래 2개)
-  const [mockDiaries, setMockDiaries] = useState<DiaryData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const hasOpened = useRef(false);
   const { character } = useCharacter();
+  const [groups, setGroups] = useState<DailyGroup[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // 현재 조회 중인 월(YYYY-MM)
+  const [viewYM, setViewYM] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
+  });
 
   const allDates = useMemo(() => {
-    return mockDiaries
-      .map((d) => {
-        const [y, m, dd] = d.date.split("-");
-        return `${y}-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`;
-      })
+    // groups = [{ date:"YYYY-MM-DD", diaries:[...] }, ... ]
+    return [...groups]
+      .map((g) => g.date.slice(0, 10))
       .sort((a, b) => a.localeCompare(b));
-  }, [mockDiaries]);
+  }, [groups]);
 
   const dateItems = useMemo(
     () => allDates.map((d) => ({ date: d })),
@@ -42,13 +49,14 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   );
 
   const diaryMap = useMemo(() => {
-    return mockDiaries.reduce<Record<string, DiaryData>>((acc, d) => {
-      const [y, m, dd] = d.date.split("-");
-      const key = `${y}-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`;
-      acc[key] = d;
-      return acc;
-    }, {});
-  }, [mockDiaries]);
+    // 날짜별 대표 1개(첫 번째)만 매핑. 규칙 바꾸고 싶으면 여기서 선택 로직 수정
+    const acc: Record<string, DiaryData> = {};
+    for (const g of groups) {
+      const top = g.diaries?.[0];
+      if (top) acc[g.date.slice(0, 10)] = top;
+    }
+    return acc;
+  }, [groups]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const viewDate = allDates[currentIndex] || allDates[0] || "";
@@ -73,37 +81,47 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     nextKey ? diaryMap[nextKey] ?? null : null,
   ];
 
-  // 목업 데이터 로드
+  // 선택된 월(viewYM)의 일별 목록 로드
   useEffect(() => {
-    const loadMockData = async () => {
+    (async () => {
+      setLoading(true);
       try {
-        console.log("목업 데이터 로드 시작");
-        const data = await mockFetchDiaries();
-        console.log("목업 데이터 로드 완료:", data);
-        setMockDiaries(data);
-        // 데이터 로드 후 최신 일기가 가운데에 오도록 인덱스 설정
-        setCurrentIndex(Math.max(0, data.length - 1));
-        console.log("currentIndex 설정:", Math.max(0, data.length - 1));
+        const [y, m] = viewYM.split("-").map(Number);
+        const data = await fetchDailyGroups(y, m);
+        const sorted = [...data].sort((a, b) => a.date.localeCompare(b.date));
+        setGroups(sorted);
+        setCurrentIndex(sorted.length ? sorted.length - 1 : 0); // 최신 날짜로 포커스
       } catch (error) {
-        console.error("목업 데이터 로드 실패:", error);
+        console.error("일별 일기 로드 실패:", error);
+        setGroups([]);
+        setCurrentIndex(0);
       } finally {
         setLoading(false);
       }
-    };
-    loadMockData();
-  }, []);
+    })();
+  }, [viewYM]);
 
-  const currentDiary = diaryMap[viewDate] ?? mockDiaries[0];
+  const currentDiary = diaryMap[viewDate] ?? groups[0]?.diaries?.[0] ?? null;
+
+  const addMonths = (ym: string, delta: number) => {
+    const [y, m] = ym.split("-").map(Number);
+    const d = new Date(y, m - 1 + delta, 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  };
 
   const handlePrev = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+      setCurrentIndex((i) => i - 1);
+    } else {
+      setViewYM((ym) => addMonths(ym, -1)); // 이전 달 로드
     }
   };
 
   const handleNext = () => {
     if (currentIndex < allDates.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      setCurrentIndex((i) => i + 1);
+    } else {
+      setViewYM((ym) => addMonths(ym, +1)); // 다음 달 로드
     }
   };
 
