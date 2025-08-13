@@ -139,9 +139,12 @@ const DiaryStylePage = () => {
           .filter(Boolean)
       : [];
 
+    const img =
+      d.imageUrls?.[0] ?? d.photoUrl ?? d.imageUrl ?? draft.image ?? ""; // 새로 고른 파일의 base64 미리보기
+
     const diaryData: DiaryData = {
       id,
-      photoUrl: d.photoUrl ?? d.imageUrl ?? draft.image ?? "",
+      photoUrl: img,
       date: d.date ?? d.createdDate ?? new Date().toISOString().slice(0, 10),
       emotion:
         typeof d.emotion === "string"

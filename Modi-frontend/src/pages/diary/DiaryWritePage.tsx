@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import ExifReader from "exifreader";
 import { useNavigate } from "react-router-dom";
 import styles from "./DiaryWritePage.module.css";
@@ -27,6 +27,28 @@ const DiaryWritePage = () => {
 
   const { draft, setDraft } = useDiaryDraft();
 
+  const equalArray = (a: string[] = [], b: string[] = []) =>
+    a.length === b.length &&
+    a.every((v, i) => v.trim() === (b[i] ?? "").trim());
+
+  const isDraftUnchanged = () => {
+    if (draft.mode !== "edit") return false;
+
+    const sameContent =
+      (draft.originalContent ?? "").trim() === (draft.content ?? "").trim();
+    const sameAddress =
+      (draft.originalAddress ?? "").trim() === (draft.address ?? "").trim();
+    const sameKeywords = equalArray(
+      draft.originalKeywords ?? [],
+      draft.keywords ?? []
+    );
+    const sameImage =
+      !draft.imageChanged &&
+      (draft.originalImage ?? null) === (draft.image ?? null);
+
+    return sameContent && sameAddress && sameKeywords && sameImage;
+  };
+
   // 비활성화 조건
   const isReadyToSubmit =
     draft.image && draft.address.trim() !== "" && draft.keywords.length > 2;
@@ -44,6 +66,7 @@ const DiaryWritePage = () => {
     reader.onload = async () => {
       const imageUrl = reader.result as string;
       setDraft({ image: imageUrl });
+      setDraft({ imageFile: file, imageChanged: true });
 
       // 3. GPS 정보 추출
       try {
@@ -223,10 +246,7 @@ const DiaryWritePage = () => {
           location="next"
           label="다음"
           onClick={async () => {
-            if (
-              draft.mode === "edit" &&
-              (draft.originalContent ?? "").trim() === draft.content.trim()
-            ) {
+            if (draft.mode === "edit" && isDraftUnchanged()) {
               setShowUnchangedPopup(true);
               return;
             }
@@ -286,7 +306,7 @@ const DiaryWritePage = () => {
             {
               label: "아니요",
               onClick: () => {
-                if (popupGenerating) return; // 진행 중이면 막기
+                if (popupGenerating) return;
                 setShowEmptyContentPopup(false);
               },
             },

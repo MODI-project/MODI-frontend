@@ -1,4 +1,3 @@
-// types/DiaryDraftTypes.ts
 export interface DiaryDraft {
   mode: "create" | "edit";
   diaryId?: number;
@@ -19,6 +18,10 @@ export interface DiaryDraft {
   longitude?: number;
   style?: string;
   date?: string;
+  originalContent?: string;
+  originalAddress?: string;
+  originalKeywords?: string[];
+  originalImage?: string | null;
 }
 
 export const defaultDraft: DiaryDraft = {
@@ -40,4 +43,8 @@ export const defaultDraft: DiaryDraft = {
   longitude: undefined,
   style: "",
   date: undefined,
+  originalContent: "",
+  originalAddress: "",
+  originalKeywords: [],
+  originalImage: null,
 };

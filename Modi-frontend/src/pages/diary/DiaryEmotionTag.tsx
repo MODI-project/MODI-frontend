@@ -52,25 +52,24 @@ const DiaryEmotionTag = () => {
         setDraft({
           mode: "edit",
           diaryId: editId,
-          // ...
+          image: d.imageUrls?.[0] ?? null,
+          imageFile: undefined,
+          imageChanged: false,
           content: d.content ?? "",
           summary: d.summary ?? "",
           noEmotionSummary: d.summary ?? "",
           emotion: d.emotion?.name ?? null,
-
-          // 위치
           address: d.location?.address ?? "",
           latitude: d.location?.latitude,
           longitude: d.location?.longitude,
-
-          // 날짜
           date: d.date ?? undefined,
-
-          // 스타일
           templateId: d.frameId ?? 1,
           font: d.font ?? "",
-          // ...
           keywords: (d.tags ?? []).map((t: { name: string }) => t.name),
+          originalContent: d.content ?? "",
+          originalAddress: d.location?.address ?? "",
+          originalKeywords: (d.tags ?? []).map((t: { name: string }) => t.name),
+          originalImage: d.imageUrls?.[0] ?? null,
         });
       } catch (e) {
         console.error("편집 데이터 불러오기 실패:", e);
