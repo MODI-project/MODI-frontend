@@ -10,10 +10,44 @@ import DeleteButton from "../../components/common/button/ButtonIcon/DeleteButton
 import { useFrameTemplate } from "../../contexts/FrameTemplate";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DiaryData } from "../../components/common/frame/Frame";
-import { updateFavorite } from "../../apis/favorites";
+import { updateFavorite } from "../../apis/Diary/favorites";
 import { getDiaryById } from "../../apis/Diary/searchDiary";
 import { deleteDiary } from "../../apis/Diary/deleteDiary";
 import Popup from "../../components/common/Popup";
+
+type DiaryApi = {
+  id: number;
+  content: string;
+  summary: string;
+  date: string;
+  emotion?: { id: number; name: string } | null;
+  tags?: Array<{ id: number; name: string }>;
+  location?: {
+    id: number;
+    address: string;
+    latitude: number;
+    longitude: number;
+  } | null;
+  font?: string | null;
+  frameId?: number | null;
+  imageUrls?: string[] | null;
+  favorites?: boolean; // 서버 키
+  createdAt: string;
+  updatedAt: string;
+};
+
+// 화면용으로 정규화
+const normalizeDiary = (api: DiaryApi) => ({
+  id: api.id,
+  date: api.date,
+  photoUrl: api.imageUrls?.[0] ?? null,
+  summary: api.summary,
+  emotion: api.emotion?.name ?? "",
+  tags: (api.tags ?? []).map((t) => t.name),
+  created_at: api.createdAt,
+  favorites: !!api.favorites,
+  frame: String(api.frameId ?? 1),
+});
 
 const pageBackgrounds = {
   frameId: {
@@ -42,7 +76,6 @@ const RecordDetailPage = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<string>("");
   const frameContainerRef = useRef<HTMLDivElement>(null);
   const frameCardRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +93,7 @@ const RecordDetailPage = () => {
     emotion: string;
     tags: string[];
     created_at: string;
+    favorites?: boolean;
   } | null>(null);
   const [loading, setLoading] = useState<boolean>(!!diaryId);
   const [error, setError] = useState<string | null>(null);
@@ -74,25 +108,32 @@ const RecordDetailPage = () => {
 
   useEffect(() => {
     let active = true;
-    const run = async () => {
+    (async () => {
       if (!diaryId) return;
       try {
         setLoading(true);
         setError(null);
-        const res = await getDiaryById(Number(diaryId));
+
+        const apiRes = (await getDiaryById(
+          Number(diaryId)
+        )) as unknown as DiaryApi;
+
         if (!active) return;
-        if (!res) {
+
+        if (!apiRes) {
           setError("기록을 찾을 수 없어요.");
         } else {
-          setFetched(res);
+          const norm = normalizeDiary(apiRes);
+
+          setFetched(norm);
+          setIsFavorite(norm.favorites);
         }
       } catch {
         if (active) setError("기록을 불러오지 못했어요.");
       } finally {
         if (active) setLoading(false);
       }
-    };
-    run();
+    })();
     return () => {
       active = false;
     };
@@ -210,7 +251,11 @@ const RecordDetailPage = () => {
 
     setIsPending(true);
     setIsFavorite(next);
-    setMessageText(next ? "즐겨찾기 추가" : "즐겨찾기 해제");
+    setMessageText(
+      next
+        ? "사진이 즐겨찾기에 추가되었습니다"
+        : "사진이 즐겨찾기에서 삭제되었습니다"
+    );
     setShowMessage(true);
 
     try {
@@ -239,14 +284,12 @@ const RecordDetailPage = () => {
     if (!diaryId || isDeleting) return;
     try {
       setIsDeleting(true);
-      const res = await deleteDiary(Number(diaryId));
+      await deleteDiary(Number(diaryId));
       setConfirmOpen(false);
-      setAlertMessage(res?.message || "일기가 삭제되었습니다.");
       setAlertOpen(true);
     } catch (e) {
       console.error(e);
       setConfirmOpen(false);
-      setAlertMessage("삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
       setAlertOpen(true);
     } finally {
       setIsDeleting(false);
@@ -329,7 +372,6 @@ const RecordDetailPage = () => {
             {confirmOpen && (
               <Popup
                 title={["소중한 일기가 사라져요!", "정말 삭제 하시겠어요?"]}
-                // imageUrl="/images/whatever.svg"  // 필요하면 넣기
                 showCloseButton={false}
                 onClose={() => setConfirmOpen(false)}
                 buttons={[

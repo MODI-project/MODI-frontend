@@ -68,10 +68,7 @@ export const searchDiaries = async (
   return grouped;
 };
 
-export const getDiaryById = async (id: number): Promise<Diary | null> => {
-  const { data } = await apiClient.get<{ diaries: Diary[] }>("/diaries", {
-    headers: { "Content-Type": "application/json" },
-  });
-  const found = data?.diaries?.find((d) => d.id === id) ?? null;
-  return found;
+export const getDiaryById = async (id: number) => {
+  const { data } = await apiClient.get(`/diaries/${id}`);
+  return data;
 };
