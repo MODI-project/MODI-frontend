@@ -5,6 +5,7 @@ import Footer from "../../components/common/Footer";
 import FrequentKeywords from "../../components/common/keyword/FrequentKeywords";
 import { useCharacter } from "../../contexts/CharacterContext";
 import { searchDiaries } from "../../apis/Diary/searchDiary";
+import { useNavigate } from "react-router-dom";
 
 type Diary = {
   id: number;
@@ -25,6 +26,8 @@ const SearchPage = () => {
   const [query, setQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const [isComposing, setIsComposing] = useState(false);
+
+  const navigate = useNavigate();
 
   const [grouped, setGrouped] = useState<Record<string, Diary[]>>({});
   const [loading, setLoading] = useState(false);
@@ -165,11 +168,13 @@ const SearchPage = () => {
                           key={d.id}
                           className={styles.card}
                           onClick={() => {
-                            // TODO: 상세 라우팅
-                            // navigate(`/diaries/${d.id}`)
+                            navigate("/recorddetail", {
+                              state: { diaryId: String(d.id) },
+                            });
                           }}
                         >
                           <img
+                            crossOrigin="anonymous"
                             src={d.photoUrl || fallbackImg}
                             alt={d.summary}
                             className={styles.card_img}

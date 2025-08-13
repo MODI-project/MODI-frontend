@@ -1,7 +1,7 @@
 import styles from "./RecordDetailPage.module.css";
 import Header from "../../components/common/Header";
 import Frame from "../../components/common/frame/Frame";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import html2canvas from "html2canvas";
 import SaveButton from "../../components/common/button/ButtonIcon/SaveButton";
 import FavoriteButton from "../../components/common/button/ButtonIcon/FavoriteButton";
@@ -11,7 +11,7 @@ import { useFrameTemplate } from "../../contexts/FrameTemplate";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DiaryData } from "../../components/common/frame/Frame";
 import { updateFavorite } from "../../apis/favorites";
-import { overflow } from "html2canvas/dist/types/css/property-descriptors/overflow";
+import { getDiaryById } from "../../apis/Diary/searchDiary";
 
 const pageBackgrounds = {
   frameId: {
@@ -30,8 +30,10 @@ const pageBackgrounds = {
   },
 };
 
+const fallbackImg = "https://placehold.co/215x286";
+
 const RecordDetailPage = () => {
-  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [messageText, setMessageText] = useState("");
@@ -42,30 +44,81 @@ const RecordDetailPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 홈 화면에서 전달받은 일기 데이터
-  const diaryData = location.state?.diaryData as DiaryData & {
-    isFavorited?: boolean;
-  };
   const diaryId = location.state?.diaryId as string | undefined;
 
-  // 일기 데이터의 frame 값을 FrameTemplate의 frameId로 설정
+  // ✅ 서버에서 가져온 단건 데이터
+  const [fetched, setFetched] = useState<{
+    id: number;
+    date: string;
+    photoUrl: string | null;
+    summary: string;
+    emotion: string;
+    tags: string[];
+    created_at: string;
+  } | null>(null);
+  const [loading, setLoading] = useState<boolean>(!!diaryId);
+  const [error, setError] = useState<string | null>(null);
+
+  // id 없으면 에러 처리
   useEffect(() => {
-    if (diaryData?.frame) {
-      console.log("RecordDetailPage - frame 설정:", diaryData.frame);
-      setFrameId(diaryData.frame as any);
+    if (!diaryId) {
+      setError("잘못된 접근입니다.");
+      setLoading(false);
     }
-  }, [diaryData, setFrameId]);
+  }, [diaryId]);
 
   useEffect(() => {
-    if (diaryData?.isFavorited !== undefined) {
-      setIsFavorite(diaryData.isFavorited);
-    }
-  }, [diaryData]);
+    let active = true;
+    const run = async () => {
+      if (!diaryId) return;
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await getDiaryById(Number(diaryId));
+        if (!active) return;
+        if (!res) {
+          setError("기록을 찾을 수 없어요.");
+        } else {
+          setFetched(res);
+        }
+      } catch {
+        if (active) setError("기록을 불러오지 못했어요.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    run();
+    return () => {
+      active = false;
+    };
+  }, [diaryId]);
 
+  const diaryForFrame: DiaryData | undefined = useMemo(() => {
+    if (!fetched) return undefined;
+    return {
+      id: fetched.id,
+      photoUrl: fetched.photoUrl ?? "",
+      date: fetched.date,
+      emotion: fetched.emotion,
+      summary: fetched.summary,
+      address: "",
+      tags: fetched.tags ?? [],
+      content: "",
+      frame: "1",
+    };
+  }, [fetched]);
+
+  // 프레임 배경 동기화(기본 1)
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (diaryForFrame?.frame) setFrameId(diaryForFrame.frame as any);
+    else setFrameId("1");
+  }, [diaryForFrame?.frame, setFrameId]);
+
+  // 저장
   const handleSaveClick = async () => {
     const original = frameCardRef.current;
     if (!original) return;
-
     const FRAME_W = 230;
     const FRAME_H = 299;
     const SCALE = Math.min(3, window.devicePixelRatio || 2);
@@ -100,7 +153,6 @@ const RecordDetailPage = () => {
       ).imageOrientation = "from-image";
     });
 
-    // 로드/디코드 대기 (최신 브라우저 기준)
     await Promise.all(
       photos.map(async (img) => {
         if (!img.complete) {
@@ -131,15 +183,13 @@ const RecordDetailPage = () => {
         scrollY: 0,
         imageTimeout: 15000,
       });
-
       const url = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = url;
       a.download = "diary.png";
       a.click();
       setMessageText("사진이 갤러리에 저장되었습니다.");
-    } catch (e) {
-      console.error(e);
+    } catch {
       setMessageText("저장에 실패했습니다.");
     } finally {
       document.body.removeChild(clone);
@@ -148,8 +198,9 @@ const RecordDetailPage = () => {
     }
   };
 
+  // 즐겨찾기
   const handleFavoriteClick = async () => {
-    if (isPending) return;
+    if (isPending || !diaryId) return;
     const next = !isFavorite;
 
     setIsPending(true);
@@ -159,8 +210,8 @@ const RecordDetailPage = () => {
 
     try {
       await updateFavorite(Number(diaryId), next);
-    } catch (e) {
-      setIsFavorite(!next); // 실패 롤백
+    } catch {
+      setIsFavorite(!next); // 롤백
       setMessageText("즐겨찾기 요청 실패!");
     } finally {
       setIsPending(false);
@@ -171,17 +222,13 @@ const RecordDetailPage = () => {
   const handleEditClick = () => {
     setMessageText("수정 버튼이 클릭되었습니다.");
     setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 3000);
+    setTimeout(() => setShowMessage(false), 3000);
   };
 
   const handleDeleteClick = () => {
     setMessageText("삭제 버튼이 클릭되었습니다.");
     setShowMessage(true);
-    setTimeout(() => {
-      setShowMessage(false);
-    }, 3000);
+    setTimeout(() => setShowMessage(false), 3000);
   };
 
   return (
@@ -201,13 +248,10 @@ const RecordDetailPage = () => {
             left="/icons/arrow_left.svg"
             middle="기록 상세보기"
             right="/icons/home.svg"
-            LeftClick={() => {
-              navigate("/home");
-            }}
-            RightClick={() => {
-              navigate("/home");
-            }}
+            LeftClick={() => navigate(-1)}
+            RightClick={() => navigate("/home")}
           />
+
           <div className={styles.btn_container}>
             <SaveButton onClick={handleSaveClick} />
             <FavoriteButton
@@ -217,20 +261,37 @@ const RecordDetailPage = () => {
             <EditButton onClick={handleEditClick} />
             <DeleteButton onClick={handleDeleteClick} />
           </div>
+
           <div className={styles.frame_container} ref={frameContainerRef}>
-            <Frame
-              ref={frameCardRef}
-              isAbled={true}
-              diaryData={diaryData}
-              // diaryData가 없을 때 사용할 기본값들
-              photoUrl={diaryData?.photoUrl || "https://placehold.co/215x286"}
-              date={diaryData?.date || "2025/01/01"}
-              emotion={diaryData?.emotion || "기쁨"}
-              summary={diaryData?.summary || "일기 내용 한 줄 요약"}
-              placeInfo={diaryData?.address || "장소 정보"}
-              tags={diaryData?.tags || []}
-              content={diaryData?.content || "일기 내용이 여기에 표시됩니다."}
-            />
+            {/* 로딩/에러 */}
+            {loading && (
+              <div className={styles.message_container}>
+                <span className={styles.message_text}>불러오는 중…</span>
+              </div>
+            )}
+            {error && !loading && (
+              <div className={styles.message_container}>
+                <span className={styles.message_text}>{error}</span>
+              </div>
+            )}
+
+            {/* 콘텐츠 */}
+            {!loading && !error && (
+              <Frame
+                ref={frameCardRef}
+                isAbled={true}
+                diaryData={diaryForFrame}
+                photoUrl={diaryForFrame?.photoUrl || fallbackImg}
+                date={diaryForFrame?.date || "2025/01/01"}
+                emotion={diaryForFrame?.emotion || "기쁨"}
+                summary={diaryForFrame?.summary || "일기 내용 한 줄 요약"}
+                placeInfo={diaryForFrame?.address || "장소 정보"}
+                tags={diaryForFrame?.tags || []}
+                content={
+                  diaryForFrame?.content || "일기 내용이 여기에 표시됩니다."
+                }
+              />
+            )}
 
             {showMessage && (
               <div className={styles.message_container}>
