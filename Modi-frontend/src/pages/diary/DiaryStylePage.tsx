@@ -125,6 +125,7 @@ const DiaryStylePage = () => {
             diaryData,
             diaryId: String(id),
             isFavorited: !!d.isFavorited,
+            fromCreate: true,
           },
         });
       } catch (e: any) {

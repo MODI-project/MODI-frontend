@@ -5,12 +5,15 @@ interface ButtonIconProps {
   isFavorite?: boolean;
 }
 
-export default function ButtonIcon({ onClick, isFavorite }: ButtonIconProps) {
+export default function ButtonIcon({
+  onClick,
+  isFavorite = false,
+}: ButtonIconProps) {
   return (
     <button className={styles.container} onClick={onClick}>
       <img
         src={isFavorite ? "/icons/favorite_on.svg" : "/icons/favorite_off.svg"}
-        alt="즐겨찾기 아이콘"
+        alt={isFavorite ? "즐겨찾기 해제" : "즐겨찾기 추가"}
         className={styles.icon}
       />
     </button>
