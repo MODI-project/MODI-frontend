@@ -1,18 +1,8 @@
-import { mockDiaries } from "../apis/diaryInfo";
+import { fetchStatisticsByYm } from "./statisticsFetcher";
 
-export function getEmotionStatsByMonth(ym: string) {
-  const filtered = mockDiaries.filter((d) => d.date.startsWith(ym));
-  const counter: Record<string, number> = {};
-
-  filtered.forEach((d) => {
-    if (!d.emotion) return;
-    counter[d.emotion] = (counter[d.emotion] || 0) + 1;
-  });
-
-  const result = Object.entries(counter).map(([label, value]) => ({
-    label,
-    value,
-  }));
-
-  return result.sort((a, b) => b.value - a.value);
+export async function getEmotionStatsByMonth(ym: string) {
+  const data = await fetchStatisticsByYm(ym);
+  return (data.topEmotions ?? [])
+    .map((it) => ({ label: it.name, value: it.count }))
+    .sort((a, b) => b.value - a.value);
 }
