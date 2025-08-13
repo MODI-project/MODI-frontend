@@ -5,7 +5,8 @@ import {
 import styles from "./Frame.module.css";
 import React, { useState, forwardRef } from "react";
 
-// 프레임별 background 이미지 경로 예시
+const FALLBACK_IMG = "https://placehold.co/215x286"; // 로딩 실패 시 대체 이미지
+
 const frameWrapperBackgrounds = {
   basic: {
     none: "",
@@ -28,17 +29,6 @@ const frameWrapperBackgrounds = {
 };
 
 const frameBackBackgrounds = {
-  basic: {
-    none: "",
-    pink: "",
-    yellow: "",
-    green: "",
-    blue: "",
-    cream: "",
-    star: "",
-    smallDot: "",
-    bigDot: "",
-  },
   character: {
     none: "",
     momo: "/images/frame-bg/character-frame/momo/fr-momo-bg.svg",
@@ -49,17 +39,6 @@ const frameBackBackgrounds = {
 };
 
 const frameFrontBackgrounds = {
-  basic: {
-    none: "",
-    pink: "",
-    yellow: "",
-    green: "",
-    blue: "",
-    cream: "",
-    star: "",
-    smallDot: "",
-    bigDot: "",
-  },
   character: {
     none: "",
     momo: "/images/frame-bg/character-frame/momo/fr-momo.svg",
@@ -69,15 +48,14 @@ const frameFrontBackgrounds = {
   },
 };
 
-// 서버 API 명세에 맞는 DiaryData 인터페이스
+// 서버 API 명세에 맞춘 DiaryData 타입
 export interface DiaryData {
-  id: number; // 서버에서 반환하는 실제 ID (number 타입)
-  date: string; // "YYYY-MM-DD" 형식
-  photoUrl: string; // 이미지 URL
-  summary: string; // 일기 요약
-  emotion: string; // 감정
-  tags: string[]; // 태그 배열
-  // 기존 필드들 (서버에서 제공하지 않는 경우 기본값 사용)
+  id: number;
+  date: string;
+  photoUrl: string;
+  summary: string;
+  emotion: string;
+  tags: string[];
   content?: string;
   address?: string;
   latitude?: number;
@@ -90,9 +68,7 @@ export interface DiaryData {
 interface FrameProps {
   isAbled?: boolean;
   onClick?: () => void;
-  // 서버 데이터 props
   diaryData?: DiaryData;
-  // 개별 데이터 props (diaryData가 없을 때 사용)
   photoUrl?: string;
   date?: string;
   emotion?: string;
@@ -114,28 +90,24 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
     placeInfo,
     tags = [],
     content,
-  }: FrameProps,
+  },
   ref
 ) {
   const { frameId } = useFrameTemplate();
   const [isFlipped, setIsFlipped] = useState(false);
-  // diaryData가 있으면 해당 일기의 frame을 사용, 없으면 전역 frameId 사용
+
   const currentFrameId = diaryData?.frame || frameId;
 
   const handleFrameClick = () => {
     if (!isAbled) return;
-
-    if (onClick) {
-      onClick();
-    } else {
-      setIsFlipped(!isFlipped);
-    }
+    if (onClick) onClick();
+    else setIsFlipped(!isFlipped);
   };
 
-  // diaryData가 있으면 우선 사용, 없으면 개별 props 사용
+  // 표시할 데이터 (diaryData 우선)
   const displayData = diaryData
     ? {
-        photoUrl: diaryData.photoUrl,
+        photoUrl: diaryData.photoUrl || FALLBACK_IMG,
         date: diaryData.date,
         emotion: diaryData.emotion,
         summary: diaryData.summary,
@@ -144,40 +116,25 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
         content: diaryData.content,
       }
     : {
-        photoUrl: photoUrl || "https://placehold.co/215x286",
+        photoUrl: photoUrl || FALLBACK_IMG,
         date: date || "2000/00/00",
         emotion: emotion || "기쁨",
         summary: summary || "일기 내용 한 줄 요약",
         placeInfo: placeInfo || "장소 정보",
-        tags: tags,
+        tags,
         content:
           content ||
-          "어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구어쩌구저쩌구",
+          "일기 내용이 여기에 표시됩니다. 내용이 없으면 이 문장이 기본으로 표시됩니다.",
       };
 
-  // 안전한 frameMapping 처리
+  // frameId -> type/id 변환
   const frameMapping =
     frameIdMapping[currentFrameId as keyof typeof frameIdMapping] ||
     frameIdMapping["1"];
   const frameType = frameMapping.type;
   const frameTypeId = frameMapping.id;
 
-  console.log("Frame 컴포넌트 디버깅:", {
-    currentFrameId,
-    frameType,
-    frameTypeId,
-    diaryData: !!diaryData,
-    diaryDataFrame: diaryData?.frame,
-    displayData: {
-      photoUrl: displayData.photoUrl,
-      date: displayData.date,
-      emotion: displayData.emotion,
-      summary: displayData.summary,
-      tags: displayData.tags,
-      content: displayData.content?.substring(0, 50) + "...",
-    },
-  });
-
+  // 배경 스타일 설정
   const wrapperBg =
     frameType === "basic"
       ? frameWrapperBackgrounds.basic[
@@ -188,25 +145,23 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
         ];
 
   const backBg =
-    frameType === "basic"
-      ? ""
-      : frameBackBackgrounds.character[
+    frameType === "character"
+      ? frameBackBackgrounds.character[
           frameTypeId as keyof typeof frameBackBackgrounds.character
-        ];
+        ]
+      : "";
 
   const frontBg =
-    frameType === "basic"
-      ? ""
-      : frameFrontBackgrounds.character[
+    frameType === "character"
+      ? frameFrontBackgrounds.character[
           frameTypeId as keyof typeof frameFrontBackgrounds.character
-        ];
+        ]
+      : "";
 
   const isColor = wrapperBg?.startsWith("var(") || wrapperBg?.startsWith("#");
-
   const wrapperStyle = isColor
     ? { background: wrapperBg }
     : { backgroundImage: `url(${wrapperBg})` };
-
   const backStyle = backBg ? { backgroundImage: `url(${backBg})` } : {};
   const frontStyle = frontBg ? { backgroundImage: `url(${frontBg})` } : {};
 
@@ -217,6 +172,7 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
       style={wrapperStyle}
       onClick={handleFrameClick}
     >
+      {/* 앞면 */}
       <div
         className={`${styles.fore_frame} ${isFlipped ? styles.flipped : ""}`}
       >
@@ -229,12 +185,18 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
             src={displayData.photoUrl}
             alt="일기 사진"
             crossOrigin="anonymous"
+            onError={(e) => {
+              const img = e.currentTarget as HTMLImageElement;
+              if (img.src !== FALLBACK_IMG) img.src = FALLBACK_IMG;
+            }}
           />
         </div>
         <div className={styles.summary_container}>
           <span className={styles.summary}>{displayData.summary}</span>
         </div>
       </div>
+
+      {/* 뒷면 */}
       <div
         className={`${styles.back_frame} ${isFlipped ? styles.flipped : ""}`}
       >

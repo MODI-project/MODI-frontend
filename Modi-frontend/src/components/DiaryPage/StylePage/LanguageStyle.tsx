@@ -21,10 +21,6 @@ const LanguageStyle = () => {
 
   const isBusy = previewLoadingIndex !== null;
 
-  const toApiStyle = (label: string) => {
-    return label;
-  };
-
   useEffect(() => {
     setPreviewedIndexes([]);
     setPreviews({});
@@ -69,7 +65,7 @@ const LanguageStyle = () => {
   }, [draft.style, apiStyles.length]);
 
   const handlePreviewClick = async (index: number) => {
-    if (isBusy) return;
+    if (loading || isBusy) return;
     if (previewedIndexes.includes(index)) return;
 
     const label = items[index].style;
@@ -98,7 +94,9 @@ const LanguageStyle = () => {
   };
 
   const handleSelect = (index: number) => {
+    if (loading || isBusy) return;
     if (!previewedIndexes.includes(index)) return;
+
     setSelectedIndex(index);
 
     const label = items[index].style;
@@ -119,14 +117,16 @@ const LanguageStyle = () => {
       {items.map((item, index) => {
         const isPreviewed = previewedIndexes.includes(index);
         const isSelected = selectedIndex === index;
-
         const content = previews[item.style] ?? draft.noEmotionSummary ?? "";
 
         return (
           <div
             key={`${item.style}-${index}`}
             onClick={() => handleSelect(index)}
-            style={{ cursor: isPreviewed ? "pointer" : "default" }}
+            style={{
+              cursor:
+                isPreviewed && !loading && !isBusy ? "pointer" : "default",
+            }}
           >
             <LanguageStyleSelector
               emotion={item.style}
@@ -137,7 +137,7 @@ const LanguageStyle = () => {
               isSelected={isSelected}
               onPreviewClick={() => handlePreviewClick(index)}
               loading={previewLoadingIndex === index}
-              disabled={isBusy && previewLoadingIndex !== index}
+              disabled={loading || isBusy}
             />
           </div>
         );

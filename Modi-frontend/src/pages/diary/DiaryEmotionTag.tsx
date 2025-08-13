@@ -2,9 +2,11 @@ import styles from "./DiaryEmotionTag.module.css";
 import Header from "../../components/common/Header";
 import Popup from "../../components/common/Popup";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDiaryDraft } from "../../hooks/useDiaryDraft";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getDiaryById } from "../../apis/Diary/searchDiary";
+import { useCharacter } from "../../contexts/CharacterContext";
 
 const emotionList = [
   { en: "happy", ko: "기쁨" },
@@ -19,27 +21,77 @@ const emotionList = [
   { en: "angry", ko: "화남" },
 ];
 
-const characterName = "momo"; //캐릭터 momo로 임시 설정
-
 const DiaryEmotionTag = () => {
-  const { draft, setDraft } = useDiaryDraft();
+  const { draft, setDraft, resetDraft } = useDiaryDraft();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { character } = useCharacter();
 
   const handlePopupConfirm = () => {
     setIsPopupOpen(false);
     navigate("/home");
   };
 
+  useEffect(() => {
+    const editId = location.state?.editDiaryId as number | undefined;
+
+    if (!editId) {
+      if (draft.mode === "edit" || draft.diaryId) resetDraft();
+      return;
+    }
+
+    let alive = true;
+    (async () => {
+      try {
+        resetDraft();
+
+        const d = await getDiaryById(editId);
+        if (!alive || !d) return;
+
+        setDraft({
+          mode: "edit",
+          diaryId: editId,
+          image: d.imageUrls?.[0] ?? null,
+          imageFile: undefined,
+          imageChanged: false,
+          content: d.content ?? "",
+          summary: d.summary ?? "",
+          noEmotionSummary: d.summary ?? "",
+          emotion: d.emotion?.name ?? null,
+          address: d.location?.address ?? "",
+          latitude: d.location?.latitude,
+          longitude: d.location?.longitude,
+          date: d.date ?? undefined,
+          templateId: d.frameId ?? 1,
+          font: d.font ?? "",
+          keywords: (d.tags ?? []).map((t: { name: string }) => t.name),
+          originalContent: d.content ?? "",
+          originalAddress: d.location?.address ?? "",
+          originalKeywords: (d.tags ?? []).map((t: { name: string }) => t.name),
+          originalImage: d.imageUrls?.[0] ?? null,
+        });
+      } catch (e) {
+        console.error("편집 데이터 불러오기 실패:", e);
+        setDraft({ mode: "edit", diaryId: editId });
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
+
   return (
     <div className={styles.DiaryEmotionTag_wrapper}>
       <div className={styles.DiaryEmotionTag_container}>
         <Header
           left="/icons/back.svg"
-          LeftClick={() => setIsPopupOpen(true)} // ✅ 팝업 열기
-          middle="기록 작성하기"
+          LeftClick={() => setIsPopupOpen(true)}
+          middle="기록하기"
           right="/icons/X.svg"
-          RightClick={() => setIsPopupOpen(true)} // ✅ 팝업 열기
+          RightClick={() => setIsPopupOpen(true)}
         />
         <div className={styles.main_container}>
           <p className={styles.ask}>오늘은 어떤 하루였나요?</p>
@@ -47,12 +99,12 @@ const DiaryEmotionTag = () => {
             {emotionList.map((emotion) => {
               const isSelected = draft.emotion === emotion.ko;
               const imageName = isSelected
-                ? `clicked_${characterName}-${emotion.en}.svg`
-                : `${characterName}-${emotion.en}.svg`;
+                ? `clicked_${character}-${emotion.en}.svg`
+                : `${character}-${emotion.en}.svg`;
               return (
                 <div key={emotion.en} className={styles.emotion_item}>
                   <img
-                    src={`/emotion_tag/${characterName}/${imageName}`}
+                    src={`/emotion_tag/${character}/${imageName}`}
                     alt={emotion.ko}
                     className={styles.emotion_image}
                     onClick={() => setDraft({ emotion: emotion.ko })}
@@ -74,16 +126,15 @@ const DiaryEmotionTag = () => {
       {/* 팝업 */}
       {isPopupOpen && (
         <Popup
-          title={["작성한 일기가 저장되지 않아요!", "화면을 닫을까요?"]}
+          title={[
+            draft.mode === "edit"
+              ? "수정한 일기가 저장되지 않아요!"
+              : "작성한 일기가 저장되지 않아요!",
+            "화면을 닫을까요?",
+          ]}
           buttons={[
-            {
-              label: "아니오",
-              onClick: () => setIsPopupOpen(false),
-            },
-            {
-              label: "예",
-              onClick: handlePopupConfirm,
-            },
+            { label: "아니오", onClick: () => setIsPopupOpen(false) },
+            { label: "예", onClick: handlePopupConfirm },
           ]}
         />
       )}

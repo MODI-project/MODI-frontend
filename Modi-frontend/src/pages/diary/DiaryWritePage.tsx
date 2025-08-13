@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import ExifReader from "exifreader";
 import { useNavigate } from "react-router-dom";
 import styles from "./DiaryWritePage.module.css";
@@ -18,6 +18,7 @@ const DiaryWritePage = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [popupGenerating, setPopupGenerating] = useState(false);
+  const [showUnchangedPopup, setShowUnchangedPopup] = useState(false);
 
   const handlePopupConfirm = () => {
     setIsPopupOpen(false);
@@ -26,6 +27,28 @@ const DiaryWritePage = () => {
 
   const { draft, setDraft } = useDiaryDraft();
 
+  const equalArray = (a: string[] = [], b: string[] = []) =>
+    a.length === b.length &&
+    a.every((v, i) => v.trim() === (b[i] ?? "").trim());
+
+  const isDraftUnchanged = () => {
+    if (draft.mode !== "edit") return false;
+
+    const sameContent =
+      (draft.originalContent ?? "").trim() === (draft.content ?? "").trim();
+    const sameAddress =
+      (draft.originalAddress ?? "").trim() === (draft.address ?? "").trim();
+    const sameKeywords = equalArray(
+      draft.originalKeywords ?? [],
+      draft.keywords ?? []
+    );
+    const sameImage =
+      !draft.imageChanged &&
+      (draft.originalImage ?? null) === (draft.image ?? null);
+
+    return sameContent && sameAddress && sameKeywords && sameImage;
+  };
+
   // 비활성화 조건
   const isReadyToSubmit =
     draft.image && draft.address.trim() !== "" && draft.keywords.length > 2;
@@ -33,6 +56,7 @@ const DiaryWritePage = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setDraft({ imageFile: file, imageChanged: true });
 
     // 1. 원본 File 객체 저장 (FormData 전송용)
     setDraft({ imageFile: file });
@@ -42,6 +66,7 @@ const DiaryWritePage = () => {
     reader.onload = async () => {
       const imageUrl = reader.result as string;
       setDraft({ image: imageUrl });
+      setDraft({ imageFile: file, imageChanged: true });
 
       // 3. GPS 정보 추출
       try {
@@ -140,7 +165,7 @@ const DiaryWritePage = () => {
         <Header
           left="/icons/back.svg"
           LeftClick={() => navigate(-1)}
-          middle="기록 작성하기"
+          middle="기록하기"
           right="/icons/X.svg"
           RightClick={() => setIsPopupOpen(true)}
         />
@@ -221,6 +246,11 @@ const DiaryWritePage = () => {
           location="next"
           label="다음"
           onClick={async () => {
+            if (draft.mode === "edit" && isDraftUnchanged()) {
+              setShowUnchangedPopup(true);
+              return;
+            }
+
             if (draft.content.trim() === "") {
               setShowEmptyContentPopup(true);
             } else {
@@ -231,19 +261,38 @@ const DiaryWritePage = () => {
         />
       </div>
 
-      {/* 팝업 */}
-      {isPopupOpen && (
+      {/* 내용 변경 없음 팝업 */}
+      {showUnchangedPopup && (
         <Popup
-          title={["작성한 일기가 저장되지 않아요!", "화면을 닫을까요?"]}
+          title={["일기 내용이 변경되지 않았어요!", "넘어가시겠어요?"]}
           buttons={[
             {
-              label: "아니오",
-              onClick: () => setIsPopupOpen(false),
+              label: "아니요",
+              onClick: () => setShowUnchangedPopup(false),
             },
             {
               label: "예",
-              onClick: handlePopupConfirm,
+              onClick: () => {
+                setShowUnchangedPopup(false);
+                navigate("/style");
+              },
             },
+          ]}
+        />
+      )}
+
+      {/* 팝업 */}
+      {isPopupOpen && (
+        <Popup
+          title={[
+            draft.mode === "edit"
+              ? "수정한 일기가 저장되지 않아요!"
+              : "작성한 일기가 저장되지 않아요!",
+            "화면을 닫을까요?",
+          ]}
+          buttons={[
+            { label: "아니오", onClick: () => setIsPopupOpen(false) },
+            { label: "예", onClick: handlePopupConfirm },
           ]}
         />
       )}
@@ -257,7 +306,7 @@ const DiaryWritePage = () => {
             {
               label: "아니요",
               onClick: () => {
-                if (popupGenerating) return; // 진행 중이면 막기
+                if (popupGenerating) return;
                 setShowEmptyContentPopup(false);
               },
             },
