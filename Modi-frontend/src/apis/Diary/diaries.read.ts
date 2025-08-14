@@ -40,18 +40,25 @@ export const fetchDailyGroups = async (
     params: { year, month },
   });
 
-  const groups = Array.isArray(data) ? data : data?.groups ?? data;
-  return (groups as any[]).map((g) => {
-    const rawList = Array.isArray(g?.diaries)
-      ? g.diaries
-      : Array.isArray(g?.items)
-      ? g.items
-      : Array.isArray(g?.list)
-      ? g.list
-      : [];
-    return {
-      date: (g.date ?? "").slice(0, 10),
-      diaries: rawList.map(normalize),
-    };
-  });
+  const diariesRaw: any[] = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.diaries)
+    ? data.diaries
+    : Array.isArray(data?.items)
+    ? data.items
+    : [];
+
+  const diaries = diariesRaw.map(normalize).filter((d) => d.date);
+
+  const map: Record<string, DiaryData[]> = {};
+  for (const d of diaries) {
+    if (!map[d.date]) map[d.date] = [];
+    map[d.date].push(d);
+  }
+
+  const groups: DailyGroup[] = Object.entries(map)
+    .map(([date, ds]) => ({ date, diaries: ds }))
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  return groups;
 };
