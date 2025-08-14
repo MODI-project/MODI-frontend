@@ -6,6 +6,7 @@ import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButto
 import { useCharacter } from "../../contexts/CharacterContext";
 import { handleUserSignUp } from "../../apis/UserAPIS/signUp";
 import { handleEditUserInfo } from "../../apis/UserAPIS/editUserInfo";
+import { loadUserInfo } from "../../apis/UserAPIS/loadUserInfo";
 import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
 
 // URL에서 code 파라미터 추출 함수
@@ -16,7 +17,6 @@ const getCodeFromURL = (): string | null => {
 
 interface LocationState {
   from?: string;
-  isNew?: boolean;
 }
 
 const InitialSetting = () => {
@@ -30,13 +30,27 @@ const InitialSetting = () => {
   const [nickname, setNickname] = useState<string>("");
   const [showPreview, setShowPreview] = useState<boolean>(false);
 
-  // 기존 닉네임 불러오기
+  // 기존 사용자 정보 불러오기 (마이페이지에서 수정하는 경우)
   useEffect(() => {
-    const savedNickname = localStorage.getItem("nickname");
-    if (savedNickname) {
-      setNickname(savedNickname);
-    }
-  }, []);
+    const loadExistingUserInfo = async () => {
+      if (from === "/mypage") {
+        try {
+          console.log("기존 사용자 정보 불러오기 시작");
+          const userInfo = await loadUserInfo();
+          setNickname(userInfo.nickname);
+          setSelectedCharacter(userInfo.character);
+          setCharacter(userInfo.character);
+          console.log("기존 사용자 정보 불러오기 완료:", userInfo);
+        } catch (error) {
+          console.error("기존 사용자 정보 불러오기 실패:", error);
+          // 실패해도 계속 진행 가능
+        }
+      }
+    };
+
+    loadExistingUserInfo();
+  }, [from, setCharacter]);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [nicknameError, setNicknameError] = useState<string>("");
   const completeBtnRef = useRef<HTMLButtonElement>(null);
@@ -88,7 +102,7 @@ const InitialSetting = () => {
 
   const handleCharacterSelect = (character: string) => {
     setSelectedCharacter(character);
-    setCharacter(character as any);
+    // setCharacter(character as any); // API 요청 방지를 위해 제거
 
     // 완료 버튼을 enabled 상태로 만들고 포커스
     if (completeBtnRef.current) {
@@ -156,9 +170,8 @@ const InitialSetting = () => {
         console.log("회원가입 완료:", userInfo);
       }
 
-      // 닉네임을 localStorage에 저장 (기존 코드와의 호환성을 위해)
-      localStorage.setItem("nickname", finalNickname);
-      localStorage.setItem("character", selectedCharacter);
+      // API 호출 성공 후에만 캐릭터 정보 업데이트
+      setCharacter(selectedCharacter as any);
 
       if (location.state?.from === "/mypage") {
         navigate("/mypage");

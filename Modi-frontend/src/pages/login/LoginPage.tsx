@@ -14,11 +14,8 @@ const LoginPage = () => {
 
     // 외부 URL로 이동하므로 window.location.href 사용
     // React Router가 내부 라우트로 인식하지 않도록 전체 URL 사용
-    if (backendOAuthUrl.startsWith("http")) {
+    if (backendOAuthUrl.startsWith("https")) {
       window.location.href = backendOAuthUrl;
-    } else {
-      // 상대 경로인 경우 현재 도메인과 결합
-      window.location.href = `${window.location.origin}${backendOAuthUrl}`;
     }
   };
 

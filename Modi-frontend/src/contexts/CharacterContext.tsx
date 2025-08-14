@@ -70,12 +70,9 @@ export const CharacterProvider: React.FC<React.PropsWithChildren> = ({
       saveNickname(me.nickname);
     } catch (e) {
       console.warn("[CharacterProvider:refreshFromServer] failed:", e);
+      // 로그인되지 않은 상태이므로 로컬 스토리지 값 유지
     }
   };
-
-  useEffect(() => {
-    refreshFromServer();
-  }, []);
 
   useEffect(() => {
     console.log(
