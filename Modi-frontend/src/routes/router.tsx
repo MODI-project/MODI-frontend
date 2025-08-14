@@ -17,6 +17,7 @@ import Popup from "../components/common/Popup";
 import MapSearchBar from "../components/map/SearchPlace/MapSearchBar";
 import NotiPopUp from "../components/notification/NotiPopUp";
 import OAuthCallback from "../pages/login/OAuthCallback";
+import NotificationGridPage from "../pages/notification/NotificationGridPage";
 
 const Router = () => {
   const router = createBrowserRouter([
@@ -83,6 +84,10 @@ const Router = () => {
     {
       path: "/oauth/callback",
       element: <OAuthCallback />,
+    },
+    {
+      path: "/notification-grid",
+      element: <NotificationGridPage />,
     },
   ]);
   return <RouterProvider router={router} />;
