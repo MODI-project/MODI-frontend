@@ -1,13 +1,13 @@
 import styles from "./MapPage.module.css";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { mockDiaries } from "../../apis/diaryInfo";
-import { DiaryData } from "../../apis/diaryInfo";
 import MapMarker from "../../components/map/MapMarking/MapMarker";
 import { loadKakaoMapAPI } from "../../utils/kakaoMapLoader";
 import KakaoMap from "../../components/map/LoadMap/KakaoMap";
 import MapSearchBar from "../../components/map/SearchPlace/MapSearchBar";
 import Footer from "../../components/common/Footer";
 import { useCharacter } from "../../contexts/CharacterContext";
+import LocationDiariesBottomSheet from "../../components/map/MapMarking/LocationDiariesBottomSheet";
 
 interface Diary {
   id: number;
@@ -24,6 +24,10 @@ const MapPage = () => {
   const [mapInstance, setMapInstance] = useState<any>(null);
   const [diaries, setDiaries] = useState<Diary[]>([]);
   const { character } = useCharacter();
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedLocationId, setSelectedLocationId] = useState<number | null>(
+    null
+  );
 
   const loadMap = async () => {
     try {
@@ -245,6 +249,10 @@ const MapPage = () => {
                     map={mapInstance}
                     diary={d}
                     character={character!}
+                    onClick={(locId) => {
+                      setSelectedLocationId(locId);
+                      setSheetOpen(true);
+                    }}
                   />
                 ))}
               </>
@@ -256,6 +264,11 @@ const MapPage = () => {
             <p className={styles.loading_text}>지도를 초기화하는 중...</p>
           </div>
         )}
+        <LocationDiariesBottomSheet
+          isOpen={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+          locationId={selectedLocationId}
+        />
         <Footer />
       </div>
     </div>

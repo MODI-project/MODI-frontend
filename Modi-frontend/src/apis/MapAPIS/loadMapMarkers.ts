@@ -9,40 +9,112 @@ const API_BASE_URL =
 const accessToken = import.meta.env.VITE_ACCESS_TOKEN || "";
 
 // 개발환경에서 사용할 mock 데이터
-const mockMapMarkers: MapMarkerResponse[] = [
+export const MOCK_NEARBY_DIARIES: MapMarkerResponse[] = [
   {
-    id: 1,
-    datetime: "2024-01-15T10:30:00",
+    id: 101,
+    datetime: "2025-07-29T15:37:01.82931",
     emotion: "happy",
     location: {
       id: 1,
-      address: "서울특별시 강남구 테헤란로 123",
+      address: "서울시 광진구 화양동",
       latitude: 37.5407923,
       longitude: 127.0710699,
     },
     thumbnailUrl: "https://example.com/thumbnail1.jpg",
   },
   {
-    id: 2,
-    datetime: "2024-01-15T14:20:00",
+    id: 102,
+    datetime: "2025-07-30T15:37:01.82931",
     emotion: "sad",
     location: {
-      id: 2,
-      address: "서울특별시 강남구 역삼동 456",
+      id: 1,
+      address: "서울시 광진구 화양동",
       latitude: 37.5507923,
-      longitude: 127.0810699,
+      longitude: 127.123456,
     },
     thumbnailUrl: "https://example.com/thumbnail2.jpg",
   },
   {
-    id: 3,
-    datetime: "2024-01-15T18:45:00",
+    id: 104,
+    datetime: "2025-07-31T15:37:01.82931",
+    emotion: "sad",
+    location: {
+      id: 1,
+      address: "서울시 광진구 화양동",
+      latitude: 37.5507923,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail2.jpg",
+  },
+  {
+    id: 105,
+    datetime: "2025-08-01T15:37:01.82931",
+    emotion: "sad",
+    location: {
+      id: 1,
+      address: "서울시 광진구 화양동",
+      latitude: 37.5507923,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail2.jpg",
+  },
+  {
+    id: 106,
+    datetime: "2025-08-02T15:37:01.82931",
+    emotion: "sad",
+    location: {
+      id: 1,
+      address: "서울시 광진구 화양동",
+      latitude: 37.5507923,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail2.jpg",
+  },
+  {
+    id: 103,
+    datetime: "2025-07-29T15:37:01.82931",
     emotion: "excited",
     location: {
       id: 3,
-      address: "서울특별시 강남구 삼성동 789",
-      latitude: 37.5307923,
-      longitude: 127.0610699,
+      address: "서울시 광진구 화양동",
+      latitude: 37.123456,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail3.jpg",
+  },
+  {
+    id: 107,
+    datetime: "2025-07-29T17:37:01.82931",
+    emotion: "excited",
+    location: {
+      id: 3,
+      address: "서울시 광진구 화양동",
+      latitude: 37.123456,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail3.jpg",
+  },
+  {
+    id: 108,
+    datetime: "2025-07-29T20:37:01.82931",
+    emotion: "excited",
+    location: {
+      id: 3,
+      address: "서울시 광진구 화양동",
+      latitude: 37.123456,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail3.jpg",
+  },
+  {
+    id: 109,
+    datetime: "2025-07-29T21:37:01.82931",
+    emotion: "excited",
+    location: {
+      id: 3,
+      address: "서울시 광진구 화양동",
+      latitude: 37.123456,
+      longitude: 127.123456,
     },
     thumbnailUrl: "https://example.com/thumbnail3.jpg",
   },
@@ -59,12 +131,12 @@ export const loadMapMarkers = async (
   const isDevelopment = import.meta.env.DEV;
   if (isDevelopment) {
     console.log("🔄 개발환경 - Mock 데이터 사용");
-    console.log("Mock 마커 데이터:", mockMapMarkers);
+    console.log("Mock 마커 데이터:", MOCK_NEARBY_DIARIES);
 
     // 실제 API 호출 대신 mock 데이터 반환
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(mockMapMarkers);
+        resolve(MOCK_NEARBY_DIARIES);
       }, 500); // 0.5초 지연으로 실제 API 호출 시뮬레이션
     });
   }

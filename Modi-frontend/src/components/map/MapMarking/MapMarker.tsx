@@ -14,9 +14,15 @@ interface MapMarkerProps {
     postCount: number; // +n 에 표시될 값
   };
   character: Exclude<CharacterKey, null>;
+  onClick?: (locationId: number) => void;
 }
 
-const MapMarker: React.FC<MapMarkerProps> = ({ map, diary, character }) => {
+const MapMarker: React.FC<MapMarkerProps> = ({
+  map,
+  diary,
+  character,
+  onClick,
+}) => {
   useEffect(() => {
     console.log("MapMarker useEffect 실행:", {
       map: !!map,
@@ -75,6 +81,10 @@ const MapMarker: React.FC<MapMarkerProps> = ({ map, diary, character }) => {
     badge.textContent = `+${diary.postCount}`;
     container.appendChild(badge);
 
+    container.addEventListener("click", () => {
+      onClick?.(diary.id);
+    });
+
     // 5) CustomOverlay 생성
     const overlay = new kakao.maps.CustomOverlay({
       position,
@@ -88,7 +98,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({ map, diary, character }) => {
     return () => {
       overlay.setMap(null);
     };
-  }, [map, diary, character]);
+  }, [map, diary, character, onClick]);
 
   return null; // 실제로는 DOM 마운트 없이 useEffect로만 처리
 };
