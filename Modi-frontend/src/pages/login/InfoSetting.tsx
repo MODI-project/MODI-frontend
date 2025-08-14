@@ -133,17 +133,9 @@ const InitialSetting = () => {
       const payload = {
         nickname: finalNickname,
         character: selectedCharacter,
-        code: code, // code 파라미터 추가
       };
 
       let userInfo;
-
-      console.log("회원가입 시작:", {
-        nickname: finalNickname,
-        character: selectedCharacter,
-        code: code,
-      });
-
       // API 호출하여 회원가입
       if (from === "/mypage") {
         // ✅ 마이페이지에서 온 경우 → 수정
@@ -162,13 +154,6 @@ const InitialSetting = () => {
           code
         );
         console.log("회원가입 완료:", userInfo);
-
-        // 회원가입 후 토큰 요청 (code가 있는 경우)
-        if (code) {
-          console.log("회원가입 후 토큰 요청 시작");
-          await handleTokenRequest(code);
-          console.log("회원가입 후 토큰 요청 완료");
-        }
       }
 
       // 닉네임을 localStorage에 저장 (기존 코드와의 호환성을 위해)

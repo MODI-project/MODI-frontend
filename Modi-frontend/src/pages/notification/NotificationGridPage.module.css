@@ -1,0 +1,31 @@
+.notification_grid_page_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.notification_grid_page_container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  max-width: 400px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url("/images/background/normal-bg.svg");
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+}
+
+.notification_grid_container {
+  width: 100vw;
+  height: 100vh;
+  max-width: 297px;
+  max-height: 596px;
+  overflow: scroll;
+  margin-top: 143px;
+}
