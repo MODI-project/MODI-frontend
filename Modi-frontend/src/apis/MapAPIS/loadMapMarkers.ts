@@ -24,7 +24,43 @@ export const MOCK_NEARBY_DIARIES: MapMarkerResponse[] = [
   },
   {
     id: 102,
-    datetime: "2025-07-29T15:37:01.82931",
+    datetime: "2025-07-30T15:37:01.82931",
+    emotion: "sad",
+    location: {
+      id: 1,
+      address: "서울시 광진구 화양동",
+      latitude: 37.5507923,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail2.jpg",
+  },
+  {
+    id: 104,
+    datetime: "2025-07-31T15:37:01.82931",
+    emotion: "sad",
+    location: {
+      id: 1,
+      address: "서울시 광진구 화양동",
+      latitude: 37.5507923,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail2.jpg",
+  },
+  {
+    id: 105,
+    datetime: "2025-08-01T15:37:01.82931",
+    emotion: "sad",
+    location: {
+      id: 1,
+      address: "서울시 광진구 화양동",
+      latitude: 37.5507923,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail2.jpg",
+  },
+  {
+    id: 106,
+    datetime: "2025-08-02T15:37:01.82931",
     emotion: "sad",
     location: {
       id: 1,
@@ -37,6 +73,42 @@ export const MOCK_NEARBY_DIARIES: MapMarkerResponse[] = [
   {
     id: 103,
     datetime: "2025-07-29T15:37:01.82931",
+    emotion: "excited",
+    location: {
+      id: 3,
+      address: "서울시 광진구 화양동",
+      latitude: 37.123456,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail3.jpg",
+  },
+  {
+    id: 107,
+    datetime: "2025-07-29T17:37:01.82931",
+    emotion: "excited",
+    location: {
+      id: 3,
+      address: "서울시 광진구 화양동",
+      latitude: 37.123456,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail3.jpg",
+  },
+  {
+    id: 108,
+    datetime: "2025-07-29T20:37:01.82931",
+    emotion: "excited",
+    location: {
+      id: 3,
+      address: "서울시 광진구 화양동",
+      latitude: 37.123456,
+      longitude: 127.123456,
+    },
+    thumbnailUrl: "https://example.com/thumbnail3.jpg",
+  },
+  {
+    id: 109,
+    datetime: "2025-07-29T21:37:01.82931",
     emotion: "excited",
     location: {
       id: 3,

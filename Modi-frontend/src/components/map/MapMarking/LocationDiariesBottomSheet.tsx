@@ -42,6 +42,14 @@ async function fetchDiariesByLocation(
   return [];
 }
 
+function dayKey(iso: string) {
+  const d = new Date(iso);
+  const yy = d.getFullYear().toString().slice(2);
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  return `${yy}. ${m}. ${day}`;
+}
+
 const EMO_KO: Record<string, string> = {
   happy: "기쁨",
   sad: "슬픔",
@@ -54,14 +62,6 @@ const EMO_KO: Record<string, string> = {
   nervous: "떨림",
   normal: "보통",
 };
-
-function formatDate(iso: string) {
-  const d = new Date(iso);
-  const y = d.getFullYear().toString().slice(2);
-  const m = (d.getMonth() + 1).toString().padStart(2, "0");
-  const day = d.getDate().toString().padStart(2, "0");
-  return `${y}.${m}.${day}`;
-}
 
 export default function LocationDiariesBottomSheet({
   isOpen,
@@ -89,15 +89,25 @@ export default function LocationDiariesBottomSheet({
     return items[0]?.location?.address ?? "이 위치의 일기";
   }, [items]);
 
+  const grouped = useMemo(() => {
+    const map = new Map<string, NearbyDiary[]>();
+    for (const d of items) {
+      const key = dayKey(d.datetime);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(d);
+    }
+    return Array.from(map.entries()).sort(
+      (a, b) =>
+        new Date(b[1][0].datetime).getTime() -
+        new Date(a[1][0].datetime).getTime()
+    );
+  }, [items]);
+
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} minimizeOnDrag>
       <div className={styles.wrapper}>
         <div className={styles.header}>
           <div className={styles.bar} />
-          <h3 className={styles.title}>{title}</h3>
-          <div className={styles.sub}>
-            {items.length > 0 ? `총 ${items.length}개` : ""}
-          </div>
         </div>
 
         {loading && (
@@ -119,28 +129,28 @@ export default function LocationDiariesBottomSheet({
           </div>
         )}
 
-        {!loading && !err && items.length > 0 && (
-          <div className={styles.grid}>
-            {items.map((d) => (
-              <button
-                key={d.id}
-                className={styles.card}
-                onClick={() => onClickDiary?.(d.id)}
-              >
-                <img
-                  className={styles.thumb}
-                  src={d.thumbnailUrl}
-                  alt=""
-                  loading="lazy"
-                />
-                <div className={styles.meta}>
-                  <span className={styles.date}>{formatDate(d.datetime)}</span>
-                  <span className={styles.dot} />
-                  <span className={styles.badge}>
-                    {EMO_KO[d.emotion] ?? d.emotion}
-                  </span>
+        {!loading && !err && !!grouped.length && (
+          <div className={styles.sections}>
+            {grouped.map(([day, arr]) => (
+              <section key={day} className={styles.section}>
+                <div className={styles.day}>{day}</div>
+                <div className={styles.grid}>
+                  {arr.map((d) => (
+                    <button
+                      key={d.id}
+                      className={styles.card}
+                      onClick={() => onClickDiary?.(d.id)}
+                    >
+                      <img
+                        className={styles.thumb}
+                        src={d.thumbnailUrl}
+                        alt=""
+                        loading="lazy"
+                      />
+                    </button>
+                  ))}
                 </div>
-              </button>
+              </section>
             ))}
           </div>
         )}
