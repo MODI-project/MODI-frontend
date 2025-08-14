@@ -68,13 +68,6 @@ const Setting = () => {
             <ToggleSwitch />
           </div>
           <div className={styles.setting_button_list}>
-            <button
-              className={styles.setting_item}
-              onClick={handleGoogleDriveClick}
-            >
-              <span>구글 드라이브 연동</span>
-              <img src="/icons/arrow_right.svg" />
-            </button>
             <button className={styles.setting_item} onClick={handleLogoutClick}>
               <span>로그아웃</span>
               <img src="/icons/arrow_right.svg" />
