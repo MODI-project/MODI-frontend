@@ -1,7 +1,6 @@
 import styles from "./MapPage.module.css";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { mockDiaries } from "../../apis/diaryInfo";
-import { DiaryData } from "../../apis/diaryInfo";
 import MapMarker from "../../components/map/MapMarking/MapMarker";
 import { loadKakaoMapAPI } from "../../utils/kakaoMapLoader";
 import KakaoMap from "../../components/map/LoadMap/KakaoMap";

@@ -14,6 +14,7 @@ interface MapMarkerProps {
     postCount: number; // +n 에 표시될 값
   };
   character: Exclude<CharacterKey, null>;
+  onClick?: (locationId: number) => void;
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({ map, diary, character }) => {
