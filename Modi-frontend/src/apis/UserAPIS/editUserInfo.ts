@@ -16,10 +16,10 @@ export const editUserInfo = async (
     console.log("현재 모든 쿠키:", document.cookie);
 
     const response = await axios.put(`${API_BASE_URL}/members/me`, userInfo, {
+      withCredentials: true, // HttpOnly 쿠키 자동 전송
       headers: {
         "Content-Type": "application/json",
       },
-      withCredentials: true, // HttpOnly 쿠키 자동 전송
     });
 
     console.log("✅ 회원 정보 수정 성공:", response.data);

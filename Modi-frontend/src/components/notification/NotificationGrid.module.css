@@ -1,0 +1,18 @@
+.notification_grid_item_date {
+  color: #404040;
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* title */
+  font-family: var(--font-nanum-square-round, "NanumSquareRound");
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 25px; /* 125% */
+  letter-spacing: -0.43px;
+}
+.notification_grid_item_container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
