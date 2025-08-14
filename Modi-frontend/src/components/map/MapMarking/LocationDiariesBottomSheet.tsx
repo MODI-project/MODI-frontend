@@ -131,27 +131,37 @@ export default function LocationDiariesBottomSheet({
 
         {!loading && !err && !!grouped.length && (
           <div className={styles.sections}>
-            {grouped.map(([day, arr]) => (
-              <section key={day} className={styles.section}>
-                <div className={styles.day}>{day}</div>
-                <div className={styles.grid}>
-                  {arr.map((d) => (
-                    <button
-                      key={d.id}
-                      className={styles.card}
-                      onClick={() => onClickDiary?.(d.id)}
-                    >
-                      <img
-                        className={styles.thumb}
-                        src={d.thumbnailUrl}
-                        alt=""
-                        loading="lazy"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </section>
-            ))}
+            {grouped.map(([day, arr]) => {
+              const latestThree = [...arr]
+                .sort(
+                  (a, b) =>
+                    new Date(b.datetime).getTime() -
+                    new Date(a.datetime).getTime()
+                )
+                .slice(0, 3);
+
+              return (
+                <section key={day} className={styles.section}>
+                  <div className={styles.day}>{day}</div>
+                  <div className={styles.grid}>
+                    {latestThree.map((d) => (
+                      <button
+                        key={d.id}
+                        className={styles.card}
+                        onClick={() => onClickDiary?.(d.id)}
+                      >
+                        <img
+                          className={styles.thumb}
+                          src={d.thumbnailUrl}
+                          alt=""
+                          loading="lazy"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         )}
       </div>
