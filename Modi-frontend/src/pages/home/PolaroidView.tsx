@@ -47,13 +47,19 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     () => allDates.map((d) => ({ date: d })),
     [allDates]
   );
-
-  const diaryMap = useMemo(() => {
-    // 날짜별 대표 1개(첫 번째)만 매핑. 규칙 바꾸고 싶으면 여기서 선택 로직 수정
+  const diaryMap: Record<string, DiaryData> = useMemo(() => {
     const acc: Record<string, DiaryData> = {};
     for (const g of groups) {
-      const top = g.diaries?.[0];
-      if (top) acc[g.date.slice(0, 10)] = top;
+      const dateKey = g.date.slice(0, 10);
+      const sorted = [...(g.diaries ?? [])].sort((a, b) => {
+        const ta = (a as any).created_at ?? "";
+        const tb = (b as any).created_at ?? "";
+        const byTime = tb.localeCompare(ta);
+        if (byTime) return byTime;
+        return (b.id ?? 0) - (a.id ?? 0);
+      });
+      const top = sorted[0];
+      if (top) acc[dateKey] = top; // 단일 DiaryData 저장
     }
     return acc;
   }, [groups]);
@@ -73,14 +79,10 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const currentIdx = allDates.length > 0 ? allDates.indexOf(viewDate) : -1;
 
   // 보여줄 날짜: 가장 최근이 오른쪽 (목업 데이터 사용! allDiaries 대신 mockDiaries만 바꾼 것!)
-  const prevKey = allDates[currentIdx - 1];
-  const nextKey = allDates[currentIdx + 1];
-  const slots: (DiaryData | null)[] = [
-    prevKey ? diaryMap[prevKey] ?? null : null,
-    diaryMap[viewDate] ?? null,
-    nextKey ? diaryMap[nextKey] ?? null : null,
-  ];
-
+  const slides: (DiaryData | null)[] = useMemo(
+    () => allDates.map((d) => diaryMap[d] ?? null),
+    [allDates, diaryMap]
+  );
   // 선택된 월(viewYM)의 일별 목록 로드
   useEffect(() => {
     (async () => {
@@ -101,7 +103,8 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     })();
   }, [viewYM]);
 
-  const currentDiary = diaryMap[viewDate] ?? groups[0]?.diaries?.[0] ?? null;
+  const currentDiary: DiaryData | null =
+    diaryMap[viewDate] ?? groups[0]?.diaries?.[0] ?? null;
 
   const addMonths = (ym: string, delta: number) => {
     const [y, m] = ym.split("-").map(Number);
@@ -210,7 +213,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
               transform: `translateX(-${currentIndex * 100}%)`,
             }}
           >
-            {slots.map((d, i) => (
+            {slides.map((d, i) => (
               <div key={i} className={pageStyles[`slot${i + 1}`]}>
                 {d ? (
                   <PolaroidFrame diaryData={d} diaryId={d.id} />
