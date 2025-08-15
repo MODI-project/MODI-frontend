@@ -16,7 +16,6 @@ import MapMarker from "../components/map/MapMarking/MapMarker";
 import Popup from "../components/common/Popup";
 import MapSearchBar from "../components/map/SearchPlace/MapSearchBar";
 import NotiPopUp from "../components/notification/NotiPopUp";
-import OAuthCallback from "../pages/login/OAuthCallback";
 import NotificationGridPage from "../pages/notification/NotificationGridPage";
 
 const Router = () => {
@@ -80,10 +79,6 @@ const Router = () => {
     {
       path: "/map-search-bar",
       element: <MapSearchBar />,
-    },
-    {
-      path: "/oauth/callback",
-      element: <OAuthCallback />,
     },
     {
       path: "/notification-grid",

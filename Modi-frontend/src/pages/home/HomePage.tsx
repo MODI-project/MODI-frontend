@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import style from "./HomePage.module.css";
 import Footer from "../../components/common/Footer";
 
@@ -23,14 +23,17 @@ export default function HomePage() {
   const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [hasMonthData, setHasMonthData] = useState<boolean | null>(null); // 현재 달에 일기가 하나라도 있는지
+  const isTokenRequesting = useRef(false); // 토큰 요청 중복 방지
 
-  // code 파라미터가 있으면 토큰 요청 처리
+  // code 파라미터가 있으면 토큰 요청 처리 (중복 방지)
   useEffect(() => {
     const code = getCodeFromURL();
-    if (code) {
+    if (code && !isTokenRequesting.current) {
       console.log("=== 홈 페이지에서 code 파라미터 감지 ===");
       console.log("code:", code);
       console.log("기존 회원이므로 토큰 요청 처리");
+
+      isTokenRequesting.current = true;
 
       // 토큰 요청 API 호출
       handleTokenRequest(code)
@@ -42,15 +45,26 @@ export default function HomePage() {
           navigate("/login");
         })
         .finally(() => {
+          isTokenRequesting.current = false;
           // URL에서 code 파라미터 제거
           const newUrl = window.location.pathname;
           window.history.replaceState({}, document.title, newUrl);
         });
     }
-  }, [location, navigate]);
+  }, [location]); // navigate 의존성 제거
 
   useEffect(() => {
     (async () => {
+      // 로그인 상태 확인
+      const hasCookies = document.cookie.length > 0;
+
+      if (!hasCookies) {
+        console.log("로그인되지 않은 상태 - 일기 데이터 로드 생략");
+        setLoading(false);
+        setHasMonthData(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const now = new Date();
