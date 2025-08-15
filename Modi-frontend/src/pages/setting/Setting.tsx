@@ -4,11 +4,13 @@ import Header from "../../components/common/Header";
 import ToggleSwitch from "../../components/toggle/ToggleSwitch";
 import { useNavigate } from "react-router-dom";
 import { handleWithdrawMembership } from "../../apis/UserAPIS/withdrawMembership";
+import Popup from "../../components/common/Popup";
 
 const Setting = () => {
   // 설정별 이벤트 처리
   //캐릭터 id 가져오기
   const [selectedCharacter, setSelectedCharacter] = useState<string>("");
+  const [showWithdrawPopup, setShowWithdrawPopup] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -23,16 +25,12 @@ const Setting = () => {
     // 로그아웃 이벤트
   };
 
-  const handleWithdrawalClick = async () => {
-    // 회원 탈퇴 확인 팝업
-    const isConfirmed = window.confirm(
-      "정말로 탈퇴하시겠습니까?\n이 작업은 되돌릴 수 없습니다."
-    );
+  const handleWithdrawalClick = () => {
+    // 회원 탈퇴 확인 팝업 표시
+    setShowWithdrawPopup(true);
+  };
 
-    if (!isConfirmed) {
-      return;
-    }
-
+  const handleWithdrawConfirm = async () => {
     try {
       console.log("회원 탈퇴 시작...");
       await handleWithdrawMembership();
@@ -47,6 +45,10 @@ const Setting = () => {
       const errorMessage = error.userMessage || "회원 탈퇴에 실패했습니다.";
       alert(errorMessage);
     }
+  };
+
+  const handleWithdrawCancel = () => {
+    setShowWithdrawPopup(false);
   };
 
   return (
@@ -82,6 +84,24 @@ const Setting = () => {
           </div>
         </div>
       </div>
+
+      {/* 회원 탈퇴 확인 팝업 */}
+      {showWithdrawPopup && (
+        <Popup
+          title="정말 탈퇴하시겠어요?"
+          description="탈퇴하면 저장한 기록이 모두 사라져요"
+          buttons={[
+            {
+              label: "아니오",
+              onClick: handleWithdrawCancel,
+            },
+            {
+              label: "탈퇴하기",
+              onClick: handleWithdrawConfirm,
+            },
+          ]}
+        />
+      )}
     </div>
   );
 };
