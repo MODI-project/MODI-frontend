@@ -166,6 +166,14 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     touchEndX.current = null;
   };
 
+  const getSlotClass = (i: number) => {
+    const diff = i - currentIndex; // i가 현재에서 얼마나 떨어져있는지
+    if (diff === 0) return pageStyles.center; // 현재 카드
+    if (diff === -1) return pageStyles.left; // 왼쪽 이웃
+    if (diff === 1) return pageStyles.right; // 오른쪽 이웃
+    return pageStyles.hidden; // 그 외는 숨김
+  };
+
   if (loading) {
     return (
       <div className={pageStyles.wrapper}>
@@ -207,21 +215,23 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
             handleTouchEnd(e);
           }}
         >
-          <div
-            className={pageStyles.carouselInner}
-            style={{
-              transform: `translateX(-${currentIndex * 100}%)`,
-            }}
-          >
-            {slides.map((d, i) => (
-              <div key={i} className={pageStyles[`slot${i + 1}`]}>
-                {d ? (
-                  <PolaroidFrame diaryData={d} diaryId={d.id} />
-                ) : (
-                  <div className={pageStyles.emptySlot} />
-                )}
-              </div>
-            ))}
+          <div className={pageStyles.carouselInner}>
+            {slides.map((d, i) => {
+              let cls = pageStyles.hidden;
+              if (i === currentIndex - 1) cls = pageStyles.left; // 이전 날짜
+              else if (i === currentIndex) cls = pageStyles.center; // 현재 날짜
+              else if (i === currentIndex + 1) cls = pageStyles.right; // 다음 날짜
+
+              return (
+                <div key={i} className={cls}>
+                  {d ? (
+                    <PolaroidFrame diaryData={d} diaryId={d.id} />
+                  ) : (
+                    <div className={pageStyles.emptySlot} />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
         {/* ← 이 아래는 "항상 현재 일기" 것만 고정으로 보여줍니다 */}

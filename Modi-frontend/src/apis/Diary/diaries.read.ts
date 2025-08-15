@@ -40,6 +40,21 @@ export const fetchDailyGroups = async (
     params: { year, month },
   });
 
+  if (
+    Array.isArray(data) &&
+    data.length &&
+    data[0]?.date &&
+    Array.isArray(data[0]?.diaries)
+  ) {
+    return (data as any[])
+      .map((g) => ({
+        date: String(g.date).slice(0, 10),
+        diaries: (g.diaries as any[]).map(normalize).filter((d) => d.date),
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  // 2) 평탄 배열
   const diariesRaw: any[] = Array.isArray(data)
     ? data
     : Array.isArray(data?.diaries)
@@ -52,13 +67,10 @@ export const fetchDailyGroups = async (
 
   const map: Record<string, DiaryData[]> = {};
   for (const d of diaries) {
-    if (!map[d.date]) map[d.date] = [];
-    map[d.date].push(d);
+    (map[d.date] ||= []).push(d);
   }
 
-  const groups: DailyGroup[] = Object.entries(map)
+  return Object.entries(map)
     .map(([date, ds]) => ({ date, diaries: ds }))
-    .sort((a, b) => b.date.localeCompare(a.date));
-
-  return groups;
+    .sort((a, b) => a.date.localeCompare(b.date));
 };
