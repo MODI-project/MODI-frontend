@@ -87,3 +87,21 @@
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
 }
+
+.tracking {
+  background-color: #007aff !important;
+  border-color: #007aff !important;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.6);
+  }
+  100% {
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  }
+}
