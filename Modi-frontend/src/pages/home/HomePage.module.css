@@ -111,7 +111,7 @@
   transition: transform 0.5s ease-in-out;
 }
 
-.slot1 {
+.left {
   position: absolute;
   left: 50%;
   transform: translateX(-50%) rotate(-15deg) translateX(-190px)
@@ -121,7 +121,7 @@
 }
 
 /* 슬롯2: 중앙(현재) */
-.slot2 {
+.center {
   position: absolute;
   left: 50%;
   transform: translateX(-50%) rotate(0deg);
@@ -129,7 +129,7 @@
 }
 
 /* 슬롯3: 오른쪽 */
-.slot3 {
+.right {
   position: absolute;
   left: 50%;
   transform: translateX(-50%) rotate(15deg) translateX(190px) translateY(-50px)

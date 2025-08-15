@@ -55,16 +55,6 @@ export default function HomePage() {
 
   useEffect(() => {
     (async () => {
-      // 로그인 상태 확인
-      const hasCookies = document.cookie.length > 0;
-
-      if (!hasCookies) {
-        console.log("로그인되지 않은 상태 - 일기 데이터 로드 생략");
-        setLoading(false);
-        setHasMonthData(false);
-        return;
-      }
-
       setLoading(true);
       try {
         const now = new Date();
