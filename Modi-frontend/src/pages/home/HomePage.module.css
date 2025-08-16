@@ -36,7 +36,7 @@
   gap: 8px;
   padding: 25px;
 
-  max-height: 60vh;
+  max-height: 58vh;
   overflow-y: auto;
 }
 
@@ -79,6 +79,8 @@
   top: -15px;
   left: 16px;
   margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 16px;
 }
 
 .content {
