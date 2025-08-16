@@ -146,7 +146,8 @@
 .staticInfo {
   position: relative;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 8px;
   align-items: center;
   width: 100%;
   max-width: 400px;
