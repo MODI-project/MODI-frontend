@@ -76,8 +76,6 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     prevOpen.current = isSheetOpen;
   }, [isSheetOpen, viewDate]);
 
-  const currentIdx = allDates.length > 0 ? allDates.indexOf(viewDate) : -1;
-
   // 보여줄 날짜: 가장 최근이 오른쪽 (목업 데이터 사용! allDiaries 대신 mockDiaries만 바꾼 것!)
   const slides: (DiaryData | null)[] = useMemo(
     () => allDates.map((d) => diaryMap[d] ?? null),
@@ -112,20 +110,17 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   };
 
+  const atFirst = currentIndex <= 0;
+  const atLast = currentIndex >= allDates.length - 1;
+
   const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((i) => i - 1);
-    } else {
-      setViewYM((ym) => addMonths(ym, -1)); // 이전 달 로드
-    }
+    if (atFirst) return; // 더 이상 못 가면 멈춤
+    setCurrentIndex((i) => i - 1);
   };
 
   const handleNext = () => {
-    if (currentIndex < allDates.length - 1) {
-      setCurrentIndex((i) => i + 1);
-    } else {
-      setViewYM((ym) => addMonths(ym, +1)); // 다음 달 로드
-    }
+    if (atLast) return; // 더 이상 못 가면 멈춤
+    setCurrentIndex((i) => i + 1);
   };
 
   const handleChange = (newDate: string) => {
