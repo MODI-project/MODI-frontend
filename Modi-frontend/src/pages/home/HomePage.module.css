@@ -85,7 +85,6 @@
   height: auto; /* 내용물에 맞게 */
   margin: 0 auto; /* 가운데 정렬 */
   box-sizing: border-box;
-  gap: clamp(1rem, 5vw, 2rem);
   display: flex;
   flex-direction: column;
 }
@@ -148,7 +147,6 @@
   position: relative;
   display: flex;
   justify-content: space-between;
-
   align-items: center;
   width: 100%;
   max-width: 400px;
