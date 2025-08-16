@@ -34,7 +34,10 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  padding: 13px;
+  padding: 25px;
+
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .modalInner {
@@ -75,6 +78,7 @@
   position: relative;
   top: -15px;
   left: 16px;
+  margin-bottom: 10px;
 }
 
 .content {
