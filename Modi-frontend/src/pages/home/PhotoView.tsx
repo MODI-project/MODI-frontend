@@ -107,6 +107,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
   const handleDiaryClick = (diary: DiaryData) => {
     navigate(`/recorddetail/`, {
       state: {
+        diaryId: diary.id,
         diaryData: diary,
       },
     });
