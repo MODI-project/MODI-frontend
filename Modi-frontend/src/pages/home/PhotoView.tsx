@@ -23,7 +23,6 @@ interface PhotoViewProps {
 export default function PhotoView({ onSwitchView }: PhotoViewProps) {
   const navigate = useNavigate();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const hasOpened = useRef(false);
   const { character } = useCharacter();
   const [monthDiaries, setMonthDiaries] = useState<DiaryData[]>([]);
   const [loading, setLoading] = useState(false);
