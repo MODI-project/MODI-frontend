@@ -34,7 +34,10 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
-  padding: 13px;
+  padding: 25px;
+
+  max-height: 58vh;
+  overflow-y: auto;
 }
 
 .modalInner {
@@ -75,6 +78,9 @@
   position: relative;
   top: -15px;
   left: 16px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 16px;
 }
 
 .content {
@@ -85,7 +91,6 @@
   height: auto; /* 내용물에 맞게 */
   margin: 0 auto; /* 가운데 정렬 */
   box-sizing: border-box;
-  gap: clamp(1rem, 5vw, 2rem);
   display: flex;
   flex-direction: column;
 }
@@ -147,8 +152,8 @@
 .staticInfo {
   position: relative;
   display: flex;
-  justify-content: space-between;
-
+  justify-content: center;
+  gap: 8px;
   align-items: center;
   width: 100%;
   max-width: 400px;
