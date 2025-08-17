@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import Frame from "../../../common/frame/Frame";
 import styles from "./PolaroidDiary.module.css";
 import { useNavigate } from "react-router-dom";
