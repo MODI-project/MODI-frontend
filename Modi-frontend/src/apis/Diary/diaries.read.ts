@@ -1,6 +1,21 @@
 import apiClient from "../apiClient";
 import type { DiaryData } from "../../components/common/frame/Frame";
 
+const toFrame = (r: any): string => {
+  const cand =
+    r?.frameId ??
+    r?.frame ??
+    r?.frame_uuid ??
+    r?.frameNo ??
+    r?.frameCode ??
+    r?.frame?.id ??
+    r?.frame?.code ??
+    r?.templateId ?? // 혹시 이런 이름일 수도
+    r?.frameTemplateId ?? // 혹시 이런 이름일 수도
+    null;
+  return cand == null ? "" : String(cand);
+};
+
 /** 서버 → 화면 모델 매핑(월/일 공통) */
 const normalize = (r: any): DiaryData => ({
   id: Number(r.id),
@@ -15,7 +30,7 @@ const normalize = (r: any): DiaryData => ({
   longitude: r.longitude,
   tone: r.tone,
   font: r.font,
-  frame: r.frameId ?? r.frame,
+  frame: toFrame(r),
 });
 
 export const fetchMonthlyDiaries = async (
@@ -24,7 +39,10 @@ export const fetchMonthlyDiaries = async (
 ): Promise<DiaryData[]> => {
   const { data } = await apiClient.get("/diaries", { params: { year, month } });
   const list = Array.isArray(data) ? data : data?.diaries ?? data?.items ?? [];
-  return list.map(normalize);
+  const mapped = list.map(normalize);
+  console.log("[monthly] raw sample:", list[0]);
+  console.log("[monthly] normalized sample:", mapped[0]); // 🔎 frame 확인
+  return mapped;
 };
 
 export type DailyGroup = {
@@ -46,12 +64,14 @@ export const fetchDailyGroups = async (
     data[0]?.date &&
     Array.isArray(data[0]?.diaries)
   ) {
-    return (data as any[])
+    const groups = (data as any[])
       .map((g) => ({
         date: String(g.date).slice(0, 10),
         diaries: (g.diaries as any[]).map(normalize).filter((d) => d.date),
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
+    console.log("[daily groups] normalized sample:", groups[0]?.diaries?.[0]);
+    return groups;
   }
 
   // 2) 평탄 배열
@@ -78,9 +98,8 @@ export const fetchDailyGroups = async (
 export const fetchDiaryById = async (
   diaryId: number | string
 ): Promise<DiaryData> => {
-  const res = await apiClient.get(`/diaries/${diaryId}`);
-  // 명세서에 따라 DiaryData로 변환
-  return normalizeDiaryDetail(res.data);
+  const { data } = await apiClient.get(`/diaries/${diaryId}`);
+  return normalizeDiaryDetail(data);
 };
 
 // 상세 일기 데이터 변환 함수
@@ -102,6 +121,6 @@ function normalizeDiaryDetail(r: any): DiaryData {
     longitude: r.location?.longitude,
     tone: typeof r.tone === "object" ? r.tone.name : r.tone ?? "",
     font: r.font,
-    frame: r.frameId ?? r.frame,
+    frame: toFrame(r),
   };
 }

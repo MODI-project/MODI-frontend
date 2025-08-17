@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Frame from "../../../common/frame/Frame";
 import styles from "./PolaroidDiary.module.css";
 import { useNavigate } from "react-router-dom";
@@ -28,53 +28,61 @@ const PolaroidFrame: React.FC<Props> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    setDiary(diaryData ?? null);
+  }, [diaryData]);
+
   // diaryId가 있으면 API에서 데이터 가져오기! 명세서 참고!
   useEffect(() => {
-    if (diaryId && !diaryData) {
-      const fetchDiary = async () => {
+    const missingFrame = !diary?.frame && !diaryData?.frame;
+    if (diaryId && missingFrame) {
+      (async () => {
         setLoading(true);
-        setError(null);
         try {
-          const data = await fetchDiaryById(diaryId);
-          setDiary(data);
-        } catch (err) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "일기를 불러오는데 실패했습니다."
+          const detail = await fetchDiaryById(diaryId); // ✅ normalizeDiaryDetail 사용
+          // 기존 데이터 유지 + frame/이미지 보강
+          setDiary(
+            (prev) =>
+              ({
+                ...(prev ?? {}),
+                ...detail, // detail에 frame, imageUrls[0] 등 포함
+              } as DiaryData)
           );
-          console.error("일기 로드 실패:", err);
+        } catch (e) {
+          setError(
+            e instanceof Error ? e.message : "일기를 불러오는데 실패했습니다."
+          );
         } finally {
           setLoading(false);
         }
-      };
-      fetchDiary();
+      })();
     }
-  }, [diaryId, diaryData]);
+  }, [diaryId, diary?.frame, diaryData?.frame]);
 
-  // diaryData가 직접 전달되면 사용
-  useEffect(() => {
-    if (diaryData) {
-      setDiary(diaryData);
-    }
-  }, [diaryData]);
+  const resolvedDiary = useMemo<DiaryData | null>(() => {
+    const src = diary ?? (diaryData as DiaryData | undefined) ?? null;
+    if (!src) return null;
+    const frame =
+      (src as any).frame ??
+      (src as any).frameId ??
+      (src as any).frame_uuid ??
+      (src as any).frame?.id ??
+      "";
+
+    return { ...src, frame }; // DiaryData가 frame?: string; 이므로 string으로 맞추기
+  }, [diary, diaryData]);
 
   const handleFrameClick = () => {
-    if (diary) {
-      navigate("/recorddetail", {
-        state: { diaryId: diary.id, diaryData: diary },
-      });
-    } else {
-      console.log("PolaroidFrame - diary 데이터가 없음");
-      return;
-    }
+    if (!resolvedDiary) return;
+    navigate("/recorddetail", {
+      state: { diaryId: resolvedDiary.id, diaryData: resolvedDiary },
+    });
   };
 
   if (loading) {
     return (
       <div className={styles.loading_frame}>
-        <div className={styles.loading_spinner}></div>
-        <span>일기를 불러오는 중...</span>
+        <span> 로딩 중...</span>
       </div>
     );
   }
@@ -90,7 +98,7 @@ const PolaroidFrame: React.FC<Props> = ({
   return (
     <Frame
       // diaryData가 있으면 우선 사용
-      diaryData={diary || undefined}
+      diaryData={resolvedDiary || undefined}
       // 개별 props는 diaryData가 없을 때 사용
       photoUrl={photoUrl}
       date={date}
