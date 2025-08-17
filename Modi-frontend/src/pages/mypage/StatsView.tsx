@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { mockDiaries, DiaryData } from "../../apis/diaryInfo";
 import StatsDateSelect from "../../components/MyPage/Stats/StatsDateSelect";
 import styles from "./MyPage.module.css";
 import EmotionStatsCard from "../../components/MyPage/Stats/StatsCard/EmotionStatsCard";
@@ -9,8 +8,7 @@ import VisitStats from "../../components/MyPage/Stats/StatsCard/VisitStats";
 import { getEmotionStatsByMonth } from "../../utils/getEmotionStatsByMonth";
 import { getToneStatsByMonth } from "../../utils/getToneStatsByMonths";
 import { getVisitStatsByMonth } from "../../utils/getVisitStatsByMonth";
-
-type Emotion = DiaryData["emotion"];
+import { getStatistics } from "../../apis/MyPageAPIS/stats";
 
 function lastNMonths(n: number) {
   const res: string[] = [];
@@ -28,6 +26,7 @@ export default function StatsView() {
   // 1) 월 목록: mockDiaries 의존 제거
   const allMonths = useMemo(() => lastNMonths(12), []);
   const [month, setMonth] = useState<string>(allMonths.at(-1)!);
+  const [statMonths, setStatMonths] = useState<string[]>([]);
 
   // 2) 통계 상태
   const [emotionStats, setEmotionStats] = useState<
@@ -44,7 +43,27 @@ export default function StatsView() {
 
   // 3) 월 변경 시 3개 유틸(비동기) 호출
   useEffect(() => {
-    let alive = true;
+    const monthsToCheck = lastNMonths(12);
+    Promise.all(
+      monthsToCheck.map((m) => {
+        const [year, monthNum] = m.split("-");
+        return getStatistics(year, monthNum)
+          .then((res) => (res.data.totalCount > 0 ? m : null))
+          .catch(() => null);
+      })
+    ).then((results) => {
+      setStatMonths(results.filter(Boolean) as string[]);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (statMonths.length > 0 && !month) {
+      setMonth(statMonths.at(-1)!); // 최신 월로 초기화
+    }
+  }, [statMonths]);
+
+  useEffect(() => {
+    if (!month) return;
     setLoading(true);
     setError(null);
 
@@ -53,33 +72,20 @@ export default function StatsView() {
       getToneStatsByMonth(month),
       getVisitStatsByMonth(month),
     ])
-      .then(([emo, tone, visit]) => {
-        if (!alive) return;
-        setEmotionStats(emo);
-        setToneStats(tone);
-        setVisitStats(visit);
+      .then(([emotions, tones, visits]) => {
+        setEmotionStats(emotions);
+        setToneStats(tones);
+        setVisitStats(visits);
       })
-      .catch((e: any) => {
-        if (!alive) return;
-        const status = e?.response?.status;
-        setError(
-          status === 403
-            ? "인증 권한이 없습니다 (403)"
-            : "통계를 불러오지 못했습니다."
-        );
-      })
-      .finally(() => alive && setLoading(false));
-
-    return () => {
-      alive = false;
-    };
+      .catch(() => setError("통계 데이터를 불러올 수 없습니다."))
+      .finally(() => setLoading(false));
   }, [month]);
 
   return (
     <div className={styles.statsContainer}>
       <div className={styles.fixedTop}>
         <StatsDateSelect
-          months={allMonths}
+          months={statMonths}
           initialMonth={month}
           onMonthChange={setMonth}
         />

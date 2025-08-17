@@ -23,22 +23,17 @@ interface PhotoViewProps {
 export default function PhotoView({ onSwitchView }: PhotoViewProps) {
   const navigate = useNavigate();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const hasOpened = useRef(false);
   const { character } = useCharacter();
+  const [monthDiaries, setMonthDiaries] = useState<DiaryData[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const dateItems = useMemo(() => {
-    const items: { date: string }[] = [];
-    const now = new Date();
-    for (let i = 0; i < 24; i++) {
-      const dt = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const ym = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(
-        2,
-        "0"
-      )}`;
-      items.push({ date: ym });
-    }
-    return items.reverse();
-  }, []);
+    // monthDiaries에서 날짜(연월)만 추출
+    const uniqueMonths = Array.from(
+      new Set(monthDiaries.map((diary) => diary.date.slice(0, 7)))
+    );
+    return uniqueMonths.map((date) => ({ date }));
+  }, [monthDiaries]);
 
   const [viewDate, setViewDate] = useState(() => {
     const now = new Date();
@@ -54,8 +49,6 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   };
 
-  const [monthDiaries, setMonthDiaries] = useState<DiaryData[]>([]);
-  const [loading, setLoading] = useState(false);
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -78,8 +71,21 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
 
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
 
-  const handlePrev = () => setViewDate((d) => addMonths(d, -1));
-  const handleNext = () => setViewDate((d) => addMonths(d, +1));
+  const monthList = dateItems.map((item) => item.date);
+
+  const handlePrev = () => {
+    const idx = monthList.indexOf(viewDate);
+    if (idx > 0) {
+      setViewDate(monthList[idx - 1]);
+    }
+  };
+
+  const handleNext = () => {
+    const idx = monthList.indexOf(viewDate);
+    if (idx < monthList.length - 1) {
+      setViewDate(monthList[idx + 1]);
+    }
+  };
 
   const filtered = selectedEmotion
     ? monthDiaries.filter((d) => d.emotion === selectedEmotion)

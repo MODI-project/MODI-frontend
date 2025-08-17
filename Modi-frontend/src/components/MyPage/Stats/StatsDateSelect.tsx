@@ -66,16 +66,6 @@ export default function StatsDateSelect({
     if (monRef.current) monRef.current.scrollTop = idxM * 40;
   }, [years, monthsOfYear, selYear, selMonth]);
 
-  const onScroll = (
-    e: React.UIEvent<HTMLDivElement>,
-    options: string[],
-    setter: (v: string) => void
-  ) => {
-    const idx = Math.round(e.currentTarget.scrollTop / 40);
-    const val = options[Math.min(Math.max(idx, 0), options.length - 1)];
-    setter(val);
-  };
-
   return (
     <>
       <div className={styles.header}>
