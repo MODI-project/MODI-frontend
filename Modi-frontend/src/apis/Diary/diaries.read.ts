@@ -15,7 +15,7 @@ const normalize = (r: any): DiaryData => ({
   longitude: r.longitude,
   tone: r.tone,
   font: r.font,
-  frame: r.frame,
+  frame: r.frameId ?? r.frame,
 });
 
 export const fetchMonthlyDiaries = async (
@@ -74,3 +74,34 @@ export const fetchDailyGroups = async (
     .map(([date, ds]) => ({ date, diaries: ds }))
     .sort((a, b) => a.date.localeCompare(b.date));
 };
+
+export const fetchDiaryById = async (
+  diaryId: number | string
+): Promise<DiaryData> => {
+  const res = await apiClient.get(`/diaries/${diaryId}`);
+  // 명세서에 따라 DiaryData로 변환
+  return normalizeDiaryDetail(res.data);
+};
+
+// 상세 일기 데이터 변환 함수
+function normalizeDiaryDetail(r: any): DiaryData {
+  return {
+    id: Number(r.id),
+    date: (r.date ?? "").slice(0, 10),
+    photoUrl: r.imageUrls?.[0] ?? "",
+    summary: r.summary ?? "",
+    emotion: typeof r.emotion === "object" ? r.emotion.name : r.emotion ?? "",
+    tags: Array.isArray(r.tags)
+      ? r.tags.map((t: any) =>
+          t && typeof t === "object" ? t.name ?? "" : String(t)
+        )
+      : [],
+    content: r.content,
+    address: r.location?.address ?? "",
+    latitude: r.location?.latitude,
+    longitude: r.location?.longitude,
+    tone: typeof r.tone === "object" ? r.tone.name : r.tone ?? "",
+    font: r.font,
+    frame: r.frameId ?? r.frame,
+  };
+}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Frame from "../../../common/frame/Frame";
 import styles from "./PolaroidDiary.module.css";
 import { useNavigate } from "react-router-dom";
-import { mockFetchDiaryById } from "../../../../apis/diaryInfo";
+import { fetchDiaryById } from "../../../../apis/Diary/diaries.read";
 import { DiaryData } from "../../../common/frame/Frame";
 
 interface Props {
@@ -35,7 +35,7 @@ const PolaroidFrame: React.FC<Props> = ({
         setLoading(true);
         setError(null);
         try {
-          const data = await mockFetchDiaryById(diaryId.toString());
+          const data = await fetchDiaryById(diaryId);
           setDiary(data);
         } catch (err) {
           setError(
@@ -48,7 +48,6 @@ const PolaroidFrame: React.FC<Props> = ({
           setLoading(false);
         }
       };
-
       fetchDiary();
     }
   }, [diaryId, diaryData]);
