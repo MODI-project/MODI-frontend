@@ -81,11 +81,6 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   }, [groups]);
 
   const [subIndex, setSubIndex] = useState(0);
-
-  useEffect(() => {
-    setSubIndex(0);
-  }, [currentIndex]);
-
   const viewDate = allDates[currentIndex] || allDates[0] || "";
   const [tempDate, setTempDate] = useState<string>(viewDate);
   const currList = diariesByDate[viewDate] ?? [];
@@ -98,11 +93,21 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     prevOpen.current = isSheetOpen;
   }, [isSheetOpen, viewDate]);
 
+  useEffect(() => {
+    const idx = allDates.indexOf(tempDate);
+    if (idx !== -1 && idx !== currentIndex) {
+      setCurrentIndex(idx);
+      setSubIndex(0);
+    }
+  }, [tempDate, allDates]);
+
   // 보여줄 날짜: 가장 최근이 오른쪽 (목업 데이터 사용! allDiaries 대신 mockDiaries만 바꾼 것!)
   const slides: (DiaryData | null)[] = useMemo(
     () => allDates.map((d) => diaryMap[d] ?? null),
     [allDates, diaryMap]
   );
+
+  const indices = [currentIndex - 1, currentIndex, currentIndex + 1];
   // 선택된 월(viewYM)의 일별 목록 로드
   useEffect(() => {
     (async () => {
@@ -123,10 +128,9 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     })();
   }, [viewYM]);
 
-  const atFirst = currentIndex <= 0 && subIndex <= 0;
-  const atLast =
-    currentIndex >= allDates.length - 1 &&
-    subIndex >= Math.max(0, currList.length - 1);
+  const lastSub = Math.max(0, currList.length - 1);
+  const atFirst = currentIndex === 0 && subIndex === 0;
+  const atLast = currentIndex === allDates.length - 1 && subIndex === lastSub;
 
   const handlePrev = () => {
     if (atFirst) return; // 더 이상 못 가면 멈춤
@@ -175,11 +179,13 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     touchEndX.current = null;
   };
 
-  const newIdx = allDates.indexOf(tempDate);
-  if (newIdx !== -1) {
-    setCurrentIndex(newIdx);
-    setSubIndex(0); // ← 추가
-  }
+  useEffect(() => {
+    const idx = allDates.indexOf(tempDate);
+    if (idx !== -1 && idx !== currentIndex) {
+      setCurrentIndex(idx);
+      setSubIndex(0);
+    }
+  }, [tempDate, allDates]);
 
   if (loading) {
     return (
@@ -223,21 +229,24 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
           }}
         >
           <div className={pageStyles.carouselInner}>
-            {slides.map((d, i) => {
+            {indices.map((i, idx) => {
               let cls = pageStyles.hidden;
-              if (i === currentIndex - 1) cls = pageStyles.left; // 이전 날짜
-              else if (i === currentIndex) cls = pageStyles.center; // 현재 날짜
-              else if (i === currentIndex + 1) cls = pageStyles.right; // 다음 날짜
+              if (idx === 0) cls = pageStyles.left;
+              else if (idx === 1) cls = pageStyles.center;
+              else if (idx === 2) cls = pageStyles.right;
 
-              const renderDiary = i === currentIndex ? currentDiary : d;
-
+              let diary: DiaryData | null = null;
+              if (i === currentIndex) {
+                // 현재 날짜: 여러 개 중 subIndex로 선택
+                diary = diariesByDate[allDates[i]]?.[subIndex] ?? null;
+              } else {
+                // 이전/다음 날짜: 대표 일기(첫 번째)
+                diary = diariesByDate[allDates[i]]?.[0] ?? null;
+              }
               return (
                 <div key={i} className={cls}>
-                  {renderDiary ? (
-                    <PolaroidFrame
-                      diaryData={renderDiary}
-                      diaryId={renderDiary.id}
-                    />
+                  {diary ? (
+                    <PolaroidFrame diaryData={diary} diaryId={diary.id} />
                   ) : (
                     <div className={pageStyles.emptySlot} />
                   )}
