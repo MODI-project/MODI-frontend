@@ -235,7 +235,14 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
               else if (idx === 1) cls = pageStyles.center;
               else if (idx === 2) cls = pageStyles.right;
 
-              const diary = slides[i] ?? null;
+              let diary: DiaryData | null = null;
+              if (i === currentIndex) {
+                // 현재 날짜: 여러 개 중 subIndex로 선택
+                diary = diariesByDate[allDates[i]]?.[subIndex] ?? null;
+              } else {
+                // 이전/다음 날짜: 대표 일기(첫 번째)
+                diary = diariesByDate[allDates[i]]?.[0] ?? null;
+              }
               return (
                 <div key={i} className={cls}>
                   {diary ? (
