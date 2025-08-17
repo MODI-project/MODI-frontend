@@ -71,8 +71,21 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
 
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
 
-  const handlePrev = () => setViewDate((d) => addMonths(d, -1));
-  const handleNext = () => setViewDate((d) => addMonths(d, +1));
+  const monthList = dateItems.map((item) => item.date);
+
+  const handlePrev = () => {
+    const idx = monthList.indexOf(viewDate);
+    if (idx > 0) {
+      setViewDate(monthList[idx - 1]);
+    }
+  };
+
+  const handleNext = () => {
+    const idx = monthList.indexOf(viewDate);
+    if (idx < monthList.length - 1) {
+      setViewDate(monthList[idx + 1]);
+    }
+  };
 
   const filtered = selectedEmotion
     ? monthDiaries.filter((d) => d.emotion === selectedEmotion)

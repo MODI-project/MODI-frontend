@@ -126,10 +126,6 @@
   font-weight: 600; /* 굵게 */
 }
 
-/* ── 확인 버튼 등 나머지 그대로 ───────────────── */
-.footerWrapper {
-}
-
 .wrapper {
   z-index: 1005;
 }
