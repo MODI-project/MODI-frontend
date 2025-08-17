@@ -15,7 +15,7 @@ const normalize = (r: any): DiaryData => ({
   longitude: r.longitude,
   tone: r.tone,
   font: r.font,
-  frame: r.frame,
+  frame: r.frameId ?? r.frame,
 });
 
 export const fetchMonthlyDiaries = async (
@@ -102,6 +102,6 @@ function normalizeDiaryDetail(r: any): DiaryData {
     longitude: r.location?.longitude,
     tone: typeof r.tone === "object" ? r.tone.name : r.tone ?? "",
     font: r.font,
-    frame: r.frameId,
+    frame: r.frameId ?? r.frame,
   };
 }
