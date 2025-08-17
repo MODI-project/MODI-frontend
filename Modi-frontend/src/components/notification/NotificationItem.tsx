@@ -6,6 +6,7 @@ interface NotificationItemProps {
   lastVisit: string;
   address: string;
   isRead?: boolean;
+  created_at?: string; // 알림 생성 시간 추가
 }
 
 const NotificationItem: React.FC<NotificationItemProps> = ({
@@ -13,6 +14,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   lastVisit,
   address,
   isRead = false,
+  created_at,
 }) => {
   // emotion에 따른 이미지 경로 생성
   const getEmotionImagePath = (emotion: string) => {
@@ -48,8 +50,27 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     return words[words.length - 1] || "여기";
   };
 
+  // 알림 생성 시간으로부터 경과 시간 계산
+  const getTimeAgo = (createdAt: string) => {
+    const createdDate = new Date(createdAt);
+    const currentDate = new Date();
+    const timeDiff = currentDate.getTime() - createdDate.getTime();
+
+    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return `${days}일 전`;
+    } else if (hours > 0) {
+      return `${hours}시간 전`;
+    } else {
+      return "방금 전";
+    }
+  };
+
   const daysSinceLastVisit = calculateDaysSinceLastVisit(lastVisit);
   const lastWord = getLastWordFromAddress(address);
+  const timeAgo = created_at ? getTimeAgo(created_at) : "방금 전";
 
   return (
     <div className={styles.notification_item}>
@@ -62,7 +83,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           {daysSinceLastVisit}일만에 {lastWord}에 왔어요!
         </span>
         <span className={styles.noti_content}>이전 기록을 확인해보세요</span>
-        <span className={styles.noti_time}>00시간 전</span>
+        <span className={styles.noti_time}>{timeAgo}</span>
       </div>
       <button className={styles.noti_detail_btn}>
         <img src="/icons/arrow_right.svg" alt="arrow_right" />
