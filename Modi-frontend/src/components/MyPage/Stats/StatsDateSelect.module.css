@@ -54,8 +54,8 @@
 .modalInner {
   display: flex;
   width: auto;
-  max-width: 400px;
-  height: 373px;
+  max-width: 300px;
+  height: 270px;
   flex-direction: column;
   align-items: flex-start;
   gap: 32px;
@@ -80,7 +80,7 @@
   position: absolute;
   top: 0px;
 
-  width: 296px;
+  width: 200px;
   height: 28px;
   flex-shrink: 0;
   border-radius: 7px;
@@ -128,7 +128,6 @@
 
 /* ── 확인 버튼 등 나머지 그대로 ───────────────── */
 .footerWrapper {
-  padding: 0 16px 24px;
 }
 
 .wrapper {
