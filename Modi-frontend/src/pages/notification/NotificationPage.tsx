@@ -6,95 +6,67 @@ import { useNavigate } from "react-router-dom";
 import { getWeeklyReminder } from "../../apis/ReminderAPIS/weeklyReminder";
 import { WeeklyReminderResponse } from "../../types/Reminder";
 import { useCharacter } from "../../contexts/CharacterContext";
-import { useDongGeofence } from "../../hooks/useDongGeofence";
-import { reverseToDong } from "../../apis/MapAPIS/reverseGeocode";
-import { notifyEnter } from "../../apis/ReminderAPIS/notifyEnter";
+import { useGeolocation } from "../../contexts/GeolocationContext";
 import { getRemindersByAddress } from "../../apis/ReminderAPIS/remindersByAddress";
 import { fetchMonthlyDiaries } from "../../apis/Diary/diaries.read";
 
 const NotificationPage = () => {
   const navigate = useNavigate();
   const { character } = useCharacter();
+  const { address } = useGeolocation();
   const [notifications, setNotifications] = useState<WeeklyReminderResponse[]>(
     []
   );
+  const [locationNotifications, setLocationNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [enterInfo, setEnterInfo] = useState<{
-    dong: string;
-    days: number;
-  } | null>(null);
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const data = await getWeeklyReminder();
-        setNotifications(data);
+        console.log("=== 알림 페이지 로드 시작 ===");
+        console.log("현재 Geolocation 주소:", address);
+
+        // 주간 알림 데이터 가져오기
+        console.log("주간 알림 API 호출 시작");
+        const weeklyData = await getWeeklyReminder();
+        console.log("주간 알림 응답:", weeklyData);
+        console.log("주간 알림 개수:", weeklyData.length);
+        setNotifications(weeklyData);
+
+        // 현재 위치 기반 알림 데이터 가져오기
+        if (address) {
+          console.log("현재 위치 기반 알림 조회:", address);
+          const locationData = await getRemindersByAddress(address);
+          console.log("위치 기반 알림 데이터:", locationData);
+          console.log("위치 기반 알림 개수:", locationData.length);
+
+          // 가장 최근 기록만 추출
+          if (locationData.length > 0) {
+            const sortedData = locationData.sort((a, b) => {
+              const dateA = new Date(a.datetime || a.created_at || 0);
+              const dateB = new Date(b.datetime || b.created_at || 0);
+              return dateB.getTime() - dateA.getTime();
+            });
+            const latestRecord = sortedData[0];
+            console.log("가장 최근 기록:", latestRecord);
+            setLocationNotifications([latestRecord]);
+          } else {
+            setLocationNotifications([]);
+          }
+        } else {
+          console.log("Geolocation 주소가 없습니다.");
+          setLocationNotifications([]);
+        }
       } catch (error) {
         console.error("알림 데이터 로드 실패:", error);
       } finally {
         setLoading(false);
+        console.log("=== 알림 페이지 로드 완료 ===");
       }
     };
 
     fetchNotifications();
-  }, []);
-
-  // 동 입장 시 과거 기록 조회 → 며칠 만인지 계산 → 알림 노출
-  const onEnterDong = useCallback(
-    async ({ dong, lat, lon }: { dong: string; lat: number; lon: number }) => {
-      try {
-        const today = new Date();
-        let days = 0;
-
-        // 1) 서버에서 현재 위치의 일기 배열을 받아 가장 최근 기록 기준으로 계산
-        const serverReminders = await getRemindersByAddress();
-        if (Array.isArray(serverReminders) && serverReminders.length > 0) {
-          const toDate = (s?: string) => (s ? new Date(s) : null);
-          const latest = [...serverReminders]
-            .map((r) => toDate(r.datetime) || toDate(r.created_at))
-            .filter((d): d is Date => d instanceof Date)
-            .sort((a, b) => b.getTime() - a.getTime())[0];
-          if (latest) {
-            days = Math.max(
-              0,
-              Math.ceil(
-                (today.getTime() - latest.getTime()) / (1000 * 60 * 60 * 24)
-              )
-            );
-          }
-        }
-
-        // 2) 서버 응답이 없거나 날짜 파싱 실패 시, 이번 달 데이터로 보조 계산
-        if (days === 0) {
-          const year = today.getFullYear();
-          const month = today.getMonth() + 1;
-          const diaries = await fetchMonthlyDiaries(year, month);
-          const sameDong = diaries
-            .filter(
-              (d) => typeof d.address === "string" && d.address.includes(dong)
-            )
-            .sort((a, b) => b.date.localeCompare(a.date));
-          if (sameDong.length > 0) {
-            const last = new Date(sameDong[0].date);
-            days = Math.max(
-              0,
-              Math.ceil(
-                (today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24)
-              )
-            );
-          }
-        }
-
-        setEnterInfo({ dong, days });
-        await notifyEnter({ dong, lat, lon, daysSince: days });
-      } catch (e) {
-        console.warn("[NotificationPage] onEnterDong failed:", e);
-      }
-    },
-    []
-  );
-
-  useDongGeofence(onEnterDong);
+  }, [address]);
 
   // 오늘과 지난 알림을 분류하는 함수
   const categorizeNotifications = () => {
@@ -154,17 +126,56 @@ const NotificationPage = () => {
           }}
         />
         <div className={styles.notification_container}>
+          {/* 위치 기반 알림 */}
+          {locationNotifications.length > 0 && (
+            <div className={styles.today_notification}>
+              <span className={styles.today}>현재 위치</span>
+              {locationNotifications.map((notification, index) => (
+                <NotificationItem
+                  key={`location-${index}`}
+                  id={notification.id || index}
+                  emotion={notification.emotion || "기쁨"}
+                  lastVisit={
+                    notification.datetime ||
+                    notification.created_at ||
+                    new Date().toISOString()
+                  }
+                  address={notification.address || address || ""}
+                  created_at={notification.created_at || notification.datetime}
+                  isRead={false}
+                  onClick={() => {
+                    navigate("/notification-grid", {
+                      state: {
+                        address: notification.address || address,
+                        totalCount: locationNotifications.length,
+                      },
+                    });
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* 주간 알림 */}
           {todayNotifications.length > 0 && (
             <div className={styles.today_notification}>
               <span className={styles.today}>오늘</span>
               {todayNotifications.map((notification) => (
                 <NotificationItem
                   key={notification.id}
+                  id={notification.id}
                   emotion={notification.emotion}
                   lastVisit={notification.lastVisit}
                   address={notification.address}
                   created_at={notification.created_at}
                   isRead={false}
+                  onClick={() => {
+                    navigate("/notification-grid", {
+                      state: {
+                        address: notification.address,
+                      },
+                    });
+                  }}
                 />
               ))}
             </div>
@@ -175,16 +186,24 @@ const NotificationPage = () => {
               {pastNotifications.map((notification) => (
                 <NotificationItem
                   key={notification.id}
+                  id={notification.id}
                   emotion={notification.emotion}
                   lastVisit={notification.lastVisit}
                   address={notification.address}
                   created_at={notification.created_at}
                   isRead={true}
+                  onClick={() => {
+                    navigate("/notification-grid", {
+                      state: {
+                        address: notification.address,
+                      },
+                    });
+                  }}
                 />
               ))}
             </div>
           )}
-          {notifications.length === 0 && (
+          {notifications.length === 0 && locationNotifications.length === 0 && (
             <div className={styles.no_notification_container}>
               <img
                 src={`/images/no-noti/no-${character || "momo"}.svg`}

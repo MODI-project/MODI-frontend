@@ -2,19 +2,24 @@ import React from "react";
 import styles from "./NotificationItem.module.css";
 
 interface NotificationItemProps {
+  id: number;
   emotion: string;
   lastVisit: string;
   address: string;
   isRead?: boolean;
   created_at?: string; // 알림 생성 시간 추가
+  totalCount?: number; // 전체 일기 개수
+  onClick?: () => void; // 클릭 핸들러 추가
 }
 
 const NotificationItem: React.FC<NotificationItemProps> = ({
+  id,
   emotion,
   lastVisit,
   address,
   isRead = false,
   created_at,
+  onClick,
 }) => {
   // emotion에 따른 이미지 경로 생성
   const getEmotionImagePath = (emotion: string) => {
@@ -73,7 +78,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   const timeAgo = created_at ? getTimeAgo(created_at) : "방금 전";
 
   return (
-    <div className={styles.notification_item}>
+    <div className={styles.notification_item} onClick={onClick}>
       {!isRead && <div className={styles.noti_alert}></div>}
       <div className={styles.noti_emotion}>
         <img src={getEmotionImagePath(emotion)} alt={emotion} />
@@ -85,9 +90,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         <span className={styles.noti_content}>이전 기록을 확인해보세요</span>
         <span className={styles.noti_time}>{timeAgo}</span>
       </div>
-      <button className={styles.noti_detail_btn}>
-        <img src="/icons/arrow_right.svg" alt="arrow_right" />
-      </button>
+      <img src="/icons/arrow_right.svg" alt="arrow_right" />
     </div>
   );
 };
