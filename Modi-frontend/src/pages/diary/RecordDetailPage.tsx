@@ -305,7 +305,8 @@ const RecordDetailPage = () => {
     if (!diaryId || isDeleting) return;
     try {
       setIsDeleting(true);
-      await deleteDiary(Number(diaryId));
+      const res = await deleteDiary(Number(diaryId));
+      console.log(res);
       setConfirmOpen(false);
       setAlertOpen(true);
     } catch (e) {
