@@ -104,7 +104,7 @@
 .summary {
   color: var(--gray5, #2c2c2c);
   text-align: center;
-  font-family: var(--font-onryuruu, "Onryuruu");
+  font-family: var(--font-diary, "NanumSquareRoundBold");
   font-size: 17px;
   font-style: normal;
   font-weight: 400;
