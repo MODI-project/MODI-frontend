@@ -86,7 +86,7 @@ const RecordDetailPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const diaryId = location.state?.diaryId as string | undefined;
+  const diaryId = location.state?.diaryId as number | undefined;
 
   const [fetched, setFetched] = useState<{
     id: number;
