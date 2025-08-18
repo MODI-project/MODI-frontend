@@ -12,9 +12,10 @@ interface MapMarkerProps {
     lng?: number; // 경도 (x)
     emotion: string; // ex) "happy","sad"...
     postCount: number; // +n 에 표시될 값
+    dong?: string; // '동' 정보
   };
   character: Exclude<CharacterKey, null>;
-  onClick?: (locationId: number) => void;
+  onClick?: (position: { lat: number; lng: number }) => void;
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({
@@ -24,19 +25,11 @@ const MapMarker: React.FC<MapMarkerProps> = ({
   onClick,
 }) => {
   useEffect(() => {
-    console.log("MapMarker useEffect 실행:", {
-      map: !!map,
-      diary,
-      character,
-    });
-
     if (!map) {
-      console.warn("지도 객체가 없습니다.");
       return;
     }
 
     if (!diary.lat || !diary.lng) {
-      console.warn("마커 좌표가 없습니다:", { lat: diary.lat, lng: diary.lng });
       return;
     }
 
@@ -44,16 +37,10 @@ const MapMarker: React.FC<MapMarkerProps> = ({
 
     // 1) 위치 객체
     const position = new kakao.maps.LatLng(diary.lat, diary.lng);
-    console.log("마커 위치 생성:", {
-      lat: diary.lat,
-      lng: diary.lng,
-      position: position,
-    });
 
     // 2) Marker용 DOM 컨테이너 생성
     const container = document.createElement("div");
     container.className = styles.mapMarker_container;
-    console.log("마커 컨테이너 생성:", container);
 
     // 3) 캐릭터 이미지
     const charImg = document.createElement("img");
@@ -82,7 +69,9 @@ const MapMarker: React.FC<MapMarkerProps> = ({
     container.appendChild(badge);
 
     container.addEventListener("click", () => {
-      onClick?.(diary.id);
+      if (diary.lat && diary.lng) {
+        onClick?.({ lat: diary.lat, lng: diary.lng });
+      }
     });
 
     // 5) CustomOverlay 생성
@@ -91,9 +80,8 @@ const MapMarker: React.FC<MapMarkerProps> = ({
       content: container,
       yAnchor: 1, // marker 하단 기준으로 위치 맞추기
     });
-    console.log("CustomOverlay 생성:", overlay);
+
     overlay.setMap(map);
-    console.log("마커를 지도에 추가 완료");
 
     return () => {
       overlay.setMap(null);

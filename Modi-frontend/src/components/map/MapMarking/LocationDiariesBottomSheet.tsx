@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import BottomSheet from "../../common/BottomSheet";
 import styles from "./LocationDiariesBottomSheet.module.css";
-import { MOCK_NEARBY_DIARIES } from "../../../apis/MapAPIS/loadMapMarkers";
+import axios from "axios";
 export interface NearbyDiary {
   id: number;
   datetime: string; // ISO string
@@ -18,28 +18,43 @@ export interface NearbyDiary {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  locationId: number | null;
+  position: { lat: number; lng: number; dong?: string } | null;
   /** 썸네일 클릭 시 상세 화면으로 라우팅 등 할 때 사용 (선택) */
   onClickDiary?: (diaryId: number) => void;
 }
 
-async function fetchDiariesByLocation(
-  locationId: number
-): Promise<NearbyDiary[]> {
-  // 개발 환경: mock
-  if (import.meta.env.DEV) {
-    const all = MOCK_NEARBY_DIARIES; // 아래에 정의
-    return new Promise((resolve) =>
-      setTimeout(
-        () => resolve(all.filter((d) => d.location.id === locationId)),
-        300
-      )
-    );
+async function fetchDiariesByLocation(position: {
+  lat: number;
+  lng: number;
+  dong?: string;
+}): Promise<NearbyDiary[]> {
+  try {
+    // 임시로 뷰포트 기반 API 사용 (전체 지도 영역)
+    const API_BASE_URL = "https://modidiary.store/api";
+    const { data } = await axios.get(`${API_BASE_URL}/diaries/nearby`, {
+      params: {
+        swLat: 37.0, // 한국 전체 영역
+        swLng: 126.0,
+        neLat: 38.0,
+        neLng: 130.0,
+      },
+      withCredentials: true,
+    });
+
+    // 같은 '동'의 일기들만 필터링
+    if (Array.isArray(data)) {
+      return data.filter((diary: any) => {
+        const diaryDong =
+          diary.location?.address?.split(" ").pop() || "unknown";
+        return diaryDong === position.dong;
+      });
+    }
+
+    return [];
+  } catch (error) {
+    console.error("위치별 일기 조회 실패:", error);
+    return [];
   }
-  // 실제 연동 시:
-  // const { data } = await axios.get(`${API_BASE_URL}/diaries/location/${locationId}`, { withCredentials: true });
-  // return data;
-  return [];
 }
 
 function dayKey(iso: string) {
@@ -66,7 +81,7 @@ const EMO_KO: Record<string, string> = {
 export default function LocationDiariesBottomSheet({
   isOpen,
   onClose,
-  locationId,
+  position,
   onClickDiary,
 }: Props) {
   const [items, setItems] = useState<NearbyDiary[]>([]);
@@ -74,14 +89,14 @@ export default function LocationDiariesBottomSheet({
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isOpen || !locationId) return;
+    if (!isOpen || !position) return;
     setLoading(true);
     setErr(null);
-    fetchDiariesByLocation(locationId)
+    fetchDiariesByLocation(position)
       .then(setItems)
       .catch((e) => setErr(e?.message ?? "목록을 불러오지 못했어요."))
       .finally(() => setLoading(false));
-  }, [isOpen, locationId]);
+  }, [isOpen, position]);
 
   const title = useMemo(() => {
     if (!items.length) return "이 위치의 일기";
@@ -148,7 +163,10 @@ export default function LocationDiariesBottomSheet({
                       <button
                         key={d.id}
                         className={styles.card}
-                        onClick={() => onClickDiary?.(d.id)}
+                        onClick={() => {
+                          console.log("일기 클릭:", d.id);
+                          onClickDiary?.(d.id);
+                        }}
                       >
                         <img
                           className={styles.thumb}

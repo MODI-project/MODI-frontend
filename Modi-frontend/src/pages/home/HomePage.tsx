@@ -10,6 +10,7 @@ import { fetchMonthlyDiaries } from "../../apis/Diary/diaries.read";
 import EmptyDiaryView from "./EmptyDiaryView";
 import { useNavigate, useLocation } from "react-router-dom";
 import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
+import { useGeolocationControl } from "../../hooks/useGeolocationControl";
 
 // URL에서 code 파라미터 추출 함수
 const getCodeFromURL = (): string | null => {
@@ -24,6 +25,9 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [hasMonthData, setHasMonthData] = useState<boolean | null>(null); // 현재 달에 일기가 하나라도 있는지
   const isTokenRequesting = useRef(false); // 토큰 요청 중복 방지
+
+  // Geolocation 제어
+  useGeolocationControl();
 
   // code 파라미터가 있으면 토큰 요청 처리 (중복 방지)
   useEffect(() => {

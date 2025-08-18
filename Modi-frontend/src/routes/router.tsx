@@ -85,6 +85,7 @@ const Router = () => {
       element: <NotificationGridPage />,
     },
   ]);
+
   return <RouterProvider router={router} />;
 };
 export default Router;

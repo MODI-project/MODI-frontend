@@ -208,13 +208,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
           type="text"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          placeholder={
-            isApiReady
-              ? currentPosition?.address
-                ? `현재 위치: ${currentPosition.address}`
-                : "주소를 입력하세요."
-              : "지도 로딩 중..."
-          }
+          placeholder={"주소를 입력하세요"}
           disabled={!isApiReady}
         />
         <button

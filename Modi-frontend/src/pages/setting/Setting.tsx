@@ -1,28 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Setting.module.css";
 import Header from "../../components/common/Header";
 import ToggleSwitch from "../../components/toggle/ToggleSwitch";
 import { useNavigate } from "react-router-dom";
 import { handleWithdrawMembership } from "../../apis/UserAPIS/withdrawMembership";
 import Popup from "../../components/common/Popup";
+import { useNotificationControl } from "../../hooks/useNotificationControl";
 
 const Setting = () => {
   // 설정별 이벤트 처리
   //캐릭터 id 가져오기
   const [selectedCharacter, setSelectedCharacter] = useState<string>("");
   const [showWithdrawPopup, setShowWithdrawPopup] = useState<boolean>(false);
+  const [notificationEnabled, setNotificationEnabled] =
+    useState<boolean>(false);
 
   const navigate = useNavigate();
+  const { handleNotificationSettingChange } = useNotificationControl();
 
-  const handleNotificationClick = () => {
-    // 알림 설정 이벤트
-  };
-  const handleGoogleDriveClick = () => {
-    // 구글 드라이브 연동 이벤트
-  };
+  // 페이지 로드 시 알림 설정 상태 불러오기
+  useEffect(() => {
+    const savedSetting = localStorage.getItem("notification_setting");
+    setNotificationEnabled(savedSetting === "true");
+  }, []);
 
-  const handleLogoutClick = () => {
-    // 로그아웃 이벤트
+  const handleNotificationToggle = () => {
+    const newValue = !notificationEnabled;
+    setNotificationEnabled(newValue);
+    localStorage.setItem("notification_setting", newValue.toString());
+    handleNotificationSettingChange(newValue); // 알림 제어 훅에 변경 알림
+    console.log("알림 설정 변경:", newValue ? "ON" : "OFF");
   };
 
   const handleWithdrawalClick = () => {
@@ -62,15 +69,15 @@ const Setting = () => {
           }}
         />
         <div className={styles.setting_container}>
-          <div
-            className={styles.notification}
-            onClick={handleNotificationClick}
-          >
+          <div className={styles.notification}>
             <span>알림 설정</span>
-            <ToggleSwitch />
+            <ToggleSwitch
+              isOn={notificationEnabled}
+              onToggle={handleNotificationToggle}
+            />
           </div>
           <div className={styles.setting_button_list}>
-            <button className={styles.setting_item} onClick={handleLogoutClick}>
+            <button className={styles.setting_item}>
               <span>로그아웃</span>
               <img src="/icons/arrow_right.svg" />
             </button>
