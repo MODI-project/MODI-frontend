@@ -37,10 +37,6 @@ export default function StyleBarList({
   onMaxLabelChange,
 }: StyleBarListProps) {
   const { character } = useCharacter();
-  if (!character || data.length === 0) return null;
-
-  const iconPath = `/images/character-statsbar/${character}/${character}_head.svg`;
-  const coloredIcon = `/images/character-statsbar/${character}/${character}_head_color.svg`;
 
   const max = Math.max(...data.map((d) => d.value));
   const maxLabel = data.find((d) => d.value === max)?.label;
@@ -51,6 +47,10 @@ export default function StyleBarList({
       onMaxLabelChange(maxLabel);
     }
   }, [onMaxLabelChange, maxLabel]);
+  if (!character || data.length === 0) return null;
+
+  const iconPath = `/images/character-statsbar/${character}/${character}_head.svg`;
+  const coloredIcon = `/images/character-statsbar/${character}/${character}_head_color.svg`;
 
   const maxBarColorMap: Record<string, string> = {
     momo: "#FBD7D5",
