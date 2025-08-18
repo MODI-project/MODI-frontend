@@ -45,7 +45,7 @@ const MyPage = () => {
         <Header
           left="/icons/setting.svg"
           middle="마이페이지"
-          right="/icons/notification_O.svg"
+          right="/icons/notification_X.svg"
           LeftClick={() => {
             navigate("/setting");
           }}

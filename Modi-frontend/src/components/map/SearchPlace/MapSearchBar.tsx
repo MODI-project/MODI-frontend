@@ -20,9 +20,18 @@ interface Pagination {
 interface MapSearchBarProps {
   map?: any;
   onPlaceSelect?: (place: Place) => void;
+  currentPosition?: {
+    lat: number;
+    lng: number;
+    address?: string;
+  } | null;
 }
 
-const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
+const MapSearchBar: React.FC<MapSearchBarProps> = ({
+  map,
+  onPlaceSelect,
+  currentPosition,
+}) => {
   const [keyword, setKeyword] = useState<string>("");
   const [places, setPlaces] = useState<Place[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -199,7 +208,13 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
           type="text"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          placeholder={isApiReady ? "주소를 입력하세요." : "지도 로딩 중..."}
+          placeholder={
+            isApiReady
+              ? currentPosition?.address
+                ? `현재 위치: ${currentPosition.address}`
+                : "주소를 입력하세요."
+              : "지도 로딩 중..."
+          }
           disabled={!isApiReady}
         />
         <button

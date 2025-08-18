@@ -28,6 +28,11 @@ const MapPage = () => {
   const [selectedLocationId, setSelectedLocationId] = useState<number | null>(
     null
   );
+  const [currentPosition, setCurrentPosition] = useState<{
+    lat: number;
+    lng: number;
+    address?: string;
+  } | null>(null);
 
   const loadMap = async () => {
     try {
@@ -131,34 +136,65 @@ const MapPage = () => {
     (place: any) => {
       console.log("선택된 장소:", place);
 
-      // 선택된 장소로 지도 이동
-      if (mapInstance && place.x && place.y) {
-        try {
-          const kakao = (window as any).kakao;
-          if (kakao && kakao.maps) {
-            const newCenter = new kakao.maps.LatLng(
-              parseFloat(place.y),
-              parseFloat(place.x)
-            );
+      // 현재 위치 정보가 있으면 선택된 장소 대신 현재 위치 사용
+      if (currentPosition) {
+        console.log("현재 위치 기준으로 지도 이동:", currentPosition);
 
-            // 지도 중심 이동
-            mapInstance.setCenter(newCenter);
+        if (mapInstance) {
+          try {
+            const kakao = (window as any).kakao;
+            if (kakao && kakao.maps) {
+              const newCenter = new kakao.maps.LatLng(
+                currentPosition.lat,
+                currentPosition.lng
+              );
 
-            // 적절한 확대 레벨로 설정 (상세한 뷰)
-            mapInstance.setLevel(3);
+              // 지도 중심 이동
+              mapInstance.setCenter(newCenter);
 
-            console.log("지도 이동 완료:", {
-              place: place.place_name,
-              lat: place.y,
-              lng: place.x,
-            });
+              // 적절한 확대 레벨로 설정 (상세한 뷰)
+              mapInstance.setLevel(3);
+
+              console.log("현재 위치로 지도 이동 완료:", {
+                address: currentPosition.address,
+                lat: currentPosition.lat,
+                lng: currentPosition.lng,
+              });
+            }
+          } catch (error) {
+            console.error("지도 이동 중 오류 발생:", error);
           }
-        } catch (error) {
-          console.error("지도 이동 중 오류 발생:", error);
+        }
+      } else {
+        // 현재 위치 정보가 없으면 기존 로직 사용
+        if (mapInstance && place.x && place.y) {
+          try {
+            const kakao = (window as any).kakao;
+            if (kakao && kakao.maps) {
+              const newCenter = new kakao.maps.LatLng(
+                parseFloat(place.y),
+                parseFloat(place.x)
+              );
+
+              // 지도 중심 이동
+              mapInstance.setCenter(newCenter);
+
+              // 적절한 확대 레벨로 설정 (상세한 뷰)
+              mapInstance.setLevel(3);
+
+              console.log("선택된 장소로 지도 이동 완료:", {
+                place: place.place_name,
+                lat: place.y,
+                lng: place.x,
+              });
+            }
+          } catch (error) {
+            console.error("지도 이동 중 오류 발생:", error);
+          }
         }
       }
     },
-    [mapInstance]
+    [mapInstance, currentPosition]
   );
 
   const handleRetry = useCallback(() => {
@@ -230,6 +266,7 @@ const MapPage = () => {
                 longitude={127.0710699}
                 showSearchBar={false}
                 onMapReady={handleMapReady}
+                onCurrentPositionChange={setCurrentPosition}
               />
             </div>
 
@@ -240,6 +277,7 @@ const MapPage = () => {
                   <MapSearchBar
                     map={mapInstance}
                     onPlaceSelect={handlePlaceSelect}
+                    currentPosition={currentPosition}
                   />
                 </div>
                 {/* 마커 렌더링 */}
