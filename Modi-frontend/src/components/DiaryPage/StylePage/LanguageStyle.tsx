@@ -104,9 +104,6 @@ const LanguageStyle = () => {
 
     setDraft({
       style: label,
-      // tone은 서버에 전달되는 필드이므로 선택된 스타일을 그대로 매핑한다.
-      // "없음"은 빈 문자열로 보낸다.
-      tone: label === "없음" ? "" : label,
       summary: styled,
     });
   };
