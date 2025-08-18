@@ -2,123 +2,7 @@ import axios from "axios";
 import type { MapMarkerResponse, ViewportParams } from "../../types/map-marker";
 
 // 환경변수에서 API URL 가져오기 (개발환경에서는 localhost 사용)
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:8080/api";
-
-// 개발환경에서는 하드코딩된 토큰 사용하지 않음
-const accessToken = import.meta.env.VITE_ACCESS_TOKEN || "";
-
-// 개발환경에서 사용할 mock 데이터
-export const MOCK_NEARBY_DIARIES: MapMarkerResponse[] = [
-  {
-    id: 101,
-    datetime: "2025-07-29T15:37:01.82931",
-    emotion: "happy",
-    location: {
-      id: 1,
-      address: "서울시 광진구 화양동",
-      latitude: 37.5407923,
-      longitude: 127.0710699,
-    },
-    thumbnailUrl: "https://example.com/thumbnail1.jpg",
-  },
-  {
-    id: 102,
-    datetime: "2025-07-30T15:37:01.82931",
-    emotion: "sad",
-    location: {
-      id: 1,
-      address: "서울시 광진구 화양동",
-      latitude: 37.5507923,
-      longitude: 127.123456,
-    },
-    thumbnailUrl: "https://example.com/thumbnail2.jpg",
-  },
-  {
-    id: 104,
-    datetime: "2025-07-31T15:37:01.82931",
-    emotion: "sad",
-    location: {
-      id: 1,
-      address: "서울시 광진구 화양동",
-      latitude: 37.5507923,
-      longitude: 127.123456,
-    },
-    thumbnailUrl: "https://example.com/thumbnail2.jpg",
-  },
-  {
-    id: 105,
-    datetime: "2025-08-01T15:37:01.82931",
-    emotion: "sad",
-    location: {
-      id: 1,
-      address: "서울시 광진구 화양동",
-      latitude: 37.5507923,
-      longitude: 127.123456,
-    },
-    thumbnailUrl: "https://example.com/thumbnail2.jpg",
-  },
-  {
-    id: 106,
-    datetime: "2025-08-02T15:37:01.82931",
-    emotion: "sad",
-    location: {
-      id: 1,
-      address: "서울시 광진구 화양동",
-      latitude: 37.5507923,
-      longitude: 127.123456,
-    },
-    thumbnailUrl: "https://example.com/thumbnail2.jpg",
-  },
-  {
-    id: 103,
-    datetime: "2025-07-29T15:37:01.82931",
-    emotion: "excited",
-    location: {
-      id: 3,
-      address: "서울시 광진구 화양동",
-      latitude: 37.123456,
-      longitude: 127.123456,
-    },
-    thumbnailUrl: "https://example.com/thumbnail3.jpg",
-  },
-  {
-    id: 107,
-    datetime: "2025-07-29T17:37:01.82931",
-    emotion: "excited",
-    location: {
-      id: 3,
-      address: "서울시 광진구 화양동",
-      latitude: 37.123456,
-      longitude: 127.123456,
-    },
-    thumbnailUrl: "https://example.com/thumbnail3.jpg",
-  },
-  {
-    id: 108,
-    datetime: "2025-07-29T20:37:01.82931",
-    emotion: "excited",
-    location: {
-      id: 3,
-      address: "서울시 광진구 화양동",
-      latitude: 37.123456,
-      longitude: 127.123456,
-    },
-    thumbnailUrl: "https://example.com/thumbnail3.jpg",
-  },
-  {
-    id: 109,
-    datetime: "2025-07-29T21:37:01.82931",
-    emotion: "excited",
-    location: {
-      id: 3,
-      address: "서울시 광진구 화양동",
-      latitude: 37.123456,
-      longitude: 127.123456,
-    },
-    thumbnailUrl: "https://example.com/thumbnail3.jpg",
-  },
-];
+const API_BASE_URL = "https://modidiary.store/api";
 
 export const loadMapMarkers = async (
   viewport: ViewportParams
@@ -127,22 +11,8 @@ export const loadMapMarkers = async (
   console.log("API URL:", `${API_BASE_URL}/diaries/nearby`);
   console.log("Viewport 파라미터:", viewport);
 
-  // 개발환경에서는 mock 데이터 사용
-  const isDevelopment = import.meta.env.DEV;
-  if (isDevelopment) {
-    console.log("🔄 개발환경 - Mock 데이터 사용");
-    console.log("Mock 마커 데이터:", MOCK_NEARBY_DIARIES);
-
-    // 실제 API 호출 대신 mock 데이터 반환
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(MOCK_NEARBY_DIARIES);
-      }, 500); // 0.5초 지연으로 실제 API 호출 시뮬레이션
-    });
-  }
-
   try {
-    console.log("🌐 프로덕션 환경 - 실제 API 호출");
+    console.log("🌐 실제 API 호출");
     console.log("HttpOnly 쿠키 방식으로 인증 진행");
     console.log("현재 모든 쿠키:", document.cookie);
     console.log("쿠키 존재 여부:", document.cookie ? "있음" : "없음");
@@ -156,7 +26,6 @@ export const loadMapMarkers = async (
       },
       headers: {
         "Content-Type": "application/json",
-        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       },
       withCredentials: true, // HttpOnly 쿠키 자동 전송
       timeout: 10000, // 10초 타임아웃
