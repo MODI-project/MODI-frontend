@@ -34,20 +34,19 @@ const PolaroidFrame: React.FC<Props> = ({
 
   // diaryId가 있으면 API에서 데이터 가져오기! 명세서 참고!
   useEffect(() => {
-    const missingFrame = !diary?.frame && !diaryData?.frame;
-    if (diaryId && missingFrame) {
+    const needFrame = !(diary?.frame ?? diaryData?.frame);
+    const needFont = !(diary?.font ?? diaryData?.font);
+    // 필요시 이미지 보강도
+    // const needPhoto = !((diary?.photoUrl ?? diaryData?.photoUrl) || "");
+
+    const needEnrich = needFrame || needFont; // || needPhoto;
+
+    if (diaryId && needEnrich) {
       (async () => {
         setLoading(true);
         try {
-          const detail = await fetchDiaryById(diaryId); // ✅ normalizeDiaryDetail 사용
-          // 기존 데이터 유지 + frame/이미지 보강
-          setDiary(
-            (prev) =>
-              ({
-                ...(prev ?? {}),
-                ...detail, // detail에 frame, imageUrls[0] 등 포함
-              } as DiaryData)
-          );
+          const detail = await fetchDiaryById(diaryId);
+          setDiary((prev) => ({ ...(prev ?? {}), ...detail } as DiaryData));
         } catch (e) {
           setError(
             e instanceof Error ? e.message : "일기를 불러오는데 실패했습니다."
@@ -57,7 +56,14 @@ const PolaroidFrame: React.FC<Props> = ({
         }
       })();
     }
-  }, [diaryId, diary?.frame, diaryData?.frame]);
+  }, [
+    diaryId,
+    diary?.frame,
+    diaryData?.frame,
+    diary?.font,
+    diaryData?.font,
+    // diary?.photoUrl, diaryData?.photoUrl,
+  ]);
 
   const resolvedDiary = useMemo<DiaryData | null>(() => {
     const src = diary ?? (diaryData as DiaryData | undefined) ?? null;

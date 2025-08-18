@@ -4,6 +4,7 @@ import {
 } from "../../../contexts/FrameTemplate";
 import styles from "./Frame.module.css";
 import React, { useState, forwardRef } from "react";
+import { DEFAULT_FONT } from "../../../utils/fontMap";
 
 const FALLBACK_IMG = "https://placehold.co/215x286"; // 로딩 실패 시 대체 이미지
 
@@ -165,6 +166,8 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
   const backStyle = backBg ? { backgroundImage: `url(${backBg})` } : {};
   const frontStyle = frontBg ? { backgroundImage: `url(${frontBg})` } : {};
 
+  const appliedFont = diaryData?.font || DEFAULT_FONT;
+
   return (
     <div
       ref={ref}
@@ -175,6 +178,7 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
       {/* 앞면 */}
       <div
         className={`${styles.fore_frame} ${isFlipped ? styles.flipped : ""}`}
+        style={{ ["--font-diary" as any]: appliedFont }}
       >
         <div className={styles.frame_back} style={backStyle}></div>
         <div className={styles.frame_front} style={frontStyle}></div>

@@ -1,5 +1,6 @@
 import apiClient from "../apiClient";
 import type { DiaryData } from "../../components/common/frame/Frame";
+import { mapFontName } from "../../utils/fontMap";
 
 const toFrame = (r: any): string => {
   const cand =
@@ -120,7 +121,7 @@ function normalizeDiaryDetail(r: any): DiaryData {
     latitude: r.location?.latitude,
     longitude: r.location?.longitude,
     tone: typeof r.tone === "object" ? r.tone.name : r.tone ?? "",
-    font: r.font,
+    font: mapFontName(r.font),
     frame: toFrame(r),
   };
 }
