@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import MapSearchBar from "../SearchPlace/MapSearchBar";
-import Geolocation from "../setCurrentPosition/Geolocation";
+import Geolocation from "../UserPosition/Geolocation";
 
 interface KakaoMapProps {
   latitude: number;
