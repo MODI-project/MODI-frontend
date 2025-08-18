@@ -8,6 +8,7 @@ import FavoriteView from "./FavoriteView";
 import StatsView from "./StatsView";
 import { useNavigate } from "react-router-dom";
 import { loadUserInfo } from "../../apis/UserAPIS/loadUserInfo";
+import { useGeolocationControl } from "../../hooks/useGeolocationControl";
 
 const TAB_LABELS = ["즐겨찾기", "월간 일기"] as const;
 type TabLabel = (typeof TAB_LABELS)[number];
@@ -18,6 +19,9 @@ const MyPage = () => {
   const [email, setEmail] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // Geolocation 제어
+  useGeolocationControl();
 
   useEffect(() => {
     (async () => {

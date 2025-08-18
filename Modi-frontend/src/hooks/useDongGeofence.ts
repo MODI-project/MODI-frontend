@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { reverseToDong } from "../apis/MapAPIS/reverseGeocode";
+import { useGeolocation } from "../contexts/GeolocationContext";
 
 export interface EnterDongPayload {
   dong: string;
@@ -14,6 +14,7 @@ type OnEnterDong = (payload: EnterDongPayload) => void | Promise<void>;
  * - 정확도 필터, 이동 거리 임계치, 동 안정화(연속 일치) 및 쿨타임 적용
  */
 export function useDongGeofence(onEnter: OnEnterDong) {
+  const { lat, lng, dong, isTracking } = useGeolocation();
   const prevDongRef = useRef<string | null>(null);
   const stableCountRef = useRef<number>(0);
   const lastCoordRef = useRef<{ lat: number; lon: number } | null>(null);
@@ -35,49 +36,29 @@ export function useDongGeofence(onEnter: OnEnterDong) {
   };
 
   useEffect(() => {
-    if (!("geolocation" in navigator)) {
-      console.warn("[useDongGeofence] Geolocation 미지원 브라우저");
-      return;
+    if (!isTracking || !lat || !lng || !dong) return;
+
+    const last = lastCoordRef.current;
+    if (last && haversine(last, { lat, lon: lng }) < 40) return; // 이동 임계
+    lastCoordRef.current = { lat, lon: lng };
+
+    const prev = prevDongRef.current;
+    if (prev === dong) {
+      stableCountRef.current += 1;
+    } else {
+      prevDongRef.current = dong;
+      stableCountRef.current = 1;
     }
 
-    const watchId = navigator.geolocation.watchPosition(
-      async (pos) => {
-        const { latitude: lat, longitude: lon, accuracy } = pos.coords;
-        if (typeof accuracy === "number" && accuracy > 60) return; // 정확도 필터
-
-        const last = lastCoordRef.current;
-        if (last && haversine(last, { lat, lon }) < 40) return; // 이동 임계
-        lastCoordRef.current = { lat, lon };
-
-        const rg = await reverseToDong(lat, lon);
-        const dong = rg?.dong;
-        if (!dong) return;
-
-        const prev = prevDongRef.current;
-        if (prev === dong) {
-          stableCountRef.current += 1;
-        } else {
-          prevDongRef.current = dong;
-          stableCountRef.current = 1;
-        }
-
-        // 연속 2회 이상 같은 동일 때만 입장 처리
-        if (stableCountRef.current >= 2) {
-          const now = Date.now();
-          const lastEnter = lastEnterAtRef.current[dong] || 0;
-          // 30분 쿨타임
-          if (now - lastEnter > 30 * 60 * 1000) {
-            lastEnterAtRef.current[dong] = now;
-            await onEnter({ dong, lat, lon });
-          }
-        }
-      },
-      (err) => {
-        console.warn("[useDongGeofence] geolocation error:", err);
-      },
-      { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
-    );
-
-    return () => navigator.geolocation.clearWatch(watchId);
-  }, [onEnter]);
+    // 연속 2회 이상 같은 동일 때만 입장 처리
+    if (stableCountRef.current >= 2) {
+      const now = Date.now();
+      const lastEnter = lastEnterAtRef.current[dong] || 0;
+      // 30분 쿨타임
+      if (now - lastEnter > 30 * 60 * 1000) {
+        lastEnterAtRef.current[dong] = now;
+        onEnter({ dong, lat, lon: lng });
+      }
+    }
+  }, [lat, lng, dong, isTracking, onEnter]);
 }

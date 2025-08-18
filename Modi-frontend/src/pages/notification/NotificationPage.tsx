@@ -46,9 +46,8 @@ const NotificationPage = () => {
         const today = new Date();
         let days = 0;
 
-        // 1) 서버에서 해당 동의 일기 배열을 받아 가장 최근 기록 기준으로 계산
-        const address = `${dong}`;
-        const serverReminders = await getRemindersByAddress(address);
+        // 1) 서버에서 현재 위치의 일기 배열을 받아 가장 최근 기록 기준으로 계산
+        const serverReminders = await getRemindersByAddress();
         if (Array.isArray(serverReminders) && serverReminders.length > 0) {
           const toDate = (s?: string) => (s ? new Date(s) : null);
           const latest = [...serverReminders]
