@@ -14,12 +14,6 @@ function toLocalDateTimeString(input: string | Date): string {
   )}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
-/** 파일 사이즈를 보기 좋게 */
-const pretty = (n: number) =>
-  n > 1024 * 1024
-    ? `${(n / 1024 / 1024).toFixed(2)} MB`
-    : `${(n / 1024).toFixed(0)} KB`;
-
 /** 이미지 목표 용량 이하가 될 때까지 반복 압축 (JPEG) */
 async function compressToTarget(
   file: File,
@@ -70,28 +64,10 @@ async function compressToTarget(
   return current;
 }
 
-/** UI 영문 슬러그 -> 서버 한글 값 매핑 */
-const EMOTION_EN_TO_KO: Record<string, string> = {
-  happy: "기쁨",
-  surprised: "놀람",
-  nervous: "떨림",
-  normal: "보통",
-  love: "사랑",
-  excited: "신남",
-  sad: "슬픔",
-  sick: "아픔",
-  bored: "지루함",
-  angry: "화남",
-};
-
 export async function postDiary(
   draft: DiaryDraft,
   date: Date | string = new Date()
 ): Promise<PostDiaryResponse> {
-  //필요 없을 수도 나중에 다시 확인
-  const emotionForServer =
-    (draft.emotion && EMOTION_EN_TO_KO[draft.emotion]) || draft.emotion || "";
-
   const data = {
     content: String(draft.content ?? ""),
     summary: String(draft.summary ?? ""),
@@ -99,11 +75,11 @@ export async function postDiary(
     address: String(draft.address ?? ""),
     latitude: Number(draft.latitude ?? 0),
     longitude: Number(draft.longitude ?? 0),
-    emotion: String(emotionForServer),
+    emotion: String(draft.emotion ?? ""),
     tone: String(draft.tone ?? ""),
     tags: Array.isArray(draft.keywords) ? draft.keywords.map(String) : [],
     font: String(draft.font ?? ""),
-    frame: draft.templateId != null ? String(draft.templateId) : "", // 문서 예시대로 문자열
+    frame: draft.templateId != null ? String(draft.templateId) : "",
   };
 
   const form = new FormData();
@@ -113,17 +89,7 @@ export async function postDiary(
   );
 
   if (draft.imageFile) {
-    console.log(
-      "원본 이미지 크기:",
-      pretty(draft.imageFile.size),
-      draft.imageFile.type
-    );
     const imageToSend = await compressToTarget(draft.imageFile, 900 * 1024);
-    console.log(
-      "압축 후 이미지 크기:",
-      pretty(imageToSend.size),
-      imageToSend.type
-    );
     form.append("image", imageToSend);
   }
 
