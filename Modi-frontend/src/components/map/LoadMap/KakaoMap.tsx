@@ -9,6 +9,11 @@ interface KakaoMapProps {
   showSearchBar?: boolean;
   onPlaceSelect?: (place: any) => void;
   onMapReady?: (map: any) => void;
+  onCurrentPositionChange?: (position: {
+    lat: number;
+    lng: number;
+    address?: string;
+  }) => void;
 }
 
 const KakaoMap = ({
@@ -18,6 +23,7 @@ const KakaoMap = ({
   showSearchBar = true,
   onPlaceSelect,
   onMapReady,
+  onCurrentPositionChange,
 }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [mapInstance, setMapInstance] = useState<any>(null);
@@ -88,7 +94,10 @@ const KakaoMap = ({
           <MapSearchBar map={mapInstance} onPlaceSelect={onPlaceSelect} />
         </div>
       )}
-      <Geolocation map={mapInstance} />
+      <Geolocation
+        map={mapInstance}
+        onCurrentPositionChange={onCurrentPositionChange}
+      />
     </div>
   );
 };
