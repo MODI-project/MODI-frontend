@@ -76,7 +76,7 @@ export default function HomePage() {
       <div className={style.home_container}>
         <Header
           left="/images/logo/Modi.svg"
-          right="/icons/notification_O.svg"
+          right="/icons/notification_X.svg"
           RightClick={() => {
             navigate("/notification");
           }}
