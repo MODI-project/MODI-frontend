@@ -35,12 +35,10 @@ const InitialSetting = () => {
     const loadExistingUserInfo = async () => {
       if (from === "/mypage") {
         try {
-          console.log("기존 사용자 정보 불러오기 시작");
           const userInfo = await loadUserInfo();
           setNickname(userInfo.nickname);
           setSelectedCharacter(userInfo.character);
           setCharacter(userInfo.character);
-          console.log("기존 사용자 정보 불러오기 완료:", userInfo);
         } catch (error) {
           console.error("기존 사용자 정보 불러오기 실패:", error);
           // 실패해도 계속 진행 가능
@@ -59,18 +57,14 @@ const InitialSetting = () => {
   useEffect(() => {
     const code = getCodeFromURL();
     if (code) {
-      console.log("=== 회원가입 페이지에서 code 파라미터 감지 ===");
-      console.log("code:", code);
-
       // 기존 회원이 회원가입 페이지에 온 경우 토큰 요청
       handleTokenRequest(code)
         .then(() => {
-          console.log("✅ 기존 회원 토큰 요청 완료");
           // 토큰이 있으면 홈으로 리다이렉트
           navigate("/home");
         })
         .catch((error) => {
-          console.error("❌ 토큰 요청 실패:", error);
+          console.error("토큰 요청 실패:", error);
           // 실패해도 회원가입 페이지에서 계속 진행 가능
         });
     }
@@ -135,9 +129,6 @@ const InitialSetting = () => {
 
     // URL에서 code 파라미터 추출
     const code = getCodeFromURL();
-    console.log("=== 사용자 정보 처리 시작 ===");
-    console.log("URL code 파라미터:", code);
-    console.log("HttpOnly 쿠키를 통해 백엔드에서 토큰 요청");
 
     setIsLoading(true);
 
@@ -150,24 +141,19 @@ const InitialSetting = () => {
       };
 
       let userInfo;
-      // API 호출하여 회원가입
+
+      // 분기처리 - 마이페이지에서 온 경우 회원정보 수정, 최초 회원가입인 경우 회원가입
       if (from === "/mypage") {
-        // ✅ 마이페이지에서 온 경우 → 수정
-        console.log("회원정보 수정 시작:", payload);
         userInfo = await handleEditUserInfo(
           payload.nickname,
           payload.character
         );
-        console.log("회원정보 수정 완료:", userInfo);
       } else {
-        // ✅ 최초 회원가입인 경우
-        console.log("회원가입 시작:", payload);
         userInfo = await handleUserSignUp(
           finalNickname,
           selectedCharacter,
           code
         );
-        console.log("회원가입 완료:", userInfo);
       }
 
       // API 호출 성공 후에만 캐릭터 정보 업데이트
@@ -176,10 +162,9 @@ const InitialSetting = () => {
       if (location.state?.from === "/mypage") {
         navigate("/mypage");
       } else {
-        navigate("/home"); //홈으로 이동
+        navigate("/home");
       }
     } catch (error) {
-      console.error("사용자 정보 처리 실패:", error);
       const isEditing = from === "/mypage";
       const errorMessage = isEditing
         ? "회원 정보 수정에 실패했습니다. 다시 시도해주세요."

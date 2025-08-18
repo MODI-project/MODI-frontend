@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./Geolocation.module.css";
+import { reverseToDong } from "../../../apis/MapAPIS/reverseGeocode";
 
-// === Pixel/Geodesic utility helpers (zoom-invariant circles) ===
 const EARTH_R = 6371000; // meters
 
 function toRad(deg: number) {
@@ -123,20 +123,14 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
 
   // 권한 거부 상태를 localStorage에 저장하여 반복 시도 방지
   useEffect(() => {
-    const denied = localStorage.getItem("geolocation_denied");
-    if (denied === "true") {
+    const denied = localStorage.getItem("geolocation_permission");
+    if (denied === "denied") {
       setPermissionDenied(true);
     }
   }, []);
 
   // 위치 추적 시작/중지 토글
   const toggleLocationTracking = () => {
-    console.log("=== toggleLocationTracking 호출됨 ===");
-    console.log("navigator.geolocation 지원 여부:", !!navigator.geolocation);
-    console.log("mapRef.current 존재 여부:", !!mapRef.current);
-    console.log("현재 URL:", window.location.href);
-    console.log("HTTPS 여부:", window.location.protocol === "https:");
-
     if (!mapRef.current) {
       alert("지도가 로드되지 않았습니다. 잠시 후 다시 시도해주세요.");
       return;
@@ -179,18 +173,14 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
         (position) => {
           const { latitude, longitude } = position.coords;
 
-          console.log("위치 업데이트:", { latitude, longitude });
-
           // 카카오맵 좌표로 변환
           const kakao = (window as any).kakao;
           if (kakao && kakao.maps) {
-            console.log("위치 정보 수신:", { latitude, longitude });
             const currentPos = new kakao.maps.LatLng(latitude, longitude);
 
             // 지도 중심을 현재 위치로 이동
             mapRef.current.setCenter(currentPos);
 
-            console.log("Circle 생성 시작...");
             // 현재 위치 Circle 생성
             createLocationCircle(currentPos);
 
@@ -203,7 +193,18 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
             setCurrentPosition({ lat: latitude, lng: longitude });
             setIsLoading(false);
             setIsTracking(true);
-            console.log("위치 추적 시작 완료");
+            // 현재 위치 동으로 환산해서 console로 표시
+            reverseToDong(latitude, longitude)
+              .then((res) => {
+                if (res) {
+                  console.log(
+                    `현위치 : ${res.fullAddress ? ` ${res.fullAddress}` : ""}`
+                  );
+                } else {
+                  console.log("동 정보를 찾지 못했습니다.");
+                }
+              })
+              .catch((e) => console.error("[역지오코딩] 실패:", e));
           } else {
             console.log("카카오맵 API를 찾을 수 없습니다.");
           }
@@ -239,7 +240,7 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
             case error.PERMISSION_DENIED:
               errorMessage = "위치 정보 접근이 거부되었습니다.";
               setPermissionDenied(true);
-              localStorage.setItem("geolocation_denied", "true");
+              localStorage.setItem("geolocation_permission", "denied");
               console.warn("사용자가 위치 권한을 거부했습니다.");
               break;
             case error.POSITION_UNAVAILABLE:
@@ -370,13 +371,11 @@ const Geolocation: React.FC<GeolocationProps> = ({ map }) => {
 
   // 실시간 위치 추적 중지
   const stopTracking = () => {
-    console.log("=== stopTracking 호출됨 ===");
-
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
       setIsTracking(false);
-      console.log("위치 추적이 중지되었습니다.");
+      console.log("위치 추적이 중지됨");
     }
 
     // Circle들도 중지
