@@ -110,9 +110,7 @@ const SearchPage = () => {
       setError(null);
 
       const raw = await searchDiaries(t);
-      console.log("[Search] raw response:", raw);
       const normalized = normalizeSearchResult(raw);
-      console.log("[Search] normalized:", normalized);
 
       setGrouped(normalized);
       setHasSearched(true);
