@@ -84,23 +84,6 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     [availableMonths]
   );
 
-  const diaryMap: Record<string, DiaryData> = useMemo(() => {
-    const acc: Record<string, DiaryData> = {};
-    for (const g of groups) {
-      const dateKey = g.date.slice(0, 10);
-      const sorted = [...(g.diaries ?? [])].sort((a, b) => {
-        const ta = (a as any).created_at ?? "";
-        const tb = (b as any).created_at ?? "";
-        const byTime = tb.localeCompare(ta);
-        if (byTime) return byTime;
-        return (b.id ?? 0) - (a.id ?? 0);
-      });
-      const top = sorted[0];
-      if (top) acc[dateKey] = top; // 단일 DiaryData 저장
-    }
-    return acc;
-  }, [groups]);
-
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const prevOpen = useRef(false);
