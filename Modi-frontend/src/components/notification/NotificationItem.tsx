@@ -23,6 +23,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   onClick,
 }) => {
   const [character, setCharacter] = useState<string>("momo");
+  const [hasBeenRead, setHasBeenRead] = useState<boolean>(isRead);
 
   // 사용자 정보 로드
   useEffect(() => {
@@ -97,9 +98,14 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   const lastWord = getLastWordFromAddress(address);
   const timeAgo = created_at ? getTimeAgo(created_at) : "방금 전";
 
+  const handleClick = () => {
+    setHasBeenRead(true);
+    onClick?.();
+  };
+
   return (
-    <div className={styles.notification_item} onClick={onClick}>
-      {!isRead && <div className={styles.noti_alert}></div>}
+    <div className={styles.notification_item} onClick={handleClick}>
+      {!hasBeenRead && <div className={styles.noti_alert}></div>}
       <div className={styles.noti_emotion}>
         <img src={getEmotionImagePath(emotion)} alt={emotion} />
       </div>

@@ -39,17 +39,14 @@ const NotificationPage = () => {
 
   // 오늘과 지난 알림을 분류하는 함수 (최근 일주일치로 제한)
   const categorizeNotifications = () => {
-    // 한국 시간으로 현재 날짜 계산
+    // 한국 시간으로 현재 시간 계산
     const now = new Date();
     const koreaTime = new Date(now.getTime() + 9 * 60 * 60 * 1000); // UTC+9
 
-    const todayStart = new Date(
-      koreaTime.getFullYear(),
-      koreaTime.getMonth(),
-      koreaTime.getDate()
-    );
+    // 24시간 전 시간 계산
+    const oneDayAgo = new Date(koreaTime.getTime() - 24 * 60 * 60 * 1000);
 
-    // 일주일 전 날짜 계산 (한국 시간 기준)
+    // 일주일 전 시간 계산
     const oneWeekAgo = new Date(koreaTime.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     const todayNotifications: WeeklyReminderResponse[] = [];
@@ -58,10 +55,11 @@ const NotificationPage = () => {
     notifications.forEach((notification) => {
       const notificationDate = new Date(notification.created_at);
 
-      if (notificationDate >= todayStart) {
+      if (notificationDate >= oneDayAgo) {
+        // 24시간 이내에 생성된 알림은 "오늘"
         todayNotifications.push(notification);
       } else if (notificationDate >= oneWeekAgo) {
-        // 최근 일주일치 알림만 포함
+        // 일주일 이내에 생성된 알림은 "지난 알림"
         pastNotifications.push(notification);
       }
     });
