@@ -24,6 +24,7 @@ export interface DiaryDraft {
   longitude?: number;
   style?: string;
   date?: string;
+  originalEmotion?: string | null;
   originalContent?: string;
   originalAddress?: string;
   originalKeywords?: string[];
@@ -49,6 +50,7 @@ export const defaultDraft: DiaryDraft = {
   longitude: undefined,
   style: "",
   date: undefined,
+  originalEmotion: null,
   originalContent: "",
   originalAddress: "",
   originalKeywords: [],

@@ -66,6 +66,7 @@ const DiaryEmotionTag = () => {
           templateId: d.frameId ?? 1,
           font: d.font ?? "",
           keywords: (d.tags ?? []).map((t: { name: string }) => t.name),
+          originalEmotion: d.emotion?.name ?? null,
           originalContent: d.content ?? "",
           originalAddress: d.location?.address ?? "",
           originalKeywords: (d.tags ?? []).map((t: { name: string }) => t.name),

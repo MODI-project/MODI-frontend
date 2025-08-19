@@ -48,10 +48,12 @@ const DiaryWritePage = () => {
     const sameImage =
       !draft.imageChanged &&
       (draft.originalImage ?? null) === (draft.image ?? null);
+    const sameEmotion = (draft.originalEmotion ?? "") === (draft.emotion ?? ""); // ⭐ 추가
 
-    return sameContent && sameAddress && sameKeywords && sameImage;
+    return (
+      sameContent && sameAddress && sameKeywords && sameImage && sameEmotion
+    );
   };
-
   const isReadyToSubmit =
     draft.image && draft.address.trim() !== "" && draft.keywords.length > 2;
 

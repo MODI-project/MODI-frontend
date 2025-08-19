@@ -114,8 +114,6 @@ export async function postDiary(
       }
     });
 
-    console.groupCollapsed("📤 [POST /diaries] Payload Preview");
-    console.log("JSON data", data);
     if (draft.imageFile) {
       console.table(
         [
@@ -146,9 +144,6 @@ export async function postDiary(
   // 🔎 응답 로그도 보기 좋게
   if (import.meta.env.MODE !== "production") {
     console.groupCollapsed("✅ [POST /diaries] Response");
-    console.log("status", res.status);
-    console.log("data", res.data);
-    console.groupEnd();
   }
 
   return res.data;
