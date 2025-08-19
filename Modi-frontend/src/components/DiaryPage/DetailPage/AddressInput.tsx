@@ -4,6 +4,7 @@ import { useDiaryDraft } from "../../../hooks/useDiaryDraft";
 import BottomSheet from "../../common/BottomSheet";
 import { searchKakaoAddress } from "../../../utils/searchAddress";
 import type { AddressResult } from "../../../utils/searchAddress";
+import { getDongRepresentativeCoords } from "../../../utils/dongCoords";
 
 const AddressInput = () => {
   const { draft, setDraft } = useDiaryDraft();
@@ -11,6 +12,7 @@ const AddressInput = () => {
   const [search, setSearch] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const [results, setResults] = useState<AddressResult[]>([]);
+  const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
 
   const handleSearch = () => {
     setHasSearched(true);
@@ -19,13 +21,12 @@ const AddressInput = () => {
     if (!trimmed) return;
 
     searchKakaoAddress(trimmed)
-      .then((data) => setResults(data))
+      .then(setResults)
       .catch((err) => console.error(err));
   };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+    if (e.key === "Enter") handleSearch();
   };
 
   return (
@@ -79,11 +80,25 @@ const AddressInput = () => {
               <li
                 key={i}
                 className={styles.address_item}
-                onClick={() => {
-                  setDraft({
-                    address: addr.fullAddress,
-                    dong: addr.dong,
-                  });
+                onClick={async () => {
+                  setDraft({ address: addr.fullAddress, dong: addr.dong });
+
+                  const rep = await getDongRepresentativeCoords(
+                    addr.dong,
+                    kakaoKey
+                  );
+                  if (rep) {
+                    setDraft({
+                      latitude: rep.latitude,
+                      longitude: rep.longitude,
+                    });
+                  } else {
+                    setDraft({
+                      latitude: addr.latitude,
+                      longitude: addr.longitude,
+                    });
+                  }
+
                   setIsSheetOpen(false);
                   setHasSearched(false);
                 }}

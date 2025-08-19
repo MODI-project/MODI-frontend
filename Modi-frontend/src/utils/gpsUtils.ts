@@ -42,7 +42,7 @@ export async function extractGpsFromFile(
 }
 
 /** 카카오 역지오코딩 */
-export async function reverseGeocode(
+export async function reverseGeocodeDongOnly(
   lat: number,
   lon: number,
   kakaoKey: string
@@ -50,14 +50,13 @@ export async function reverseGeocode(
   try {
     const res = await fetch(
       `https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${lon}&y=${lat}`,
-      {
-        headers: {
-          Authorization: `KakaoAK ${kakaoKey}`,
-        },
-      }
+      { headers: { Authorization: `KakaoAK ${kakaoKey}` } }
     );
     const data = await res.json();
-    return data.documents?.[0]?.address?.address_name ?? null;
+    const a = data.documents?.[0]?.address;
+    if (!a) return null;
+
+    return `${a.region_1depth_name} ${a.region_2depth_name} ${a.region_3depth_name}`;
   } catch (err) {
     console.error("역지오코딩 실패", err);
     return null;

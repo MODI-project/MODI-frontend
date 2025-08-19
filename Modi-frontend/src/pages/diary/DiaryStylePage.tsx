@@ -337,7 +337,7 @@ const DiaryStylePage = () => {
                   await goDetail(id);
                 } catch (e) {
                   console.error(e);
-                  alert("수정 실패 - 콘솔 확인");
+                  alert("수정에 실패했습니다.");
                 } finally {
                   setSubmitting(false);
                 }
