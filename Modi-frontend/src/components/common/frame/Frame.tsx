@@ -79,13 +79,6 @@ interface FrameProps {
   content?: string;
 }
 
-// ✅ fontMap 추가
-const fontMap: Record<string, string> = {
-  "온글맆 류류체": "var(--font-onryuruu)",
-  이서윤체: "var(--font-leeseoyoon)",
-  "온글맆 박다현체": "var(--font-parkdahyun)",
-};
-
 const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
   {
     isAbled = true,
@@ -173,10 +166,7 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
   const frontStyle = frontBg ? { backgroundImage: `url(${frontBg})` } : {};
 
   // font 적용
-  const appliedFont =
-    diaryData?.font && fontMap[diaryData.font]
-      ? fontMap[diaryData.font]
-      : fontMap[DEFAULT_FONT] || DEFAULT_FONT;
+  const appliedFont = diaryData?.font || DEFAULT_FONT;
 
   return (
     <div

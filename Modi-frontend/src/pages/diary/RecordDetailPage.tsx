@@ -14,6 +14,7 @@ import { updateFavorite } from "../../apis/MyPageAPIS/favorites";
 import { getDiaryById } from "../../apis/Diary/searchDiary";
 import { deleteDiary } from "../../apis/Diary/deleteDiary";
 import Popup from "../../components/common/Popup";
+import { mapFontName } from "../../utils/fontMap";
 
 type DiaryApi = {
   id: number;
@@ -47,7 +48,7 @@ const normalizeDiary = (api: DiaryApi) => ({
   created_at: api.createdAt,
   favorites: !!api.favorites,
   frame: String(api.frameId ?? 1),
-  font: api.font ?? null,
+  font: mapFontName(api.font),
 });
 
 const pageBackgrounds = {
@@ -125,7 +126,7 @@ const RecordDetailPage = () => {
         created_at: "",
         favorites: location.state?.isFavorited ?? false,
         frame: initial.frame,
-        font: initial.font ?? null,
+        font: initial.font ? mapFontName(initial.font) : null,
       });
       setIsFavorite(!!location.state?.isFavorited);
       setError(null);
