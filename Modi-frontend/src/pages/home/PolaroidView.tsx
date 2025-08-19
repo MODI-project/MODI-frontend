@@ -19,6 +19,28 @@ interface PolaroidViewProps {
   onSwitchView: () => void;
 }
 
+const [availableMonths, setAvailableMonths] = useState<string[]>([]);
+const monthCache = useRef<Map<string, DailyGroup[]>>(new Map());
+
+// ✅ YYYY-MM +/- N 달 계산
+const addMonths = (ym: string, delta: number) => {
+  const [y, m] = ym.split("-").map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+};
+
+// ✅ 월(YYYY-MM) 단위로 일별 그룹 불러오기 + 캐시
+async function loadMonth(ym: string) {
+  if (monthCache.current.has(ym)) {
+    return monthCache.current.get(ym)!;
+  }
+  const [y, m] = ym.split("-").map(Number);
+  const data = await fetchDailyGroups(y, m);
+  const sorted = [...data].sort((a, b) => a.date.localeCompare(b.date));
+  monthCache.current.set(ym, sorted);
+  return sorted;
+}
+
 export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { character } = useCharacter();
@@ -45,6 +67,12 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     () => allDates.map((d) => ({ date: d })),
     [allDates]
   );
+
+  const monthItems = useMemo(
+    () => availableMonths.map((ym) => ({ date: ym })), // DateSelector는 {date:string}을 받음
+    [availableMonths]
+  );
+
   const diaryMap: Record<string, DiaryData> = useMemo(() => {
     const acc: Record<string, DiaryData> = {};
     for (const g of groups) {
@@ -107,11 +135,17 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     (async () => {
       setLoading(true);
       try {
-        const [y, m] = viewYM.split("-").map(Number);
-        const data = await fetchDailyGroups(y, m);
-        const sorted = [...data].sort((a, b) => a.date.localeCompare(b.date));
-        setGroups(sorted);
-        setCurrentIndex(sorted.length ? sorted.length - 1 : 0); // 최신 날짜로 포커스
+        const list = await loadMonth(viewYM); // ✅ 캐시 사용
+        setGroups(list);
+        setCurrentIndex(list.length ? list.length - 1 : 0); // 최신 날짜 포커스
+
+        if (list.length > 0) {
+          setAvailableMonths((prev) => {
+            const s = new Set(prev);
+            s.add(viewYM);
+            return Array.from(s).sort(); // 정렬 규칙은 팀 룰대로
+          });
+        }
       } catch (error) {
         setGroups([]);
         setCurrentIndex(0);
@@ -196,6 +230,35 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     );
   }
 
+  useEffect(() => {
+    if (!isSheetOpen) return;
+    (async () => {
+      const tasks: Promise<void>[] = [];
+      for (let d = -6; d <= 6; d++) {
+        const ym = addMonths(viewYM, d);
+        if (availableMonths.includes(ym)) continue;
+
+        tasks.push(
+          (async () => {
+            try {
+              const list = await loadMonth(ym);
+              if (list.length > 0) {
+                setAvailableMonths((prev) => {
+                  const s = new Set(prev);
+                  s.add(ym);
+                  return Array.from(s).sort();
+                });
+              }
+            } catch {
+              /* 실패는 무시 */
+            }
+          })()
+        );
+      }
+      await Promise.allSettled(tasks);
+    })();
+  }, [isSheetOpen, viewYM, availableMonths]);
+
   return (
     <div className={pageStyles.wrapper}>
       {/* HomeHeader 에 props 로 상태·핸들러 내려주기 */}
@@ -275,9 +338,9 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
 
           <DateSelector
             viewType="polaroid"
-            items={dateItems}
-            initialDate={viewDate}
-            onChange={handleChange}
+            items={monthItems}
+            initialDate={viewYM}
+            onChange={(ym) => setTempDate(ym)}
             userCharacter={character!}
           />
         </div>
@@ -285,10 +348,19 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
           <ButtonBar
             location="modal"
             label="확인"
-            onClick={() => {
-              const newIdx = allDates.indexOf(tempDate);
-              if (newIdx !== -1) setCurrentIndex(newIdx);
+            onClick={async () => {
               setIsSheetOpen(false);
+              setLoading(true);
+              try {
+                // 미리 로드해서 깜빡임 최소화 (캐시됨)
+                const list = await loadMonth(tempDate); // tempDate = YYYY-MM
+                setViewYM(tempDate); // ✅ 월 변경
+                setGroups(list);
+                setCurrentIndex(list.length ? list.length - 1 : 0);
+                setSubIndex(0);
+              } finally {
+                setLoading(false);
+              }
             }}
             size="primary"
             disabled={false}
