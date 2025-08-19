@@ -11,6 +11,9 @@ import EmptyDiaryView from "./EmptyDiaryView";
 import { useNavigate, useLocation } from "react-router-dom";
 import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
 import { useGeolocationControl } from "../../hooks/useGeolocationControl";
+import { useDongGeofence } from "../../hooks/useDongGeofence";
+import { useNotificationManager } from "../../contexts/NotificationManagerContext";
+import DongPopup from "../../components/common/DongPopup";
 
 // URL에서 code 파라미터 추출 함수
 const getCodeFromURL = (): string | null => {
@@ -28,6 +31,10 @@ export default function HomePage() {
 
   // Geolocation 제어
   useGeolocationControl();
+
+  // 지오펜스 및 알림 관리
+  useDongGeofence();
+  const { isEnabled, toggleNotifications } = useNotificationManager();
 
   // code 파라미터가 있으면 토큰 요청 처리 (중복 방지)
   useEffect(() => {
@@ -108,6 +115,7 @@ export default function HomePage() {
         </main>
         <Footer showBalloon={hasMonthData === false} />
       </div>
+      <DongPopup />
     </div>
   );
 }
