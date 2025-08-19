@@ -1,38 +1,74 @@
-export function extractSiDong(address: string): string {
+const METRO = [
+  "서울",
+  "포항",
+  "부산",
+  "대구",
+  "인천",
+  "광주",
+  "대전",
+  "울산",
+  "세종",
+  "제주",
+];
+
+const stripTrailingNumbers = (parts: string[]) =>
+  parts.filter((p) => !/^\d+(-\d+)?$/.test(p)); // 예: 1, 12-3 같은 숫자 토큰 제거
+
+const normalizeSiName = (siRaw: string) =>
+  siRaw.replace(/특별자치시$|특별시$|광역시$/, "시");
+
+export function formatVisitLabel(address: string): string {
   if (!address) return "";
+  const rawParts = address.trim().split(/\s+/);
+  const parts = stripTrailingNumbers(rawParts);
 
-  // 공백 기준 토큰화
-  const parts = address.trim().split(/\s+/);
-
-  // 1) '시/특별시/광역시/특별자치시' or '도' 다음의 '시/군'을 찾아 시 이름 구성
-  const findSiIndex = () => {
-    for (let i = 0; i < parts.length; i++) {
-      const p = parts[i];
-      if (/시$/.test(p)) return i; // ex) 제주시, 전주시 (이미 '시'로 끝남)
-      if (/특별시$|광역시$|특별자치시$/.test(p)) return i; // ex) 서울특별시, 인천광역시, 세종특별자치시
-      if (/도$/.test(p)) {
-        // '도'면 다음 토큰 중 '시|군'을 시로 간주
-        if (i + 1 < parts.length && /(시|군)$/.test(parts[i + 1])) return i + 1;
-      }
+  // 1) 시 찾기
+  let siIdx = -1;
+  for (let i = 0; i < parts.length; i++) {
+    const p = parts[i];
+    if (/시$/.test(p)) {
+      siIdx = i;
+      break;
     }
-    return -1;
-  };
+    if (/특별시$|광역시$|특별자치시$/.test(p)) {
+      siIdx = i;
+      break;
+    }
+    if (
+      /도$/.test(p) &&
+      i + 1 < parts.length &&
+      /(시|군)$/.test(parts[i + 1])
+    ) {
+      siIdx = i + 1;
+      break;
+    }
+  }
 
-  const siIdx = findSiIndex();
-  if (siIdx === -1) return ""; // 못 찾으면 빈 문자열
+  // (보완) '서울', '부산' 등 축약형
+  if (siIdx === -1 && METRO.includes(parts[0])) {
+    // 첫 토큰을 시로 간주
+    parts[0] = parts[0] + "시";
+    siIdx = 0;
+  }
 
-  const normalizeSiName = (siRaw: string) =>
-    siRaw
-      .replace(/특별자치시$|특별시$|광역시$/, "시")
-      // '제주특별자치도 제주시'처럼 이미 '시'로 끝나면 유지
-      .replace(/도$/, "도"); // 도로 끝나는 항목은 그대로(위에서 다음 '시/군'을 si로 잡았을 것)
-  const siName = normalizeSiName(parts[siIdx]);
+  const siName = siIdx >= 0 ? normalizeSiName(parts[siIdx]) : "";
 
-  // 2) 마지막에 나오는 동/읍/면 찾기 (일반적으로 '구/군' 다음에 위치)
+  // 2) 동/읍/면/로 찾기
+  const dong = [...parts].reverse().find((p) => /(동|읍|면|로)$/.test(p));
 
-  const dongEupMyeon = [...parts].reverse().find((p) => /(동|읍|면)$/.test(p));
+  if (dong) {
+    // ‘구’는 항상 제거
+    return `${siName || parts[0]} ${dong}`
+      .replace(/(\S+?)구(?=\s|$)/g, "$1")
+      .trim();
+  }
 
-  if (!dongEupMyeon) return siName;
+  // 3) 동이 없으면 구(접미사 제거) 사용
+  const gu = parts.find((p) => /구$/.test(p));
+  if (gu) {
+    return `${siName || parts[0]} ${gu.replace(/구$/, "")}`.trim();
+  }
 
-  return `${siName} ${dongEupMyeon}`;
+  // 4) 그래도 없으면 시만
+  return (siName || parts[0] || "").trim();
 }
