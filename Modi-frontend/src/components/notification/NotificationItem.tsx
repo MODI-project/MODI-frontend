@@ -76,27 +76,32 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     return words[words.length - 1] || "여기";
   };
 
-  // 알림 생성 시간으로부터 경과 시간 계산
-  const getTimeAgo = (createdAt: string) => {
-    const createdDate = new Date(createdAt);
-    const currentDate = new Date();
-    const timeDiff = currentDate.getTime() - createdDate.getTime();
+  // 안전한 상대시간 계산 (created_at 우선, 없거나 파싱 실패 시 lastVisit 사용, 모두 실패 시 null)
+  const getSafeTimeAgo = (
+    createdAt?: string,
+    fallback?: string
+  ): string | null => {
+    const source = createdAt || fallback;
+    if (!source) return null;
 
-    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+    const date = new Date(source);
+    if (isNaN(date.getTime())) return null;
+
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    if (diffMs < 0) return "방금 전"; // 미래로 해석된 경우 가드
+
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
     const days = Math.floor(hours / 24);
 
-    if (days > 0) {
-      return `${days}일 전`;
-    } else if (hours > 0) {
-      return `${hours}시간 전`;
-    } else {
-      return "방금 전";
-    }
+    if (days > 0) return `${days}일 전`;
+    if (hours > 0) return `${hours}시간 전`;
+    return "방금 전";
   };
 
   const daysSinceLastVisit = calculateDaysSinceLastVisit(lastVisit);
   const lastWord = getLastWordFromAddress(address);
-  const timeAgo = created_at ? getTimeAgo(created_at) : "방금 전";
+  const timeAgo = getSafeTimeAgo(created_at, lastVisit);
 
   const handleClick = () => {
     setHasBeenRead(true);
@@ -114,7 +119,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           {daysSinceLastVisit}일만에 {lastWord}에 왔어요!
         </span>
         <span className={styles.noti_content}>이전 기록을 확인해보세요</span>
-        <span className={styles.noti_time}>{timeAgo}</span>
+        {timeAgo && <span className={styles.noti_time}>{timeAgo}</span>}
       </div>
       <img src="/icons/arrow_right.svg" alt="arrow_right" />
     </div>

@@ -18,15 +18,44 @@ const NotificationPage = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const weeklyData = await getWeeklyReminder();
+        // 60초 TTL 캐시 사용 (세션 한정)
+        const CACHE_KEY = "weekly_reminders_cache";
+        const cachedRaw = sessionStorage.getItem(CACHE_KEY);
+        const cached = cachedRaw ? JSON.parse(cachedRaw) : null;
+        const now = Date.now();
 
-        // 중복 제거 (address 기준으로 중복 제거)
-        const uniqueNotifications = weeklyData.filter(
-          (notification, index, self) =>
-            index === self.findIndex((n) => n.address === notification.address)
-        );
+        let weeklyData: WeeklyReminderResponse[];
+        if (
+          cached &&
+          now - cached.ts < 60 * 1000 &&
+          Array.isArray(cached.data)
+        ) {
+          weeklyData = cached.data as WeeklyReminderResponse[];
+        } else {
+          weeklyData = await getWeeklyReminder();
+          sessionStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify({ ts: now, data: weeklyData })
+          );
+        }
 
-        setNotifications(uniqueNotifications);
+        // 1) created_at 내림차순 정렬 고정
+        const sorted = [...weeklyData].sort((a, b) => {
+          const at = new Date(a.created_at).getTime();
+          const bt = new Date(b.created_at).getTime();
+          return bt - at;
+        });
+
+        // 2) address 기준으로 가장 최신 1개만 유지
+        const seen = new Set<string>();
+        const uniqueByAddress = sorted.filter((item) => {
+          if (!item.address) return true;
+          if (seen.has(item.address)) return false;
+          seen.add(item.address);
+          return true;
+        });
+
+        setNotifications(uniqueByAddress);
       } catch (error) {
         console.error("알림 데이터 로드 실패:", error);
       } finally {
