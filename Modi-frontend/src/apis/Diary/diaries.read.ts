@@ -41,8 +41,6 @@ export const fetchMonthlyDiaries = async (
   const { data } = await apiClient.get("/diaries", { params: { year, month } });
   const list = Array.isArray(data) ? data : data?.diaries ?? data?.items ?? [];
   const mapped = list.map(normalize);
-  console.log("[monthly] raw sample:", list[0]);
-  console.log("[monthly] normalized sample:", mapped[0]); // 🔎 frame 확인
   return mapped;
 };
 
@@ -71,7 +69,6 @@ export const fetchDailyGroups = async (
         diaries: (g.diaries as any[]).map(normalize).filter((d) => d.date),
       }))
       .sort((a, b) => a.date.localeCompare(b.date));
-    console.log("[daily groups] normalized sample:", groups[0]?.diaries?.[0]);
     return groups;
   }
 

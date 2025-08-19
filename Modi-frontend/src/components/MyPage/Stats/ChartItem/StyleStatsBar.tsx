@@ -27,7 +27,7 @@ export default function StyleBar({
   isMax,
   maxColor,
   character,
-  multilineAfterSi = false,
+  multilineAfterSi = true,
 }: Props) {
   const hasValue = typeof value === "number";
   const isZuni = character === "zuni";
@@ -35,8 +35,8 @@ export default function StyleBar({
   const offset = ZUNI_MAX_HEIGHT - height;
 
   const displayLabel = (label ?? "").replace(
-    multilineAfterSi ? /시\s+/ : /$^/, // 조건일 때만 매칭
-    "시\n"
+    multilineAfterSi ? /(시|구)(?!\n)/g : /$^/,
+    "$1\n"
   );
   return (
     <div className={style.barItem}>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import StyleBar from "./StyleStatsBar";
 import style from "./StyleStatsBar.module.css";
 import { useCharacter } from "../../../../contexts/CharacterContext";
@@ -39,18 +39,47 @@ export default function StyleBarList({
   const { character } = useCharacter();
 
   const max = Math.max(...data.map((d) => d.value));
-  const maxLabel = data.find((d) => d.value === max)?.label;
+  const maxLabel = useMemo(() => {
+    if (!data.length || max <= 0) return undefined;
+    return data.find((d) => d.value === max)?.label;
+  }, [data, max]);
 
-  // maxLabel이 변경되면 부모에 알림
+  const iconPaths = useMemo(() => {
+    const base = character
+      ? `/images/character-statsbar/${character}/${character}_head.svg`
+      : "";
+    const color = character
+      ? `/images/character-statsbar/${character}/${character}_head_color.svg`
+      : "";
+    return { base, color };
+  }, [character]);
+
+  const realTop = useMemo(() => {
+    if (!character || !data.length)
+      return [] as Array<{
+        label: string;
+        value?: number;
+        height: number;
+        isMax: boolean;
+        icon: string;
+      }>;
+    return [...data]
+      .sort((a, b) => b.value - a.value)
+      .slice(0, MAX_ITEMS)
+      .map((d) => ({
+        ...d,
+        label: toKo(d.label),
+        height: max > 0 ? (d.value / max) * MAX_BAR_HEIGHT : 0,
+        isMax: d.value === max,
+        icon: d.value === max ? iconPaths.color : iconPaths.base,
+      }));
+  }, [character, data, max, iconPaths]);
+
   useEffect(() => {
-    if (onMaxLabelChange && maxLabel) {
-      onMaxLabelChange(maxLabel);
-    }
+    if (onMaxLabelChange && maxLabel) onMaxLabelChange(maxLabel);
   }, [onMaxLabelChange, maxLabel]);
-  if (!character || data.length === 0) return null;
 
-  const iconPath = `/images/character-statsbar/${character}/${character}_head.svg`;
-  const coloredIcon = `/images/character-statsbar/${character}/${character}_head_color.svg`;
+  if (!character) return null;
 
   const maxBarColorMap: Record<string, string> = {
     momo: "#FBD7D5",
@@ -59,52 +88,14 @@ export default function StyleBarList({
     zuni: "#93D1E0",
   };
 
-  if (data.length === 0) {
-    // 전부 placeholder (아이콘만)
-    return (
-      <div className={style.barList}>
-        {Array.from({ length: MAX_ITEMS }).map((_, i) => (
-          <StyleBar
-            key={`placeholder-${i}`}
-            label=""
-            value={undefined}
-            height={0}
-            icon={iconPath}
-            isMax={false}
-            character={character}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  // 실제 데이터 정렬 → 상한 N개로 자르기
-  const realTop = [...data]
-    .sort((a, b) => b.value - a.value)
-    .slice(0, MAX_ITEMS)
-    .map((d) => ({
-      ...d,
-      label: toKo(d.label), // ★ 감정/스타일 한글 변환 적용
-      height: (d.value / (max || 1)) * MAX_BAR_HEIGHT,
-      isMax: d.value === max,
-      icon: d.value === max ? coloredIcon : iconPath,
-    }));
-
-  // 부모에 최대 라벨 전달(실제 데이터가 있을 때만)
-  useEffect(() => {
-    if (onMaxLabelChange && realTop.length > 0) {
-      onMaxLabelChange(realTop[0].label);
-    }
-  }, [onMaxLabelChange, realTop]);
-
-  // 부족하면 placeholder로 채우기(아이콘만)
-  while (realTop.length < MAX_ITEMS) {
-    realTop.push({
+  const filled = [...realTop];
+  while (filled.length < MAX_ITEMS) {
+    filled.push({
       label: "",
-      value: undefined as any,
+      value: undefined,
       height: 0,
       isMax: false,
-      icon: iconPath,
+      icon: iconPaths.base,
     });
   }
 

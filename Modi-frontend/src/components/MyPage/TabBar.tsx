@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import Tab from "../../components/common/tab/Tab";
 import styles from "./TabBar.module.css"; // 아래 CSS 모듈
 
