@@ -46,9 +46,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
   async function loadMonth(ym: string) {
     // 캐시 우선
     if (monthCache.current.has(ym)) {
-      const cached = monthCache.current.get(ym)!;
-      setMonthDiaries(cached);
-      return cached;
+      return monthCache.current.get(ym)!;
     }
     const [year, month] = ym.split("-").map(Number);
     const list = await fetchMonthlyDiaries(year, month);
