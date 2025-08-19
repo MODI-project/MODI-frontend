@@ -24,16 +24,10 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
   const navigate = useNavigate();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { character } = useCharacter();
+  const [availableMonths, setAvailableMonths] = useState<string[]>([]);
+  const monthCache = useRef<Map<string, DiaryData[]>>(new Map());
   const [monthDiaries, setMonthDiaries] = useState<DiaryData[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const dateItems = useMemo(() => {
-    // monthDiaries에서 날짜(연월)만 추출
-    const uniqueMonths = Array.from(
-      new Set(monthDiaries.map((diary) => diary.date.slice(0, 7)))
-    );
-    return uniqueMonths.map((date) => ({ date }));
-  }, [monthDiaries]);
 
   const [viewDate, setViewDate] = useState(() => {
     const now = new Date();
@@ -49,43 +43,43 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   };
 
+  async function loadMonth(ym: string) {
+    // 캐시 우선
+    if (monthCache.current.has(ym)) {
+      const cached = monthCache.current.get(ym)!;
+      setMonthDiaries(cached);
+      return cached;
+    }
+    const [year, month] = ym.split("-").map(Number);
+    const list = await fetchMonthlyDiaries(year, month);
+    monthCache.current.set(ym, list);
+    return list;
+  }
+
   useEffect(() => {
     (async () => {
       setLoading(true);
       try {
-        const [year, month] = viewDate.split("-").map(Number);
-        const list = await fetchMonthlyDiaries(year, month);
+        const list = await loadMonth(viewDate);
         setMonthDiaries(list);
+
+        if (list.length > 0) {
+          setAvailableMonths((prev) => {
+            const s = new Set(prev);
+            s.add(viewDate);
+            return Array.from(s).sort(); // 정렬 기준은 팀 룰대로
+          });
+        }
       } catch (e) {
         console.error("월별 일기 로드 실패:", e);
-        setMonthDiaries([]); // 실패 시 빈 배열
+        setMonthDiaries([]);
       } finally {
         setLoading(false);
       }
     })();
   }, [viewDate]);
 
-  const emotionList = Array.from(
-    new Set(monthDiaries.map((d) => d.emotion))
-  ) as Emotion[];
-
   const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
-
-  const monthList = dateItems.map((item) => item.date);
-
-  const handlePrev = () => {
-    const idx = monthList.indexOf(viewDate);
-    if (idx > 0) {
-      setViewDate(monthList[idx - 1]);
-    }
-  };
-
-  const handleNext = () => {
-    const idx = monthList.indexOf(viewDate);
-    if (idx < monthList.length - 1) {
-      setViewDate(monthList[idx + 1]);
-    }
-  };
 
   const filtered = selectedEmotion
     ? monthDiaries.filter((d) => d.emotion === selectedEmotion)
@@ -93,16 +87,75 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
 
   const [tempDate, setTempDate] = useState(viewDate);
 
+  useEffect(() => {
+    if (!isSheetOpen) return;
+    (async () => {
+      const tasks: Promise<void>[] = [];
+      for (let d = -6; d <= 6; d++) {
+        const ym = addMonths(viewDate, d);
+        // 이미 알고 있는 월은 스킵
+        if (availableMonths.includes(ym)) continue;
+
+        tasks.push(
+          (async () => {
+            try {
+              const list = await loadMonth(ym);
+              if (list.length > 0) {
+                setAvailableMonths((prev) => {
+                  const s = new Set(prev);
+                  s.add(ym);
+                  return Array.from(s).sort();
+                });
+              }
+            } catch {
+              /* 네트워크 실패 시 무시 */
+            }
+          })()
+        );
+      }
+      await Promise.allSettled(tasks);
+    })();
+  }, [isSheetOpen]);
+
+  const tryMove = async (dir: -1 | 1) => {
+    let candidate = addMonths(viewDate, dir);
+    // 최대 12개월 범위 내에서 탐색 (무한루프 방지)
+    for (let i = 0; i < 12; i++) {
+      // 캐시/프로빙
+      let list = monthCache.current.get(candidate);
+      if (!list) {
+        try {
+          list = await loadMonth(candidate);
+        } catch {
+          list = [];
+        }
+      }
+      if (list.length > 0) {
+        setViewDate(candidate);
+        return;
+      }
+      candidate = addMonths(candidate, dir);
+    }
+  };
+
+  const handlePrev = async () => {
+    await tryMove(-1);
+  };
+  const handleNext = async () => {
+    await tryMove(1);
+  };
+
+  const monthList = availableMonths;
+  const dateItems = useMemo(
+    () => monthList.map((date) => ({ date })),
+    [monthList]
+  );
+
   const handleConfirm = () => {
+    // monthList에 없는 tempDate라도 setViewDate → loadMonth → length>0이면 availableMonths에 추가됨
     setViewDate(tempDate);
     setIsSheetOpen(false);
   };
-
-  useEffect(() => {
-    if (isSheetOpen) {
-      setTempDate(viewDate);
-    }
-  }, [isSheetOpen, viewDate]);
 
   const handleDiaryClick = (diary: DiaryData) => {
     navigate(`/recorddetail/`, {
@@ -112,6 +165,11 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
       },
     });
   };
+
+  useEffect(() => {
+    // 월(viewDate) 바뀔 때 감정 필터 초기화
+    setSelectedEmotion(null);
+  }, [viewDate]);
 
   return (
     <div className={pageStyles.wrapper}>

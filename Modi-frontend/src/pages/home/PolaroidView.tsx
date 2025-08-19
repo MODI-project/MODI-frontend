@@ -101,12 +101,6 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     }
   }, [tempDate, allDates]);
 
-  // 보여줄 날짜: 가장 최근이 오른쪽 (목업 데이터 사용! allDiaries 대신 mockDiaries만 바꾼 것!)
-  const slides: (DiaryData | null)[] = useMemo(
-    () => allDates.map((d) => diaryMap[d] ?? null),
-    [allDates, diaryMap]
-  );
-
   const indices = [currentIndex - 1, currentIndex, currentIndex + 1];
   // 선택된 월(viewYM)의 일별 목록 로드
   useEffect(() => {
@@ -119,7 +113,6 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
         setGroups(sorted);
         setCurrentIndex(sorted.length ? sorted.length - 1 : 0); // 최신 날짜로 포커스
       } catch (error) {
-        console.error("일별 일기 로드 실패:", error);
         setGroups([]);
         setCurrentIndex(0);
       } finally {
@@ -159,7 +152,6 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   };
 
   const handleChange = (newDate: string) => {
-    console.log("[Parent] onChange from DateSelector:", newDate);
     setTempDate(newDate);
   };
 
@@ -294,9 +286,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
             location="modal"
             label="확인"
             onClick={() => {
-              console.log("[Parent] confirm click", { tempDate });
               const newIdx = allDates.indexOf(tempDate);
-              console.log("[Parent] resolve index", { newIdx });
               if (newIdx !== -1) setCurrentIndex(newIdx);
               setIsSheetOpen(false);
             }}
