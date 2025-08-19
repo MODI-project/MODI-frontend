@@ -1,20 +1,20 @@
 import { useEffect, useRef } from "react";
 import { useGeolocation } from "../contexts/GeolocationContext";
+import { useAlertBus } from "../contexts/AlertBusContext";
 
-export interface EnterDongPayload {
+type OnEnterDong = (payload: {
   dong: string;
   lat: number;
   lon: number;
-}
-
-type OnEnterDong = (payload: EnterDongPayload) => void | Promise<void>;
+}) => void | Promise<void>;
 
 /**
  * 포그라운드 지오펜스(동 기준)
  * - 정확도 필터, 이동 거리 임계치, 동 안정화(연속 일치) 및 쿨타임 적용
  */
-export function useDongGeofence(onEnter: OnEnterDong) {
+export function useDongGeofence(onEnter?: OnEnterDong) {
   const { lat, lng, dong, isTracking } = useGeolocation();
+  const { publish } = useAlertBus();
   const prevDongRef = useRef<string | null>(null);
   const stableCountRef = useRef<number>(0);
   const lastCoordRef = useRef<{ lat: number; lon: number } | null>(null);
@@ -57,7 +57,17 @@ export function useDongGeofence(onEnter: OnEnterDong) {
       // 30분 쿨타임
       if (now - lastEnter > 30 * 60 * 1000) {
         lastEnterAtRef.current[dong] = now;
-        onEnter({ dong, lat, lon: lng });
+
+        // AlertBus에 이벤트 발행
+        publish("ENTER_DONG", {
+          dong,
+          lat,
+          lng,
+          timestamp: now,
+        });
+
+        // 기존 콜백도 호출 (하위 호환성)
+        onEnter?.({ dong, lat, lon: lng });
       }
     }
   }, [lat, lng, dong, isTracking, onEnter]);

@@ -6,7 +6,7 @@ import styles from "./Frame.module.css";
 import React, { useState, forwardRef } from "react";
 import { DEFAULT_FONT } from "../../../utils/fontMap";
 
-const FALLBACK_IMG = "https://placehold.co/215x286"; // 로딩 실패 시 대체 이미지
+const FALLBACK_IMG = "https://placehold.co/215x286";
 
 const frameWrapperBackgrounds = {
   basic: {
@@ -79,6 +79,13 @@ interface FrameProps {
   content?: string;
 }
 
+// ✅ fontMap 추가
+const fontMap: Record<string, string> = {
+  "온글맆 류류체": "var(--font-onryuruu)",
+  이서윤체: "var(--font-leeseoyoon)",
+  "온글맆 박다현체": "var(--font-parkdahyun)",
+};
+
 const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
   {
     isAbled = true,
@@ -105,7 +112,6 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
     else setIsFlipped(!isFlipped);
   };
 
-  // 표시할 데이터 (diaryData 우선)
   const displayData = diaryData
     ? {
         photoUrl: diaryData.photoUrl || FALLBACK_IMG,
@@ -166,7 +172,11 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
   const backStyle = backBg ? { backgroundImage: `url(${backBg})` } : {};
   const frontStyle = frontBg ? { backgroundImage: `url(${frontBg})` } : {};
 
-  const appliedFont = diaryData?.font || DEFAULT_FONT;
+  // font 적용
+  const appliedFont =
+    diaryData?.font && fontMap[diaryData.font]
+      ? fontMap[diaryData.font]
+      : fontMap[DEFAULT_FONT] || DEFAULT_FONT;
 
   return (
     <div
@@ -178,7 +188,6 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
       {/* 앞면 */}
       <div
         className={`${styles.fore_frame} ${isFlipped ? styles.flipped : ""}`}
-        style={{ ["--font-diary" as any]: appliedFont }}
       >
         <div className={styles.frame_back} style={backStyle}></div>
         <div className={styles.frame_front} style={frontStyle}></div>
@@ -196,7 +205,9 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
           />
         </div>
         <div className={styles.summary_container}>
-          <span className={styles.summary}>{displayData.summary}</span>
+          <span className={styles.summary} style={{ fontFamily: appliedFont }}>
+            {displayData.summary}
+          </span>
         </div>
       </div>
 

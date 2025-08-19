@@ -22,73 +22,76 @@ const DiaryStylePage = () => {
   const { draft, setDraft } = useContext(DiaryDraftContext);
   const navigate = useNavigate();
   const location = useLocation();
-
-  // 종료 확인 팝업
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  // "변경 없음" 팝업
   const [showNoChangePopup, setShowNoChangePopup] = useState(false);
-
   const [submitting, setSubmitting] = useState(false);
   const [summarizing, setSummarizing] = useState(false);
   const triedRef = useRef(false);
 
-  // 수정 시작 시 원본 스냅샷 보관
   const originalRef = useRef<null | {
-    content: string;
     noEmotionSummary: string;
     summary: string;
-    emotion: string | null;
     templateId: number | null;
     font: string;
     tone: string;
     style?: string;
-    address: string;
-    keywords: string[];
   }>(null);
 
-  // 수정 모드 최초 1회 스냅샷 저장
   useEffect(() => {
     if (draft.mode !== "edit") return;
     if (originalRef.current) return;
 
     originalRef.current = {
-      content: draft.content ?? "",
       noEmotionSummary: draft.noEmotionSummary ?? "",
       summary: draft.summary ?? "",
-      emotion: draft.emotion ?? null,
       templateId: draft.templateId ?? null,
       font: draft.font ?? "",
       tone: draft.tone ?? "",
       style: draft.style,
-      address: draft.address ?? "",
-      keywords: [...(draft.keywords ?? [])],
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draft.mode]);
 
+  const equalArray = (a: string[] = [], b: string[] = []) => {
+    if (a.length !== b.length) return false;
+    const A = a.map((s) => s.trim()).sort();
+    const B = b.map((s) => s.trim()).sort();
+    return A.every((v, i) => v === B[i]);
+  };
+
   const isDraftUnchanged = () => {
-    if (draft.mode !== "edit" || !originalRef.current) return false;
+    if (draft.mode !== "edit") return false;
     const o = originalRef.current;
 
-    const sameStrings =
-      (o.content ?? "") === (draft.content ?? "") &&
-      (o.noEmotionSummary ?? "") === (draft.noEmotionSummary ?? "") &&
-      (o.summary ?? "") === (draft.summary ?? "") &&
-      (o.emotion ?? null) === (draft.emotion ?? null) &&
-      (o.font ?? "") === (draft.font ?? "") &&
-      (o.tone ?? "") === (draft.tone ?? "") &&
-      (o.style ?? "") === (draft.style ?? "") &&
-      (o.address ?? "") === (draft.address ?? "");
+    const sameContent =
+      (draft.originalContent ?? "").trim() === (draft.content ?? "").trim();
+    const sameAddress =
+      (draft.originalAddress ?? "").trim() === (draft.address ?? "").trim();
+    const sameKeywords = equalArray(
+      draft.originalKeywords ?? [],
+      draft.keywords ?? []
+    );
+    const sameEmotion = (draft.originalEmotion ?? "") === (draft.emotion ?? "");
+    const sameImage =
+      !draft.imageChanged &&
+      (draft.originalImage ?? null) === (draft.image ?? null);
 
-    const sameTemplate = (o.templateId ?? null) === (draft.templateId ?? null);
+    const sameStylePageFields = o
+      ? (o.noEmotionSummary ?? "") === (draft.noEmotionSummary ?? "") &&
+        (o.summary ?? "") === (draft.summary ?? "") &&
+        (o.templateId ?? null) === (draft.templateId ?? null) &&
+        (o.font ?? "") === (draft.font ?? "") &&
+        (o.tone ?? "") === (draft.tone ?? "") &&
+        (o.style ?? "") === (draft.style ?? "")
+      : true;
 
-    const sameKeywords =
-      (o.keywords?.length ?? 0) === (draft.keywords?.length ?? 0) &&
-      (o.keywords ?? []).every((k, i) => k === draft.keywords[i]);
-
-    const imageChanged = !!draft.imageChanged;
-
-    return sameStrings && sameTemplate && sameKeywords && !imageChanged;
+    return (
+      sameContent &&
+      sameAddress &&
+      sameKeywords &&
+      sameEmotion &&
+      sameImage &&
+      sameStylePageFields
+    );
   };
 
   // 요약 자동 생성
@@ -189,7 +192,7 @@ const DiaryStylePage = () => {
         // 수정 모드
         if (draft.mode === "edit") {
           if (isDraftUnchanged()) {
-            setShowNoChangePopup(true); // 변경 없음 → 확인 팝업
+            setShowNoChangePopup(true);
             return;
           }
           const id =
@@ -337,7 +340,7 @@ const DiaryStylePage = () => {
                   await goDetail(id);
                 } catch (e) {
                   console.error(e);
-                  alert("수정 실패 - 콘솔 확인");
+                  alert("수정에 실패했습니다.");
                 } finally {
                   setSubmitting(false);
                 }

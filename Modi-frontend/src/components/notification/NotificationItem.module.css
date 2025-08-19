@@ -3,6 +3,7 @@
   position: relative;
   width: 297px;
   height: 62px;
+  justify-content: space-between;
 }
 
 .noti_alert {

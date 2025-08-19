@@ -6,85 +6,60 @@ import { useNavigate } from "react-router-dom";
 import { getWeeklyReminder } from "../../apis/ReminderAPIS/weeklyReminder";
 import { WeeklyReminderResponse } from "../../types/Reminder";
 import { useCharacter } from "../../contexts/CharacterContext";
-import { useGeolocation } from "../../contexts/GeolocationContext";
-import { getRemindersByAddress } from "../../apis/ReminderAPIS/remindersByAddress";
-import { fetchMonthlyDiaries } from "../../apis/Diary/diaries.read";
 
 const NotificationPage = () => {
   const navigate = useNavigate();
   const { character } = useCharacter();
-  const { address } = useGeolocation();
   const [notifications, setNotifications] = useState<WeeklyReminderResponse[]>(
     []
   );
-  const [locationNotifications, setLocationNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        console.log("=== 알림 페이지 로드 시작 ===");
-        console.log("현재 Geolocation 주소:", address);
-
-        // 주간 알림 데이터 가져오기
-        console.log("주간 알림 API 호출 시작");
         const weeklyData = await getWeeklyReminder();
-        console.log("주간 알림 응답:", weeklyData);
-        console.log("주간 알림 개수:", weeklyData.length);
-        setNotifications(weeklyData);
 
-        // 현재 위치 기반 알림 데이터 가져오기
-        if (address) {
-          console.log("현재 위치 기반 알림 조회:", address);
-          const locationData = await getRemindersByAddress(address);
-          console.log("위치 기반 알림 데이터:", locationData);
-          console.log("위치 기반 알림 개수:", locationData.length);
+        // 중복 제거 (address 기준으로 중복 제거)
+        const uniqueNotifications = weeklyData.filter(
+          (notification, index, self) =>
+            index === self.findIndex((n) => n.address === notification.address)
+        );
 
-          // 가장 최근 기록만 추출
-          if (locationData.length > 0) {
-            const sortedData = locationData.sort((a, b) => {
-              const dateA = new Date(a.datetime || a.created_at || 0);
-              const dateB = new Date(b.datetime || b.created_at || 0);
-              return dateB.getTime() - dateA.getTime();
-            });
-            const latestRecord = sortedData[0];
-            console.log("가장 최근 기록:", latestRecord);
-            setLocationNotifications([latestRecord]);
-          } else {
-            setLocationNotifications([]);
-          }
-        } else {
-          console.log("Geolocation 주소가 없습니다.");
-          setLocationNotifications([]);
-        }
+        setNotifications(uniqueNotifications);
       } catch (error) {
         console.error("알림 데이터 로드 실패:", error);
       } finally {
         setLoading(false);
-        console.log("=== 알림 페이지 로드 완료 ===");
       }
     };
 
     fetchNotifications();
-  }, [address]);
+  }, []);
 
-  // 오늘과 지난 알림을 분류하는 함수
+  // 오늘과 지난 알림을 분류하는 함수 (최근 일주일치로 제한)
   const categorizeNotifications = () => {
-    const today = new Date();
-    const todayStart = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
+    // 한국 시간으로 현재 시간 계산
+    const now = new Date();
+    const koreaTime = new Date(now.getTime() + 9 * 60 * 60 * 1000); // UTC+9
+
+    // 24시간 전 시간 계산
+    const oneDayAgo = new Date(koreaTime.getTime() - 24 * 60 * 60 * 1000);
+
+    // 일주일 전 시간 계산
+    const oneWeekAgo = new Date(koreaTime.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     const todayNotifications: WeeklyReminderResponse[] = [];
     const pastNotifications: WeeklyReminderResponse[] = [];
 
     notifications.forEach((notification) => {
       const notificationDate = new Date(notification.created_at);
-      if (notificationDate >= todayStart) {
+
+      if (notificationDate >= oneDayAgo) {
+        // 24시간 이내에 생성된 알림은 "오늘"
         todayNotifications.push(notification);
-      } else {
+      } else if (notificationDate >= oneWeekAgo) {
+        // 일주일 이내에 생성된 알림은 "지난 알림"
         pastNotifications.push(notification);
       }
     });
@@ -126,36 +101,6 @@ const NotificationPage = () => {
           }}
         />
         <div className={styles.notification_container}>
-          {/* 위치 기반 알림 */}
-          {locationNotifications.length > 0 && (
-            <div className={styles.today_notification}>
-              <span className={styles.today}>현재 위치</span>
-              {locationNotifications.map((notification, index) => (
-                <NotificationItem
-                  key={`location-${index}`}
-                  id={notification.id || index}
-                  emotion={notification.emotion || "기쁨"}
-                  lastVisit={
-                    notification.datetime ||
-                    notification.created_at ||
-                    new Date().toISOString()
-                  }
-                  address={notification.address || address || ""}
-                  created_at={notification.created_at || notification.datetime}
-                  isRead={false}
-                  onClick={() => {
-                    navigate("/notification-grid", {
-                      state: {
-                        address: notification.address || address,
-                        totalCount: locationNotifications.length,
-                      },
-                    });
-                  }}
-                />
-              ))}
-            </div>
-          )}
-
           {/* 주간 알림 */}
           {todayNotifications.length > 0 && (
             <div className={styles.today_notification}>
@@ -203,7 +148,7 @@ const NotificationPage = () => {
               ))}
             </div>
           )}
-          {notifications.length === 0 && locationNotifications.length === 0 && (
+          {notifications.length === 0 && (
             <div className={styles.no_notification_container}>
               <img
                 src={`/images/no-noti/no-${character || "momo"}.svg`}
