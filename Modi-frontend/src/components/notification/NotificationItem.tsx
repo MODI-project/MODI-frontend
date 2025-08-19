@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./NotificationItem.module.css";
+import { loadUserInfo } from "../../apis/UserAPIS/loadUserInfo";
 
 interface NotificationItemProps {
   id: number;
@@ -21,20 +22,39 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   created_at,
   onClick,
 }) => {
+  const [character, setCharacter] = useState<string>("momo");
+
+  // 사용자 정보 로드
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userInfo = await loadUserInfo();
+        setCharacter(userInfo.character);
+      } catch (error) {
+        console.error("사용자 정보 로드 실패:", error);
+        setCharacter("momo"); // 기본값
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   // emotion에 따른 이미지 경로 생성
   const getEmotionImagePath = (emotion: string) => {
     const emotionMap: { [key: string]: string } = {
-      기쁨: "momo-happy.svg",
-      슬픔: "momo-sad.svg",
-      화남: "momo-angry.svg",
-      평온: "momo-calm.svg",
-      설렘: "momo-excited.svg",
-      지루함: "momo-bored.svg",
-      걱정: "momo-worried.svg",
-      놀람: "momo-surprised.svg",
+      기쁨: `${character}-happy.svg`,
+      슬픔: `${character}-sad.svg`,
+      화남: `${character}-angry.svg`,
+      평온: `${character}-normal.svg`,
+      설렘: `${character}-excited.svg`,
+      지루함: `${character}-bored.svg`,
+      걱정: `${character}-nervous.svg`,
+      놀람: `${character}-surprised.svg`,
     };
 
-    return `/emotion_tag/momo/${emotionMap[emotion] || "momo-happy.svg"}`;
+    return `/emotion_tag/${character}/${
+      emotionMap[emotion] || `${character}-happy.svg`
+    }`;
   };
 
   // lastVisit로부터 현재까지의 일수 계산
