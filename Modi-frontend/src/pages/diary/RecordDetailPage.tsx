@@ -11,9 +11,6 @@ import { useFrameTemplate } from "../../contexts/FrameTemplate";
 import { useNavigate, useLocation } from "react-router-dom";
 import { DiaryData } from "../../components/common/frame/Frame";
 import { updateFavorite } from "../../apis/MyPageAPIS/favorites";
-import { overflow } from "html2canvas/dist/types/css/property-descriptors/overflow";
-import { useCharacter } from "../../contexts/CharacterContext";
-
 import { getDiaryById } from "../../apis/Diary/searchDiary";
 import { deleteDiary } from "../../apis/Diary/deleteDiary";
 import Popup from "../../components/common/Popup";
@@ -34,22 +31,23 @@ type DiaryApi = {
   font?: string | null;
   frameId?: number | null;
   imageUrls?: string[] | null;
-  favorites?: boolean; // 서버 키
+  favorites?: boolean;
   createdAt: string;
   updatedAt: string;
 };
 
-// 화면용으로 정규화
 const normalizeDiary = (api: DiaryApi) => ({
   id: api.id,
   date: api.date,
   photoUrl: api.imageUrls?.[0] ?? null,
+  content: api.content,
   summary: api.summary,
   emotion: api.emotion?.name ?? "",
   tags: (api.tags ?? []).map((t) => t.name),
   created_at: api.createdAt,
   favorites: !!api.favorites,
   frame: String(api.frameId ?? 1),
+  font: api.font ?? null,
 });
 
 const pageBackgrounds = {
@@ -93,12 +91,15 @@ const RecordDetailPage = () => {
     date: string;
     photoUrl: string | null;
     summary: string;
+    content: string;
     emotion: string;
     tags: string[];
     created_at: string;
     favorites?: boolean;
     frame?: string;
+    font?: string | null;
   } | null>(null);
+
   const [loading, setLoading] = useState<boolean>(!!diaryId);
   const [error, setError] = useState<string | null>(null);
 
@@ -118,12 +119,14 @@ const RecordDetailPage = () => {
         date: initial.date,
         photoUrl: initial.photoUrl ?? null,
         summary: initial.summary ?? "",
+        content: initial.content ?? "",
         emotion: initial.emotion ?? "",
         tags: initial.tags ?? [],
         created_at: "",
         favorites: location.state?.isFavorited ?? false,
         frame: initial.frame,
-      } as typeof fetched);
+        font: initial.font ?? null,
+      });
       setIsFavorite(!!location.state?.isFavorited);
       setError(null);
       setLoading(false);
@@ -171,14 +174,13 @@ const RecordDetailPage = () => {
       summary: fetched.summary,
       address: "",
       tags: fetched.tags ?? [],
-      content: "",
+      content: fetched.content ?? "",
       frame: fetched.frame ?? "1",
+      font: fetched.font ?? undefined,
     };
   }, [fetched]);
 
-  // 프레임 배경 동기화(기본 1)
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (diaryForFrame?.frame) setFrameId(diaryForFrame.frame as any);
     else setFrameId("1");
   }, [diaryForFrame?.frame, setFrameId]);
@@ -305,8 +307,7 @@ const RecordDetailPage = () => {
     if (!diaryId || isDeleting) return;
     try {
       setIsDeleting(true);
-      const res = await deleteDiary(Number(diaryId));
-      console.log(res);
+      await deleteDiary(Number(diaryId));
       setConfirmOpen(false);
       setAlertOpen(true);
     } catch (e) {
