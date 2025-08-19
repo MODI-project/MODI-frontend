@@ -6,7 +6,7 @@ const Loading = () => {
     <div className={styles.overlay}>
       <div className={styles.modal}>
         <img
-          src="/gif/loading.gif"
+          src="/gif/loading_small.gif"
           alt="loading animation"
           className={styles.loadingGif}
         />
