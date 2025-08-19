@@ -22,17 +22,12 @@ const DiaryStylePage = () => {
   const { draft, setDraft } = useContext(DiaryDraftContext);
   const navigate = useNavigate();
   const location = useLocation();
-
-  // 종료 확인 팝업
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  // "변경 없음" 팝업
   const [showNoChangePopup, setShowNoChangePopup] = useState(false);
-
   const [submitting, setSubmitting] = useState(false);
   const [summarizing, setSummarizing] = useState(false);
   const triedRef = useRef(false);
 
-  // 수정 시작 시 원본 스냅샷 보관
   const originalRef = useRef<null | {
     noEmotionSummary: string;
     summary: string;
@@ -56,7 +51,6 @@ const DiaryStylePage = () => {
     };
   }, [draft.mode]);
 
-  // 배열 비교 함수 (순서/공백 무시)
   const equalArray = (a: string[] = [], b: string[] = []) => {
     if (a.length !== b.length) return false;
     const A = a.map((s) => s.trim()).sort();
@@ -68,7 +62,6 @@ const DiaryStylePage = () => {
     if (draft.mode !== "edit") return false;
     const o = originalRef.current;
 
-    // ---- 앞단계 값은 draft.original* 로 비교 ----
     const sameContent =
       (draft.originalContent ?? "").trim() === (draft.content ?? "").trim();
     const sameAddress =
@@ -199,7 +192,7 @@ const DiaryStylePage = () => {
         // 수정 모드
         if (draft.mode === "edit") {
           if (isDraftUnchanged()) {
-            setShowNoChangePopup(true); // 변경 없음 → 확인 팝업
+            setShowNoChangePopup(true);
             return;
           }
           const id =
