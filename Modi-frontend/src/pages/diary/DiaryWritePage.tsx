@@ -101,9 +101,13 @@ const DiaryWritePage = () => {
       return;
     }
 
+    if (!draft.content?.trim()) {
+      setShowEmptyContentPopup(true);
+      return;
+    }
+
     try {
       setLoading(true);
-
       if (draft.content?.trim()) {
         const summary = await generateSummary(draft.content);
         if (summary) {
@@ -225,13 +229,27 @@ const DiaryWritePage = () => {
               onClick: async () => {
                 if (popupGenerating) return;
                 setPopupGenerating(true);
-                const content = await autoGenerateContent();
-                if (content && content.trim() !== "") {
+                try {
+                  const content = await autoGenerateContent();
+                  if (content && content.trim() !== "") {
+                    setDraft({ content });
+
+                    setShowEmptyContentPopup(false);
+                    setPopupGenerating(false);
+                    setLoading(true);
+
+                    const summary = await generateSummary(content);
+                    if (summary) {
+                      setDraft({ noEmotionSummary: summary });
+                    }
+
+                    navigate("/style");
+                  }
+                } catch (err) {
+                  console.error("자동 생성 + 요약 실패", err);
                   setPopupGenerating(false);
-                  setShowEmptyContentPopup(false);
-                  navigate("/style");
-                } else {
-                  setPopupGenerating(false);
+                } finally {
+                  setLoading(false);
                 }
               },
             },
