@@ -24,8 +24,6 @@ const modules = import.meta.glob(
   }
 );
 
-console.log("🔍 glob 결과:", Object.keys(modules));
-
 export const mapMarkerIconMap: Record<
   CharacterKey,
   Partial<Record<Emotion, string>>

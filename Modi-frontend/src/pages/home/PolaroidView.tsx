@@ -243,9 +243,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
                 // 이전/다음 날짜: 대표 일기(첫 번째)
                 diary = diariesByDate[allDates[i]]?.[0] ?? null;
               }
-              if (diary) {
-                console.log("diary id:", diary.id, "frame:", diary.frame);
-              }
+
               return (
                 <div key={i} className={cls}>
                   {diary ? (

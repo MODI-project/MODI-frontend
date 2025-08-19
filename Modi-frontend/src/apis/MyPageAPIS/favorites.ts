@@ -4,9 +4,9 @@ type FavoriteItemRaw = {
   id: number;
   date: string;
   thumbnailUrl?: string;
-  photoUrl?: string; // 'https://...'
-  imageUrl?: string; // 다른 이름일 수도
-  thumbnailId?: string; // '99464d7-...' 같은 키
+  photoUrl?: string;
+  imageUrl?: string;
+  thumbnailId?: string;
 };
 
 export type FavoriteItem = {
