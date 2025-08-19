@@ -101,7 +101,7 @@ export default function StyleBarList({
 
   return (
     <div className={style.barList}>
-      {realTop.map((item, idx) => (
+      {filled.map((item, idx) => (
         <StyleBar
           key={item.label || `placeholder-${idx}`}
           label={item.label}
