@@ -11,7 +11,6 @@ export default function FavoriteView() {
       try {
         const list = await getFavorites();
         // 디버그: 들어오는 최종 URL 확인
-        console.table(list.map((x) => ({ id: x.id, url: x.imageSrc })));
         setFavorites(list);
       } catch (err) {
         console.error("❌ 즐겨찾기 불러오기 실패:", err);
