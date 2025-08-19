@@ -24,6 +24,10 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const { character } = useCharacter();
   const [groups, setGroups] = useState<DailyGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  // 기록이 존재하는 월 목록 및 월별 캐시(폴라로이드 전용)
+  const [availableMonths, setAvailableMonths] = useState<string[]>([]);
+  const groupsCache = useRef<Map<string, DailyGroup[]>>(new Map());
+  const [pickerItems, setPickerItems] = useState<{ date: string }[]>([]);
 
   // 현재 조회 중인 월(YYYY-MM)
   const [viewYM, setViewYM] = useState(() => {
@@ -34,6 +38,13 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     )}`;
   });
 
+  // YYYY-MM 문자열에 개월수 더하기/빼기
+  const addMonths = (ym: string, delta: number) => {
+    const [y, m] = ym.split("-").map(Number);
+    const d = new Date(y, m - 1 + delta, 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  };
+
   const allDates = useMemo(() => {
     // groups = [{ date:"YYYY-MM-DD", diaries:[...] }, ... ]
     return [...groups]
@@ -41,10 +52,8 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       .sort((a, b) => a.localeCompare(b));
   }, [groups]);
 
-  const dateItems = useMemo(
-    () => allDates.map((d) => ({ date: d })),
-    [allDates]
-  );
+  // DateSelector에 공급할 아이템(여러 월의 일자 포함)
+  const dateItems = pickerItems;
   const diaryMap: Record<string, DiaryData> = useMemo(() => {
     const acc: Record<string, DiaryData> = {};
     for (const g of groups) {
@@ -112,6 +121,26 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
         const sorted = [...data].sort((a, b) => a.date.localeCompare(b.date));
         setGroups(sorted);
         setCurrentIndex(sorted.length ? sorted.length - 1 : 0); // 최신 날짜로 포커스
+
+        // 캐시 및 사용 가능한 월 목록 업데이트
+        groupsCache.current.set(viewYM, sorted);
+        if (sorted.length > 0) {
+          setAvailableMonths((prev) => {
+            const s = new Set(prev);
+            s.add(viewYM);
+            return Array.from(s).sort();
+          });
+        }
+
+        // 피커 아이템 재구성
+        const monthsForPicker = new Set([viewYM, ...availableMonths]);
+        const items: string[] = [];
+        monthsForPicker.forEach((ym) => {
+          const gs = groupsCache.current.get(ym) ?? [];
+          gs.forEach((g) => items.push(g.date.slice(0, 10)));
+        });
+        items.sort((a, b) => a.localeCompare(b));
+        setPickerItems(items.map((d) => ({ date: d })));
       } catch (error) {
         setGroups([]);
         setCurrentIndex(0);
@@ -178,6 +207,57 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       setSubIndex(0);
     }
   }, [tempDate, allDates]);
+
+  // 모달이 열릴 때 주변 월(예: -6~+6개월) 프로빙하여 기록 있는 월/일을 피커에 반영
+  useEffect(() => {
+    if (!isSheetOpen) return;
+    (async () => {
+      const monthsToCheck: string[] = [];
+      for (let d = -6; d <= 6; d++) {
+        monthsToCheck.push(addMonths(viewYM, d));
+      }
+
+      const tasks: Promise<void>[] = [];
+      monthsToCheck.forEach((ym) => {
+        // 이미 캐시되어 있으면 스킵
+        if (groupsCache.current.has(ym)) return;
+        tasks.push(
+          (async () => {
+            try {
+              const [y, m] = ym.split("-").map(Number);
+              const data = await fetchDailyGroups(y, m);
+              groupsCache.current.set(ym, data);
+              if (data.length > 0) {
+                setAvailableMonths((prev) => {
+                  const s = new Set(prev);
+                  s.add(ym);
+                  return Array.from(s).sort();
+                });
+              }
+            } catch {
+              /* ignore */
+            }
+          })()
+        );
+      });
+
+      await Promise.allSettled(tasks);
+
+      // 피커 아이템 재구성
+      const monthsForPicker = new Set([
+        viewYM,
+        ...availableMonths,
+        ...monthsToCheck,
+      ]);
+      const items: string[] = [];
+      monthsForPicker.forEach((ym) => {
+        const gs = groupsCache.current.get(ym) ?? [];
+        gs.forEach((g) => items.push(g.date.slice(0, 10)));
+      });
+      items.sort((a, b) => a.localeCompare(b));
+      setPickerItems(items.map((d) => ({ date: d })));
+    })();
+  }, [isSheetOpen]);
 
   if (loading) {
     return (
@@ -286,8 +366,9 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
             location="modal"
             label="확인"
             onClick={() => {
-              const newIdx = allDates.indexOf(tempDate);
-              if (newIdx !== -1) setCurrentIndex(newIdx);
+              // 선택된 날짜의 월로 전환하여 해당 월 데이터를 로드
+              const ym = tempDate.slice(0, 7);
+              setViewYM(ym);
               setIsSheetOpen(false);
             }}
             size="primary"

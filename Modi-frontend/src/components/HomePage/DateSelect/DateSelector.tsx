@@ -138,7 +138,7 @@ const DateSelector: React.FC<Props> = ({
       <div className={styles.selectionOverlay} />
       <div className={styles.columnWrapper}>
         <WheelPicker
-          key="year"
+          key={`year-${years.join("")}`}
           scrollerId="year-picker"
           data={yearOpts}
           animation="wheel"
@@ -153,14 +153,14 @@ const DateSelector: React.FC<Props> = ({
 
         {/* Month Picker */}
         <WheelPicker
-          key={`month-${year}`}
+          key={`month-${year}-${months.join("")}`}
           scrollerId="month-picker"
           data={monthOpts}
           animation="wheel"
           height={PICKER_HEIGHT}
           parentHeight={PICKER_HEIGHT}
           fontSize={14}
-          defaultSelection={months.indexOf(month)}
+          defaultSelection={Math.max(0, months.indexOf(month))}
           updateSelection={(idx: number) => {
             setMonth(months[idx].padStart(2, "0"));
           }}
@@ -169,14 +169,14 @@ const DateSelector: React.FC<Props> = ({
         {/* Day Picker (폴라로이드 모드) */}
         {viewType === "polaroid" && (
           <WheelPicker
-            key={`day-${year}-${month}`}
+            key={`day-${year}-${month}-${days.join("")}`}
             scrollerId="day-picker"
             data={dayOpts}
             animation="wheel"
             height={PICKER_HEIGHT}
             parentHeight={PICKER_HEIGHT}
             fontSize={14}
-            defaultSelection={days.indexOf(day)}
+            defaultSelection={Math.max(0, days.indexOf(day))}
             updateSelection={(idx: number) => {
               setDay(days[idx].padStart(2, "0"));
             }}
