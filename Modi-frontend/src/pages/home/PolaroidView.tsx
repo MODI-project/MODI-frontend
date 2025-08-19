@@ -78,13 +78,47 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   // 바텀시트 임시 선택: 월(YYYY-MM)
   const [tempYM, setTempYM] = useState<string>(viewYM);
   const prevOpen = useRef(false);
+  const touchStartX = useRef<number | null>(null);
+  const [pickerItems, setPickerItems] = useState<{ date: string }[]>([]);
+  const [tempDate, setTempDate] = useState<string>(viewDate);
 
   useEffect(() => {
-    if (isSheetOpen && !prevOpen.current) {
-      setTempYM(viewYM);
-    }
-    prevOpen.current = isSheetOpen;
-  }, [isSheetOpen, viewYM]);
+    if (!isSheetOpen) return;
+
+    (async () => {
+      // ① 주변 월(±6개월) 후보
+      const months: string[] = [];
+      for (let d = -6; d <= 6; d++) months.push(addMonths(viewYM, d));
+
+      // ② 프리페치 (캐시에 없으면 로드)
+      await Promise.allSettled(
+        months.map(async (ym) => {
+          if (monthCache.current.has(ym)) return;
+          try {
+            const list = await loadMonth(ym);
+            if (list.length > 0) {
+              setAvailableMonths((prev) =>
+                Array.from(new Set([...prev, ym])).sort()
+              );
+            }
+          } catch {}
+        })
+      );
+      const dates: string[] = [];
+      const srcMonths = Array.from(
+        new Set([viewYM, ...availableMonths, ...months])
+      ).sort();
+      srcMonths.forEach((ym) => {
+        const groups = monthCache.current.get(ym) ?? [];
+        groups.forEach((g) => dates.push(g.date.slice(0, 10)));
+      });
+      dates.sort((a, b) => a.localeCompare(b));
+      setPickerItems(dates.map((d) => ({ date: d })));
+
+      // 휠 첫 진입 시 현재 날짜로 초기화
+      setTempDate(viewDate);
+    })();
+  }, [isSheetOpen, viewYM, availableMonths, viewDate]);
 
   /** 월 로더 (캐시 우선) */
   async function loadMonth(ym: string) {
@@ -281,12 +315,12 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
         minimizeOnDrag={false}
       >
         <div className={pageStyles.modalInner}>
-          <h3 className={pageStyles.modalTitle}>다른 달로 이동</h3>
+          <h3 className={pageStyles.modalTitle}>다른 날짜 일기 보기</h3>
           <DateSelector
             viewType="polaroid"
-            items={monthItems} // ✅ 월 목록
-            initialDate={viewYM} // ✅ 현재 월
-            onChange={(ym) => setTempYM(ym)} // ✅ 월 임시 선택
+            items={pickerItems}
+            initialDate={viewDate}
+            onChange={(d) => setTempDate(d)}
             userCharacter={character!}
           />
         </div>
@@ -299,10 +333,21 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
               setIsSheetOpen(false);
               setLoading(true);
               try {
-                const list = await loadMonth(tempYM); // 프리페치 + 캐시
-                setViewYM(tempYM); // 월 변경
+                // tempDate는 'YYYY-MM-DD' (휠에서 고른 날짜)
+                const ym = (tempDate || viewDate).slice(0, 7);
+
+                // 월 데이터 프리페치 + 적용
+                const list = await loadMonth(ym);
+                setViewYM(ym);
                 setGroups(list);
-                setCurrentIndex(list.length ? list.length - 1 : 0);
+
+                // 그 달의 날짜 목록에서 선택한 날짜 인덱스 찾기
+                const all = list.map((g) => g.date.slice(0, 10));
+                const idx = all.indexOf(tempDate);
+
+                setCurrentIndex(
+                  idx >= 0 ? idx : all.length ? all.length - 1 : 0
+                );
                 setSubIndex(0);
               } finally {
                 setLoading(false);
