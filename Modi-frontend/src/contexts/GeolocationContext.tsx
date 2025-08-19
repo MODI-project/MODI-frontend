@@ -56,6 +56,8 @@ export const GeolocationProvider: React.FC<GeolocationProviderProps> = ({
   });
 
   const watchIdRef = useRef<number | null>(null);
+  const intervalRef = useRef<number | null>(null);
+  const POLL_INTERVAL_MS = 15 * 60 * 1000; // 15분
 
   // 권한 상태 확인
   useEffect(() => {
@@ -65,11 +67,10 @@ export const GeolocationProvider: React.FC<GeolocationProviderProps> = ({
     }
   }, []);
 
-  // 위치 추적 시작
+  // 위치 추적 시작 (15분 폴링)
   const startTracking = useCallback(() => {
     // 이미 추적 중이면 중복 시작 방지
-    if (state.isTracking || watchIdRef.current !== null) {
-      console.log("이미 위치 추적 중입니다.");
+    if (state.isTracking || intervalRef.current !== null) {
       return;
     }
 
@@ -98,95 +99,96 @@ export const GeolocationProvider: React.FC<GeolocationProviderProps> = ({
             return;
           }
         })
-        .catch((error) => {
-          console.warn("권한 상태 확인 실패:", error);
+        .catch(() => {
+          // 권한 상태 확인 실패는 무시하고 진행
         });
     }
 
-    // 위치 추적 시작
-    watchIdRef.current = navigator.geolocation.watchPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
+    const fetchPosition = () => {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
 
-        try {
-          // 역지오코딩으로 주소 정보 가져오기
-          const geocodeResult = await reverseToDong(latitude, longitude);
-          const address = geocodeResult?.fullAddress || geocodeResult?.dong;
+          try {
+            const geocodeResult = await reverseToDong(latitude, longitude);
+            const address = geocodeResult?.fullAddress || geocodeResult?.dong;
 
-          setState((prev) => ({
-            ...prev,
-            lat: latitude,
-            lng: longitude,
-            address,
-            dong: geocodeResult?.dong,
-            isTracking: true,
-            isLoading: false,
-            error: null,
-          }));
-
-          console.log(`현위치 : ${address}`);
-        } catch (error) {
-          console.error("[역지오코딩] 실패:", error);
-          setState((prev) => ({
-            ...prev,
-            lat: latitude,
-            lng: longitude,
-            isTracking: true,
-            isLoading: false,
-            error: null,
-          }));
-        }
-      },
-      (error) => {
-        console.log("=== Geolocation 에러 발생 ===");
-        console.log("에러 코드:", error.code);
-        console.log("에러 메시지:", error.message);
-
-        let errorMessage = "위치 정보를 가져오는데 실패했습니다.";
-
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage = "위치 정보 접근이 거부되었습니다.";
             setState((prev) => ({
               ...prev,
-              permissionDenied: true,
+              lat: latitude,
+              lng: longitude,
+              address,
+              dong: geocodeResult?.dong,
+              isTracking: true,
               isLoading: false,
-              error: errorMessage,
+              error: null,
             }));
-            localStorage.setItem("geolocation_permission", "denied");
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage = "위치 정보를 사용할 수 없습니다.";
-            break;
-          case error.TIMEOUT:
-            errorMessage = "위치 정보 요청 시간이 초과되었습니다.";
-            break;
-          default:
-            errorMessage = "알 수 없는 오류가 발생했습니다.";
-            break;
-        }
+          } catch (_error) {
+            setState((prev) => ({
+              ...prev,
+              lat: latitude,
+              lng: longitude,
+              isTracking: true,
+              isLoading: false,
+              error: null,
+            }));
+          }
+        },
+        (error) => {
+          let errorMessage = "위치 정보를 가져오는데 실패했습니다.";
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = "위치 정보 접근이 거부되었습니다.";
+              setState((prev) => ({
+                ...prev,
+                permissionDenied: true,
+                isLoading: false,
+                error: errorMessage,
+              }));
+              localStorage.setItem("geolocation_permission", "denied");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = "위치 정보를 사용할 수 없습니다.";
+              break;
+            case error.TIMEOUT:
+              errorMessage = "위치 정보 요청 시간이 초과되었습니다.";
+              break;
+            default:
+              errorMessage = "알 수 없는 오류가 발생했습니다.";
+              break;
+          }
 
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          error: errorMessage,
-        }));
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 10000,
-        timeout: 27000,
-      }
-    );
+          setState((prev) => ({
+            ...prev,
+            isLoading: false,
+            error: errorMessage,
+          }));
+        },
+        {
+          enableHighAccuracy: false,
+          maximumAge: POLL_INTERVAL_MS,
+          timeout: 30000,
+        }
+      );
+    };
+
+    // 즉시 1회 갱신
+    fetchPosition();
+    // 이후 10분마다 갱신
+    intervalRef.current = window.setInterval(fetchPosition, POLL_INTERVAL_MS);
   }, []);
 
   // 위치 추적 중지
   const stopTracking = useCallback(() => {
+    if (intervalRef.current !== null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
-      setState((prev) => ({ ...prev, isTracking: false }));
     }
+    setState((prev) => ({ ...prev, isTracking: false }));
   }, []);
 
   // 권한 재요청
@@ -213,8 +215,13 @@ export const GeolocationProvider: React.FC<GeolocationProviderProps> = ({
   // 컴포넌트 언마운트 시 정리
   useEffect(() => {
     return () => {
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
+        watchIdRef.current = null;
       }
     };
   }, []);

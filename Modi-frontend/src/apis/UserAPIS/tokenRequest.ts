@@ -26,23 +26,15 @@ export const requestToken = async (code: string): Promise<void> => {
       }
     );
 
-    console.log("토큰 요청 성공:", response.status);
-    console.log("응답 헤더:", response.headers);
-    console.log("응답 데이터:", response.data);
-
     // Set-Cookie 헤더 상세 분석
     const setCookieHeader = response.headers["set-cookie"];
     if (setCookieHeader) {
-      console.log("Set-Cookie 헤더:", setCookieHeader);
-
       // access_token 쿠키 분석
       const accessTokenCookie = setCookieHeader.find((cookie: string) =>
         cookie.includes("access_token")
       );
 
       if (accessTokenCookie) {
-        console.log("access_token 쿠키 발견:", accessTokenCookie);
-
         // 토큰 값이 비어있는지 확인
         if (accessTokenCookie.includes("access_token=")) {
           const tokenValue = accessTokenCookie
@@ -52,7 +44,6 @@ export const requestToken = async (code: string): Promise<void> => {
             console.warn("access_token 값이 비어있습니다!");
             console.warn("백엔드에서 토큰 생성에 실패했을 가능성이 높습니다.");
           } else {
-            console.log("access_token 값이 정상적으로 설정됨");
           }
         }
       } else {
@@ -61,9 +52,6 @@ export const requestToken = async (code: string): Promise<void> => {
     } else {
       console.warn("Set-Cookie 헤더가 없습니다!");
     }
-
-    // 요청 후 쿠키 상태 확인
-    console.log("요청 후 쿠키 상태:", document.cookie);
 
     return response.data;
   } catch (error: any) {
