@@ -75,12 +75,24 @@ async function fetchDiariesByLocation(position: {
       const addr = position.address;
       if (addr) {
         const normalizedAddr = normalizeAddress(addr);
-        return list.filter((diary) => {
+        console.log("=== 주소 매칭 디버깅 ===");
+        console.log("마커에서 넘어온 주소:", addr);
+        console.log("정규화된 마커 주소:", normalizedAddr);
+        console.log("API 응답 개수:", list.length);
+
+        const filtered = list.filter((diary) => {
           const diaryAddr = diary.location?.address;
           if (!diaryAddr) return false;
           const normalizedDiaryAddr = normalizeAddress(diaryAddr);
+          console.log("API 일기 주소:", diaryAddr);
+          console.log("정규화된 일기 주소:", normalizedDiaryAddr);
+          console.log("매칭 결과:", normalizedDiaryAddr === normalizedAddr);
           return normalizedDiaryAddr === normalizedAddr;
         });
+
+        console.log("필터링 후 개수:", filtered.length);
+        console.log("=== 디버깅 끝 ===");
+        return filtered;
       }
       return []; // 주소 정보가 없으면 전체를 노출하지 않음
     }
