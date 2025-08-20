@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./MapSearchBar.module.css";
 
-// 타입 정의
-interface Place {
-  place_name: string;
-  road_address_name?: string;
-  address_name: string;
-  phone: string;
-  x: string;
-  y: string;
+// 통합 검색 결과 타입
+interface SearchResult {
+  title: string; // 표시용 이름(장소명 또는 도로명)
+  address_name: string; // 전체 주소
+  x: string; // lon
+  y: string; // lat
 }
 
 interface Pagination {
@@ -19,7 +17,7 @@ interface Pagination {
 
 interface MapSearchBarProps {
   map?: any;
-  onPlaceSelect?: (place: Place) => void;
+  onPlaceSelect?: (place: SearchResult) => void;
   currentPosition?: {
     lat: number;
     lng: number;
@@ -33,7 +31,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
   currentPosition,
 }) => {
   const [keyword, setKeyword] = useState<string>("");
-  const [places, setPlaces] = useState<Place[]>([]);
+  const [places, setPlaces] = useState<SearchResult[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -43,6 +41,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
   const markersRef = useRef<any[]>([]);
   const infowindowRef = useRef<any>(null);
   const psRef = useRef<any>(null);
+  const geocoderRef = useRef<any>(null);
 
   // API 초기화
   const initializeApi = () => {
@@ -57,6 +56,8 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
       try {
         // 장소 검색 객체 생성
         psRef.current = new kakao.maps.services.Places();
+        // 지오코더 객체 생성
+        geocoderRef.current = new kakao.maps.services.Geocoder();
 
         // 인포윈도우 생성
         infowindowRef.current = new kakao.maps.InfoWindow({ zIndex: 1 });
@@ -90,6 +91,26 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
     }
   }, [map]);
 
+  // 주소 결과를 통합 타입으로 변환
+  const mapAddressResult = (item: any): SearchResult => {
+    return {
+      title: item.road_address?.address_name || item.address_name,
+      address_name: item.address_name,
+      x: item.x,
+      y: item.y,
+    };
+  };
+
+  // 장소 결과를 통합 타입으로 변환
+  const mapPlaceResult = (item: any): SearchResult => {
+    return {
+      title: item.place_name,
+      address_name: item.road_address_name || item.address_name,
+      x: item.x,
+      y: item.y,
+    };
+  };
+
   // 키워드 검색을 요청하는 함수
   const searchPlaces = (searchKeyword?: string) => {
     const searchTerm = searchKeyword || keyword;
@@ -99,17 +120,47 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
       return false;
     }
 
-    if (!psRef.current || !isInitialized) {
-      console.error("Places service is not initialized");
-      console.error("psRef.current:", psRef.current);
-      console.error("isInitialized:", isInitialized);
+    if ((!psRef.current && !geocoderRef.current) || !isInitialized) {
       alert("지도 서비스를 초기화하는 중입니다. 잠시 후 다시 시도해주세요.");
       return false;
     }
 
     setIsLoading(true);
 
-    // 장소검색 객체를 통해 키워드로 장소검색을 요청
+    const kakao = (window as any).kakao;
+
+    // 1) 주소 검색 우선 시도
+    if (geocoderRef.current) {
+      try {
+        geocoderRef.current.addressSearch(
+          searchTerm,
+          (data: any[], status: any) => {
+            if (status === kakao.maps.services.Status.OK && data.length > 0) {
+              const results = data.map(mapAddressResult);
+              setPlaces(results);
+              setPagination(null); // 주소 검색엔 페이지네이션 없음
+              setCurrentPage(1);
+              setShowResults(true);
+              setIsLoading(false);
+            } else {
+              // 2) 주소 결과가 없으면 키워드 장소검색으로 폴백
+              try {
+                psRef.current.keywordSearch(searchTerm, placesSearchCB);
+              } catch (error) {
+                console.error("Search error:", error);
+                setIsLoading(false);
+                alert("검색 중 오류가 발생했습니다. 다시 시도해주세요.");
+              }
+            }
+          }
+        );
+        return;
+      } catch (e) {
+        // 지오코더 예외 시 바로 폴백
+      }
+    }
+
+    // 폴백: 키워드 장소검색
     try {
       psRef.current.keywordSearch(searchTerm, placesSearchCB);
     } catch (error) {
@@ -120,18 +171,15 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
   };
 
   // 장소검색이 완료됐을 때 호출되는 콜백함수
-  const placesSearchCB = (
-    data: Place[],
-    status: any,
-    pagination: Pagination
-  ) => {
+  const placesSearchCB = (data: any[], status: any, pagination: Pagination) => {
     setIsLoading(false);
 
     const kakao = (window as any).kakao;
 
     if (status === kakao.maps.services.Status.OK) {
       // 정상적으로 검색이 완료됐으면 검색 목록만 표출 (마커 없이)
-      setPlaces(data);
+      const results = data.map(mapPlaceResult);
+      setPlaces(results);
       setPagination(pagination);
       setCurrentPage(pagination.current);
       setShowResults(true); // 검색 결과 표시
@@ -156,10 +204,10 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
     }
   };
 
-  // 장소 선택 처리
-  const handlePlaceSelect = (place: Place) => {
-    // 검색 input 텍스트를 선택한 장소명으로 변경
-    setKeyword(place.place_name);
+  // 장소/주소 선택 처리
+  const handlePlaceSelect = (place: SearchResult) => {
+    // 검색 input 텍스트를 선택한 항목으로 변경
+    setKeyword(place.title);
 
     if (onPlaceSelect) {
       onPlaceSelect(place);
@@ -198,7 +246,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
     searchPlaces();
   };
 
-  const isApiReady = isInitialized && psRef.current;
+  const isApiReady = isInitialized && (psRef.current || geocoderRef.current);
 
   return (
     <div className={styles.map_search_bar_container}>
@@ -224,24 +272,29 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
         </button>
       </form>
 
-      {/* 검색 결과 목록 - 마커 없이 텍스트만 */}
+      {/* 검색 결과 목록 - 주소/장소 공통 */}
       {showResults && places.length > 0 && (
         <div className={styles.search_results}>
           <ul className={styles.places_list}>
             {places.map((place, index) => (
               <li
-                key={`${place.place_name}-${index}`}
+                key={`${place.title}-${index}`}
                 className={styles.place_item}
                 onClick={() => handlePlaceSelect(place)}
               >
                 <div className={styles.place_info}>
-                  <span className={styles.place_name}>{place.place_name}</span>
+                  <span className={styles.place_name}>{place.title}</span>
+                  {place.address_name && (
+                    <span className={styles.place_addr}>
+                      {place.address_name}
+                    </span>
+                  )}
                 </div>
               </li>
             ))}
           </ul>
 
-          {/* 페이지네이션 */}
+          {/* 페이지네이션 - 장소검색일 때만 노출 */}
           {pagination && pagination.last > 1 && (
             <div className={styles.pagination}>
               {Array.from({ length: pagination.last }, (_, i) => i + 1).map(

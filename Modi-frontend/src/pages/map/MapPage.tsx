@@ -189,47 +189,21 @@ const MapPage = () => {
 
   const handlePlaceSelect = useCallback(
     (place: any) => {
-      // 현재 위치 정보가 있으면 선택된 장소 대신 현재 위치 사용
-      if (currentPosition) {
-        if (mapInstance) {
-          try {
-            const kakao = (window as any).kakao;
-            if (kakao && kakao.maps) {
-              const newCenter = new kakao.maps.LatLng(
-                currentPosition.lat,
-                currentPosition.lng
-              );
-
-              // 지도 중심 이동
-              mapInstance.setCenter(newCenter);
-
-              // 적절한 확대 레벨로 설정 (상세한 뷰)
-              mapInstance.setLevel(3);
-            }
-          } catch (error) {}
-        }
-      } else {
-        // 현재 위치 정보가 없으면 기존 로직 사용
-        if (mapInstance && place.x && place.y) {
-          try {
-            const kakao = (window as any).kakao;
-            if (kakao && kakao.maps) {
-              const newCenter = new kakao.maps.LatLng(
-                parseFloat(place.y),
-                parseFloat(place.x)
-              );
-
-              // 지도 중심 이동
-              mapInstance.setCenter(newCenter);
-
-              // 적절한 확대 레벨로 설정 (상세한 뷰)
-              mapInstance.setLevel(3);
-            }
-          } catch (error) {}
-        }
+      if (mapInstance && place.x && place.y) {
+        try {
+          const kakao = (window as any).kakao;
+          if (kakao && kakao.maps) {
+            const newCenter = new kakao.maps.LatLng(
+              parseFloat(place.y),
+              parseFloat(place.x)
+            );
+            mapInstance.setCenter(newCenter);
+            mapInstance.setLevel(3);
+          }
+        } catch (error) {}
       }
     },
-    [mapInstance, currentPosition]
+    [mapInstance]
   );
 
   const handleRetry = useCallback(() => {
