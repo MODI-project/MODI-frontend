@@ -125,7 +125,16 @@ const MapPage = () => {
         const normalizedAddress = normalizeAddress(address);
         const lat = d.location?.latitude || d.latitude;
         const lng = d.location?.longitude || d.longitude;
-        const key = normalizedAddress; // 정규화된 전체 주소를 키로 사용
+
+        // 주소 토큰이 3개 미만(예: "중동"만 있는 경우)에는 좌표 기반 키 사용
+        const tokenCount = normalizedAddress
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean).length;
+        const geoKey = `geo:${Number(lat).toFixed(3)},${Number(lng).toFixed(
+          3
+        )}`; // 약 ~100m 단위 그룹
+        const key = tokenCount >= 3 ? normalizedAddress : geoKey;
 
         if (!addressGroups.has(key)) {
           addressGroups.set(key, []);
@@ -134,8 +143,8 @@ const MapPage = () => {
       });
 
       const mapped: Diary[] = Array.from(addressGroups.entries()).map(
-        ([address, diaries]) => {
-          // 같은 주소의 일기들을 날짜순으로 정렬하여 가장 최근 일기 찾기
+        ([groupKey, diaries]) => {
+          // 같은 그룹의 일기들을 날짜순으로 정렬하여 가장 최근 일기 찾기
           const sortedDiaries = diaries.sort(
             (a, b) =>
               new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
@@ -144,15 +153,18 @@ const MapPage = () => {
 
           const lat = latestDiary.location?.latitude || latestDiary.latitude;
           const lng = latestDiary.location?.longitude || latestDiary.longitude;
+          const addr = normalizeAddress(
+            latestDiary.location?.address || latestDiary.address || ""
+          );
 
           return {
-            id: latestDiary.id, // 가장 최근 일기의 ID 사용
+            id: latestDiary.id,
             lat,
             lng,
-            emotion: latestDiary.emotion, // 가장 최근 일기의 감정 사용
-            postCount: diaries.length, // 해당 주소의 일기 개수
-            dong: address.split(" ").pop(), // '동' 정보 추가 (기존 호환성)
-            address: address, // 정규화된 전체 주소 전달
+            emotion: latestDiary.emotion,
+            postCount: diaries.length,
+            dong: addr ? addr.split(" ").pop() : undefined,
+            address: addr || undefined,
           };
         }
       );
@@ -189,47 +201,21 @@ const MapPage = () => {
 
   const handlePlaceSelect = useCallback(
     (place: any) => {
-      // 현재 위치 정보가 있으면 선택된 장소 대신 현재 위치 사용
-      if (currentPosition) {
-        if (mapInstance) {
-          try {
-            const kakao = (window as any).kakao;
-            if (kakao && kakao.maps) {
-              const newCenter = new kakao.maps.LatLng(
-                currentPosition.lat,
-                currentPosition.lng
-              );
-
-              // 지도 중심 이동
-              mapInstance.setCenter(newCenter);
-
-              // 적절한 확대 레벨로 설정 (상세한 뷰)
-              mapInstance.setLevel(3);
-            }
-          } catch (error) {}
-        }
-      } else {
-        // 현재 위치 정보가 없으면 기존 로직 사용
-        if (mapInstance && place.x && place.y) {
-          try {
-            const kakao = (window as any).kakao;
-            if (kakao && kakao.maps) {
-              const newCenter = new kakao.maps.LatLng(
-                parseFloat(place.y),
-                parseFloat(place.x)
-              );
-
-              // 지도 중심 이동
-              mapInstance.setCenter(newCenter);
-
-              // 적절한 확대 레벨로 설정 (상세한 뷰)
-              mapInstance.setLevel(3);
-            }
-          } catch (error) {}
-        }
+      if (mapInstance && place.x && place.y) {
+        try {
+          const kakao = (window as any).kakao;
+          if (kakao && kakao.maps) {
+            const newCenter = new kakao.maps.LatLng(
+              parseFloat(place.y),
+              parseFloat(place.x)
+            );
+            mapInstance.setCenter(newCenter);
+            mapInstance.setLevel(3);
+          }
+        } catch (error) {}
       }
     },
-    [mapInstance, currentPosition]
+    [mapInstance]
   );
 
   const handleRetry = useCallback(() => {
