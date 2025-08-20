@@ -11,6 +11,29 @@ import LocationDiariesBottomSheet from "../../components/map/MapMarking/Location
 import { useGeolocation } from "../../contexts/GeolocationContext";
 import { useNavigate } from "react-router-dom";
 
+// 주소 정규화 함수: 행정구역명 차이를 통일
+function normalizeAddress(address: string): string {
+  if (!address) return "";
+
+  return address
+    .replace(/^부산광역시\s/, "부산 ")
+    .replace(/^서울특별시\s/, "서울 ")
+    .replace(/^대구광역시\s/, "대구 ")
+    .replace(/^인천광역시\s/, "인천 ")
+    .replace(/^광주광역시\s/, "광주 ")
+    .replace(/^대전광역시\s/, "대전 ")
+    .replace(/^울산광역시\s/, "울산 ")
+    .replace(/^세종특별자치시\s/, "세종 ")
+    .replace(/^제주특별자치도\s/, "제주 ")
+    .replace(/^강원도\s/, "강원 ")
+    .replace(/^충청북도\s/, "충북 ")
+    .replace(/^충청남도\s/, "충남 ")
+    .replace(/^전라북도\s/, "전북 ")
+    .replace(/^전라남도\s/, "전남 ")
+    .replace(/^경상북도\s/, "경북 ")
+    .replace(/^경상남도\s/, "경남 ");
+}
+
 interface Diary {
   id: number;
   lat?: number;
@@ -94,24 +117,25 @@ const MapPage = () => {
         expandedViewport.neLng
       );
 
-      // 같은 '동'의 일기들을 그룹화
-      const dongGroups = new Map<string, any[]>();
+      // 전체 주소 기준으로 일기들을 그룹화 (동명이동 문제 해결)
+      const addressGroups = new Map<string, any[]>();
 
       diaryData.forEach((d: any) => {
-        const dong = d.location?.address?.split(" ").pop() || "unknown"; // 주소에서 '동' 추출
+        const address = d.location?.address || "";
+        const normalizedAddress = normalizeAddress(address);
         const lat = d.location?.latitude || d.latitude;
         const lng = d.location?.longitude || d.longitude;
-        const key = `${dong}`; // '동'을 키로 사용
+        const key = normalizedAddress; // 정규화된 전체 주소를 키로 사용
 
-        if (!dongGroups.has(key)) {
-          dongGroups.set(key, []);
+        if (!addressGroups.has(key)) {
+          addressGroups.set(key, []);
         }
-        dongGroups.get(key)!.push(d);
+        addressGroups.get(key)!.push(d);
       });
 
-      const mapped: Diary[] = Array.from(dongGroups.entries()).map(
-        ([dong, diaries]) => {
-          // 같은 '동'의 일기들을 날짜순으로 정렬하여 가장 최근 일기 찾기
+      const mapped: Diary[] = Array.from(addressGroups.entries()).map(
+        ([address, diaries]) => {
+          // 같은 주소의 일기들을 날짜순으로 정렬하여 가장 최근 일기 찾기
           const sortedDiaries = diaries.sort(
             (a, b) =>
               new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
@@ -126,9 +150,9 @@ const MapPage = () => {
             lat,
             lng,
             emotion: latestDiary.emotion, // 가장 최근 일기의 감정 사용
-            postCount: diaries.length, // 해당 '동'의 일기 개수
-            dong: dong, // '동' 정보 추가
-            address: latestDiary.location?.address, // 전체 주소 전달
+            postCount: diaries.length, // 해당 주소의 일기 개수
+            dong: address.split(" ").pop(), // '동' 정보 추가 (기존 호환성)
+            address: address, // 정규화된 전체 주소 전달
           };
         }
       );
