@@ -191,9 +191,8 @@ const DiaryWritePage = () => {
       {/* 팝업들 */}
       {showUnchangedPopup && (
         <Popup
-          title={["일기 내용이 변경되지 않았어요!", "넘어가시겠어요?"]}
+          title={["기록 내용이 변경되지 않았어요!", "정말 넘어가시겠어요?"]}
           buttons={[
-            { label: "아니요", onClick: () => setShowUnchangedPopup(false) },
             {
               label: "예",
               onClick: () => {
@@ -201,6 +200,7 @@ const DiaryWritePage = () => {
                 navigate("/style");
               },
             },
+            { label: "아니요", onClick: () => setShowUnchangedPopup(false) },
           ]}
         />
       )}
@@ -208,19 +208,26 @@ const DiaryWritePage = () => {
         <Popup
           title={[
             draft.mode === "edit"
-              ? "수정한 일기가 저장되지 않아요!"
-              : "작성한 일기가 저장되지 않아요!",
-            "화면을 닫을까요?",
+              ? "수정된 기록이 저장되지 않아요!"
+              : "작성된 기록이 저장되지 않아요!",
+            "정말 종료하시겠어요?",
           ]}
-          buttons={[
-            { label: "아니오", onClick: () => setIsPopupOpen(false) },
-            { label: "예", onClick: handlePopupConfirm },
-          ]}
+          buttons={
+            draft.mode === "edit"
+              ? [
+                  { label: "예", onClick: handlePopupConfirm },
+                  { label: "아니오", onClick: () => setIsPopupOpen(false) },
+                ]
+              : [
+                  { label: "아니오", onClick: () => setIsPopupOpen(false) },
+                  { label: "예", onClick: handlePopupConfirm },
+                ]
+          }
         />
       )}
       {showEmptyContentPopup && (
         <Popup
-          title={["내용이 입력되지 않았어요!", "넘어가시겠어요?"]}
+          title={["내용이 입력되지 않았어요!", "정말 넘어가시겠어요?"]}
           description="입력되지 않은 내용은 자동으로 생성돼요"
           buttons={[
             { label: "아니요", onClick: () => setShowEmptyContentPopup(false) },

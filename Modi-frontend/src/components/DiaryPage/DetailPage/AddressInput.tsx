@@ -57,7 +57,7 @@ const AddressInput = () => {
         <div className={styles.search_container}>
           <input
             type="text"
-            placeholder="주소 검색"
+            placeholder="OO동을 입력해주세요"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleKeyDown}

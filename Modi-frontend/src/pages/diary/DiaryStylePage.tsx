@@ -310,23 +310,29 @@ const DiaryStylePage = () => {
         <Popup
           title={[
             draft.mode === "edit"
-              ? "수정한 일기가 저장되지 않아요!"
-              : "작성한 일기가 저장되지 않아요!",
-            "화면을 닫을까요?",
+              ? "수정된 기록이 저장되지 않아요!"
+              : "작성된 기록이 저장되지 않아요!",
+            "정말 종료하시겠어요?",
           ]}
-          buttons={[
-            { label: "아니오", onClick: () => setIsPopupOpen(false) },
-            { label: "예", onClick: handleExitPopupConfirm },
-          ]}
+          buttons={
+            draft.mode === "edit"
+              ? [
+                  { label: "예", onClick: handleExitPopupConfirm },
+                  { label: "아니오", onClick: () => setIsPopupOpen(false) },
+                ]
+              : [
+                  { label: "아니오", onClick: () => setIsPopupOpen(false) },
+                  { label: "예", onClick: handleExitPopupConfirm },
+                ]
+          }
         />
       )}
 
       {/* 변경 없음 팝업 */}
       {showNoChangePopup && (
         <Popup
-          title={["일기 내용이 변경되지 않았어요!", "완료하시겠어요?"]}
+          title={["기록 내용이 변경되지 않았어요!", "완료하시겠어요?"]}
           buttons={[
-            { label: "아니오", onClick: () => setShowNoChangePopup(false) },
             {
               label: "예",
               onClick: async () => {
@@ -346,6 +352,7 @@ const DiaryStylePage = () => {
                 }
               },
             },
+            { label: "아니오", onClick: () => setShowNoChangePopup(false) },
           ]}
         />
       )}
