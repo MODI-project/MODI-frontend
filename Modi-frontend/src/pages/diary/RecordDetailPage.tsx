@@ -49,6 +49,7 @@ const normalizeDiary = (api: DiaryApi) => ({
   favorites: !!api.favorites,
   frame: String(api.frameId ?? 1),
   font: mapFontName(api.font),
+  address: api.location?.address ?? "",
 });
 
 const pageBackgrounds = {
@@ -99,6 +100,7 @@ const RecordDetailPage = () => {
     favorites?: boolean;
     frame?: string;
     font?: string | null;
+    address?: string;
   } | null>(null);
 
   const [loading, setLoading] = useState<boolean>(!!diaryId);
@@ -127,6 +129,7 @@ const RecordDetailPage = () => {
         favorites: location.state?.isFavorited ?? false,
         frame: initial.frame,
         font: initial.font ? mapFontName(initial.font) : null,
+        address: initial.address ?? "",
       });
       setIsFavorite(!!location.state?.isFavorited);
       setError(null);
@@ -173,7 +176,7 @@ const RecordDetailPage = () => {
       date: fetched.date,
       emotion: fetched.emotion,
       summary: fetched.summary,
-      address: "",
+      address: fetched.address ?? "",
       tags: fetched.tags ?? [],
       content: fetched.content ?? "",
       frame: fetched.frame ?? "1",
