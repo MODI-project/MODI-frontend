@@ -61,10 +61,10 @@ async function fetchDiariesByLocation(position: {
     const API_BASE_URL = "https://modidiary.store/api";
     const { data } = await axios.get(`${API_BASE_URL}/diaries/nearby`, {
       params: {
-        swLat: 37.0, // 한국 전체 영역
-        swLng: 126.0,
-        neLat: 38.0,
-        neLng: 130.0,
+        swLat: 33.0, // 한국 전체 영역 (제주도 포함)
+        swLng: 124.0,
+        neLat: 38.5, // 북한 경계까지
+        neLng: 132.0,
       },
       withCredentials: true,
     });
