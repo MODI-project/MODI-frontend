@@ -18,6 +18,7 @@ interface Diary {
   emotion: string;
   postCount: number;
   dong?: string;
+  address?: string;
 }
 
 const MapPage = () => {
@@ -127,6 +128,7 @@ const MapPage = () => {
             emotion: latestDiary.emotion, // 가장 최근 일기의 감정 사용
             postCount: diaries.length, // 해당 '동'의 일기 개수
             dong: dong, // '동' 정보 추가
+            address: latestDiary.location?.address, // 전체 주소 전달
           };
         }
       );
