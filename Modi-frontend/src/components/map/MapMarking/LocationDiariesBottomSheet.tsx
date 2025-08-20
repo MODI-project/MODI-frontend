@@ -2,6 +2,30 @@ import { useEffect, useMemo, useState } from "react";
 import BottomSheet from "../../common/BottomSheet";
 import styles from "./LocationDiariesBottomSheet.module.css";
 import axios from "axios";
+
+// 주소 정규화 함수: 행정구역명 차이를 통일
+function normalizeAddress(address: string): string {
+  if (!address) return "";
+
+  return address
+    .replace(/^부산광역시\s/, "부산 ")
+    .replace(/^서울특별시\s/, "서울 ")
+    .replace(/^대구광역시\s/, "대구 ")
+    .replace(/^인천광역시\s/, "인천 ")
+    .replace(/^광주광역시\s/, "광주 ")
+    .replace(/^대전광역시\s/, "대전 ")
+    .replace(/^울산광역시\s/, "울산 ")
+    .replace(/^세종특별자치시\s/, "세종 ")
+    .replace(/^제주특별자치도\s/, "제주 ")
+    .replace(/^강원도\s/, "강원 ")
+    .replace(/^충청북도\s/, "충북 ")
+    .replace(/^충청남도\s/, "충남 ")
+    .replace(/^전라북도\s/, "전북 ")
+    .replace(/^전라남도\s/, "전남 ")
+    .replace(/^경상북도\s/, "경북 ")
+    .replace(/^경상남도\s/, "경남 ");
+}
+
 export interface NearbyDiary {
   id: number;
   datetime: string; // ISO string
@@ -50,7 +74,13 @@ async function fetchDiariesByLocation(position: {
       const list = data as any[];
       const addr = position.address;
       if (addr) {
-        return list.filter((diary) => diary.location?.address === addr);
+        const normalizedAddr = normalizeAddress(addr);
+        return list.filter((diary) => {
+          const diaryAddr = diary.location?.address;
+          if (!diaryAddr) return false;
+          const normalizedDiaryAddr = normalizeAddress(diaryAddr);
+          return normalizedDiaryAddr === normalizedAddr;
+        });
       }
       return []; // 주소 정보가 없으면 전체를 노출하지 않음
     }
