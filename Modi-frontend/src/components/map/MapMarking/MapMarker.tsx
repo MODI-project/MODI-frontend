@@ -15,7 +15,7 @@ interface MapMarkerProps {
     dong?: string; // '동' 정보
   };
   character: Exclude<CharacterKey, null>;
-  onClick?: (position: { lat: number; lng: number }) => void;
+  onClick?: (position: { lat: number; lng: number; address?: string }) => void;
 }
 
 const MapMarker: React.FC<MapMarkerProps> = ({
@@ -70,7 +70,11 @@ const MapMarker: React.FC<MapMarkerProps> = ({
 
     container.addEventListener("click", () => {
       if (diary.lat && diary.lng) {
-        onClick?.({ lat: diary.lat, lng: diary.lng });
+        onClick?.({
+          lat: diary.lat,
+          lng: diary.lng,
+          address: (diary as any).address,
+        });
       }
     });
 

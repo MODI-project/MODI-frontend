@@ -31,7 +31,7 @@ const MapPage = () => {
   const [selectedPosition, setSelectedPosition] = useState<{
     lat: number;
     lng: number;
-    dong?: string;
+    address?: string;
   } | null>(null);
   const [currentPosition, setCurrentPosition] = useState<{
     lat: number;
@@ -314,7 +314,7 @@ const MapPage = () => {
                     diary={d}
                     character={character!}
                     onClick={(position) => {
-                      setSelectedPosition({ ...position, dong: d.dong });
+                      setSelectedPosition(position);
                       setSheetOpen(true);
                     }}
                   />
