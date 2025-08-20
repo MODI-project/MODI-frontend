@@ -76,19 +76,14 @@ const Setting = () => {
               onToggle={handleNotificationToggle}
             />
           </div>
-          <div className={styles.setting_button_list}>
-            <button className={styles.setting_item}>
-              <span>로그아웃</span>
-              <img src="/icons/arrow_right.svg" />
-            </button>
-            <button
-              className={styles.setting_item}
-              onClick={handleWithdrawalClick}
-            >
-              <span>회원 탈퇴</span>
-              <img src="/icons/arrow_right.svg" />
-            </button>
-          </div>
+
+          <button
+            className={styles.setting_item}
+            onClick={handleWithdrawalClick}
+          >
+            <span>회원 탈퇴</span>
+            <img src="/icons/arrow_right.svg" />
+          </button>
         </div>
       </div>
 
