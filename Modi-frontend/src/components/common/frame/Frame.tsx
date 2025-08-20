@@ -96,6 +96,7 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
 ) {
   const { frameId } = useFrameTemplate();
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showMoreTags, setShowMoreTags] = useState(false);
 
   const currentFrameId = diaryData?.frame || frameId;
 
@@ -215,9 +216,39 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
                 </span>
               ))}
               {displayData.tags.length > 3 && (
-                <span className={styles.more_tag}>더보기</span>
+                <span
+                  className={styles.more_tag}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowMoreTags((v) => !v);
+                  }}
+                >
+                  {showMoreTags ? "접기" : "더보기"}
+                </span>
               )}
             </div>
+            {showMoreTags && displayData.tags.length > 3 && (
+              <div style={{ marginTop: 6 }}>
+                {Array.from({
+                  length: Math.ceil((displayData.tags.length - 3) / 3),
+                }).map((_, rowIdx) => {
+                  const start = 3 + rowIdx * 3;
+                  const row = displayData.tags.slice(start, start + 3);
+                  return (
+                    <div
+                      key={`row-${rowIdx}`}
+                      style={{ display: "flex", gap: 6, marginTop: 4 }}
+                    >
+                      {row.map((tag, idx) => (
+                        <span key={`${rowIdx}-${idx}`} className={styles.tag}>
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             <span className={styles.place_info}>{displayData.placeInfo}</span>
           </div>
           <div className={styles.diary_detail_container}>
