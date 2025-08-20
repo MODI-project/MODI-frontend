@@ -73,7 +73,7 @@ const MapMarker: React.FC<MapMarkerProps> = ({
         onClick?.({
           lat: diary.lat,
           lng: diary.lng,
-          address: (diary as any).address,
+          address: (diary as any).address ?? undefined,
         });
       }
     });
