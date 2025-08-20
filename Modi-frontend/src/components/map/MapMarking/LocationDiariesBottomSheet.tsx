@@ -18,7 +18,7 @@ export interface NearbyDiary {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  position: { lat: number; lng: number; dong?: string } | null;
+  position: { lat: number; lng: number; address?: string } | null;
   /** 썸네일 클릭 시 상세 화면으로 라우팅 등 할 때 사용 (선택) */
   onClickDiary?: (diaryId: number) => void;
 }
@@ -26,10 +26,14 @@ interface Props {
 async function fetchDiariesByLocation(position: {
   lat: number;
   lng: number;
-  dong?: string;
+  address?: string;
 }): Promise<NearbyDiary[]> {
   try {
-    // 임시로 뷰포트 기반 API 사용 (전체 지도 영역)
+    // 주소 정보가 없으면 현재 위치에 대한 일기 목록을 표시하지 않음
+    if (!position.address) {
+      return [];
+    }
+
     const API_BASE_URL = "https://modidiary.store/api";
     const { data } = await axios.get(`${API_BASE_URL}/diaries/nearby`, {
       params: {
@@ -41,13 +45,14 @@ async function fetchDiariesByLocation(position: {
       withCredentials: true,
     });
 
-    // 같은 '동'의 일기들만 필터링
+    // 같은 주소(도/시/구/동) 기준 필터 (address 전달 시)
     if (Array.isArray(data)) {
-      return data.filter((diary: any) => {
-        const diaryDong =
-          diary.location?.address?.split(" ").pop() || "unknown";
-        return diaryDong === position.dong;
-      });
+      const list = data as any[];
+      const addr = position.address;
+      if (addr) {
+        return list.filter((diary) => diary.location?.address === addr);
+      }
+      return []; // 주소 정보가 없으면 전체를 노출하지 않음
     }
 
     return [];
