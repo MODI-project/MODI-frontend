@@ -144,6 +144,8 @@ export async function postDiary(
   // 🔎 응답 로그도 보기 좋게
   if (import.meta.env.MODE !== "production") {
     console.groupCollapsed("✅ [POST /diaries] Response");
+    console.log("서버 응답:", res.data);
+    console.groupEnd();
   }
 
   return res.data;
