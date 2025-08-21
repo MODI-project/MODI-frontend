@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { loadUserInfo } from "../apis/UserAPIS/loadUserInfo";
 
 export type CharacterType = "momo" | "boro" | "lumi" | "zuni" | null;
@@ -12,7 +12,7 @@ type Ctx = {
 };
 
 const CharacterContext = createContext<Ctx>({
-  character: null,
+  character: "momo", // ✅ 기본값 momo
   nickname: null,
   setCharacter: () => {},
   setNickname: () => {},
@@ -23,7 +23,7 @@ export const CharacterProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const [character, setCharacter] = useState<CharacterType>(() => {
-    const init = (localStorage.getItem("character") as CharacterType) || null;
+    const init = (localStorage.getItem("character") as CharacterType) || "momo"; // ✅ 기본값 momo
     return init;
   });
   const [nickname, setNickname] = useState<string | null>(() => {
@@ -31,15 +31,16 @@ export const CharacterProvider: React.FC<React.PropsWithChildren> = ({
     return init;
   });
 
-  // setter + 로컬스토리지 동기화 + 로그
+  // setter + 로컬스토리지 동기화
   const saveCharacter = (c: CharacterType) => {
-    setCharacter(c);
+    setCharacter(c ?? "momo"); // ✅ null 들어오면 momo로
     if (c) {
       localStorage.setItem("character", c);
     } else {
-      localStorage.removeItem("character");
+      localStorage.setItem("character", "momo"); // ✅ 기본값 저장
     }
   };
+
   const saveNickname = (n: string | null) => {
     setNickname(n);
     if (n) {
@@ -52,10 +53,13 @@ export const CharacterProvider: React.FC<React.PropsWithChildren> = ({
   const refreshFromServer = async () => {
     try {
       const me = await loadUserInfo();
-      saveCharacter(me.character);
+      saveCharacter(me.character ?? "momo"); // ✅ 없으면 momo
       saveNickname(me.nickname);
     } catch (e) {
-      // 로그인되지 않은 상태이므로 로컬 스토리지 값 유지
+      // 로그인 안 된 경우 → 최소 momo 유지
+      if (!character) {
+        saveCharacter("momo");
+      }
     }
   };
 
