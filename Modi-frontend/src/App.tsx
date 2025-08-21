@@ -19,6 +19,7 @@ import DiaryStylePage from "./pages/diary/DiaryStylePage";
 import NotificationPage from "./pages/notification/NotificationPage";
 import Setting from "./pages/setting/Setting";
 import NotificationGridPage from "./pages/notification/NotificationGridPage";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 import "./App.css";
 
 function App() {
@@ -29,55 +30,107 @@ function App() {
     },
     {
       path: "/home",
-      element: <HomePage />,
+      element: (
+        <ProtectedRoute>
+          <HomePage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/search",
-      element: <SearchPage />,
+      element: (
+        <ProtectedRoute>
+          <SearchPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/emotion",
-      element: <DiaryEmotionTag />,
+      element: (
+        <ProtectedRoute>
+          <DiaryEmotionTag />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/detail",
-      element: <DiaryWritePage />,
+      element: (
+        <ProtectedRoute>
+          <DiaryWritePage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/keyword",
-      element: <DiaryKeywordPage />,
+      element: (
+        <ProtectedRoute>
+          <DiaryKeywordPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/style",
-      element: <DiaryStylePage />,
+      element: (
+        <ProtectedRoute>
+          <DiaryStylePage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/recorddetail",
-      element: <RecordDetailPage />,
+      element: (
+        <ProtectedRoute>
+          <RecordDetailPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/map",
-      element: <MapPage />,
+      element: (
+        <ProtectedRoute>
+          <MapPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/mypage",
-      element: <MyPage />,
+      element: (
+        <ProtectedRoute>
+          <MyPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/information-setting",
-      element: <InfoSetting />,
+      element: (
+        <ProtectedRoute>
+          <InfoSetting />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/notification",
-      element: <NotificationPage />,
+      element: (
+        <ProtectedRoute>
+          <NotificationPage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/setting",
-      element: <Setting />,
+      element: (
+        <ProtectedRoute>
+          <Setting />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/notification-grid",
-      element: <NotificationGridPage />,
+      element: (
+        <ProtectedRoute>
+          <NotificationGridPage />
+        </ProtectedRoute>
+      ),
     },
   ]);
 
