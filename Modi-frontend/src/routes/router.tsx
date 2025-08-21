@@ -15,7 +15,6 @@ import Setting from "../pages/setting/Setting";
 import MapMarker from "../components/map/MapMarking/MapMarker";
 import Popup from "../components/common/Popup";
 import MapSearchBar from "../components/map/SearchPlace/MapSearchBar";
-import NotiPopUp from "../components/notification/NotiPopUp";
 import NotificationGridPage from "../pages/notification/NotificationGridPage";
 
 const Router = () => {
@@ -72,10 +71,7 @@ const Router = () => {
       path: "/setting",
       element: <Setting />,
     },
-    {
-      path: "/popup",
-      element: <NotiPopUp isVisible={true} onClose={() => {}} />,
-    },
+
     {
       path: "/map-search-bar",
       element: <MapSearchBar />,
