@@ -14,6 +14,9 @@ import { useGeolocationControl } from "../../hooks/useGeolocationControl";
 import { useDongGeofence } from "../../hooks/useDongGeofence";
 import { useNotificationManager } from "../../contexts/NotificationManagerContext";
 
+// ✅ 추가 import
+import { loadUserInfo, MeResponse } from "../../apis/UserAPIS/loadUserInfo";
+
 // URL에서 code 파라미터 추출 함수
 const getCodeFromURL = (): string | null => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -41,7 +44,6 @@ export default function HomePage() {
     if (code && !isTokenRequesting.current) {
       isTokenRequesting.current = true;
 
-      // 토큰 요청 API 호출
       handleTokenRequest(code)
         .then(() => {
           console.log("✅ 토큰 요청 완료");
@@ -52,13 +54,30 @@ export default function HomePage() {
         })
         .finally(() => {
           isTokenRequesting.current = false;
-          // URL에서 code 파라미터 제거
           const newUrl = window.location.pathname;
           window.history.replaceState({}, document.title, newUrl);
         });
     }
-  }, [location]); // navigate 의존성 제거
+  }, [location]);
 
+  // ✅ 사용자 정보 불러와서 nickname, character만 저장
+  useEffect(() => {
+    (async () => {
+      try {
+        const user: MeResponse = await loadUserInfo();
+
+        // nickname, character만 따로 저장
+        localStorage.setItem("nickname", user.nickname ?? "");
+        localStorage.setItem("character", user.character ?? "");
+
+        console.log("✅ 사용자 정보 저장 완료:", user.nickname, user.character);
+      } catch (err) {
+        console.error("❌ 사용자 정보 불러오기 실패:", err);
+      }
+    })();
+  }, []);
+
+  // 월별 일기 조회
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -70,7 +89,7 @@ export default function HomePage() {
         setHasMonthData(list.length > 0);
       } catch (e) {
         console.error("월별 일기 조회 실패:", e);
-        setHasMonthData(false); // 실패 시 일단 빈 상태로 처리(원하면 에러 UI 분리)
+        setHasMonthData(false);
       } finally {
         setLoading(false);
       }

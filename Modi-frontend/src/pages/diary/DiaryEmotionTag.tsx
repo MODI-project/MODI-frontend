@@ -6,7 +6,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 import { useState, useEffect } from "react";
 import { getDiaryById } from "../../apis/Diary/searchDiary";
-import { useCharacter } from "../../contexts/CharacterContext";
 
 const emotionList = [
   { en: "happy", ko: "기쁨" },
@@ -24,14 +23,20 @@ const emotionList = [
 const DiaryEmotionTag = () => {
   const { draft, setDraft, resetDraft } = useDiaryDraft();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [character, setCharacter] = useState("momo"); // ✅ 기본값 momo
   const navigate = useNavigate();
   const location = useLocation();
-  const { character } = useCharacter();
 
   const handlePopupConfirm = () => {
     setIsPopupOpen(false);
     navigate("/home");
   };
+
+  // ✅ localStorage에서 character 불러오기
+  useEffect(() => {
+    const savedCharacter = localStorage.getItem("character");
+    setCharacter(savedCharacter ?? "momo");
+  }, []);
 
   useEffect(() => {
     const editId = location.state?.editDiaryId as number | undefined;
