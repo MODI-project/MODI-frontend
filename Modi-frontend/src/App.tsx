@@ -29,7 +29,7 @@ function App() {
         <AlertBusProvider>
           <GeolocationProvider>
             <NotificationManagerProvider>
-              <RouterProvider router={router} />
+              <Router />
             </NotificationManagerProvider>
           </GeolocationProvider>
         </AlertBusProvider>
