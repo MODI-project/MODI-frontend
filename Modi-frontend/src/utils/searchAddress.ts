@@ -108,15 +108,20 @@ export const searchKakaoAddress = async (
     const fullAddress = getFullAddress(doc);
     const dong = doc.address!.region_3depth_name;
 
+    console.log(`=== 주소 검색 디버깅: ${fullAddress} ===`);
+    console.log("원본 좌표:", { x: doc.x, y: doc.y });
+
     let latitude: number;
     let longitude: number;
 
     // 1. 원본 좌표가 있으면 사용
     if (doc.x && doc.y) {
-      latitude = parseFloat(doc.x);
-      longitude = parseFloat(doc.y);
+      latitude = parseFloat(doc.y);
+      longitude = parseFloat(doc.x);
+      console.log("원본 좌표 사용:", { latitude, longitude });
     } else {
       // 2. 대체 좌표 찾기
+      console.log("원본 좌표 없음, 대체 좌표 검색 중...");
       const fallbackCoords = await findFallbackCoords(
         fullAddress,
         dong,
@@ -125,8 +130,10 @@ export const searchKakaoAddress = async (
       if (fallbackCoords) {
         latitude = fallbackCoords.latitude;
         longitude = fallbackCoords.longitude;
+        console.log("대체 좌표 사용:", { latitude, longitude });
       } else {
         // 3. 대체 좌표도 없으면 건너뛰기
+        console.log("대체 좌표도 없음, 결과에서 제외");
         continue;
       }
     }
@@ -137,6 +144,8 @@ export const searchKakaoAddress = async (
       latitude,
       longitude,
     });
+    console.log("최종 결과:", { fullAddress, dong, latitude, longitude });
+    console.log("=== 디버깅 끝 ===");
   }
 
   return results;
