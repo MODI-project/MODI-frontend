@@ -13,7 +13,6 @@ import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
 import { useGeolocationControl } from "../../hooks/useGeolocationControl";
 import { useDongGeofence } from "../../hooks/useDongGeofence";
 import { useNotificationManager } from "../../contexts/NotificationManagerContext";
-import DongPopup from "../../components/common/DongPopup";
 
 // URL에서 code 파라미터 추출 함수
 const getCodeFromURL = (): string | null => {
@@ -40,10 +39,6 @@ export default function HomePage() {
   useEffect(() => {
     const code = getCodeFromURL();
     if (code && !isTokenRequesting.current) {
-      console.log("=== 홈 페이지에서 code 파라미터 감지 ===");
-      console.log("code:", code);
-      console.log("기존 회원이므로 토큰 요청 처리");
-
       isTokenRequesting.current = true;
 
       // 토큰 요청 API 호출
@@ -115,7 +110,6 @@ export default function HomePage() {
         </main>
         <Footer showBalloon={hasMonthData === false} />
       </div>
-      <DongPopup />
     </div>
   );
 }
