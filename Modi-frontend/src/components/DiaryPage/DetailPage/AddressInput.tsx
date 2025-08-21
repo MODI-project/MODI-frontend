@@ -4,7 +4,6 @@ import { useDiaryDraft } from "../../../hooks/useDiaryDraft";
 import BottomSheet from "../../common/BottomSheet";
 import { searchKakaoAddress } from "../../../utils/searchAddress";
 import type { AddressResult } from "../../../utils/searchAddress";
-import { getDongRepresentativeCoords } from "../../../utils/dongCoords";
 
 const AddressInput = () => {
   const { draft, setDraft } = useDiaryDraft();
@@ -12,7 +11,6 @@ const AddressInput = () => {
   const [search, setSearch] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const [results, setResults] = useState<AddressResult[]>([]);
-  const kakaoKey = import.meta.env.VITE_KAKAO_API_KEY;
 
   const handleSearch = () => {
     setHasSearched(true);
@@ -81,22 +79,18 @@ const AddressInput = () => {
                 key={i}
                 className={styles.address_item}
                 onClick={async () => {
-                  setDraft({ address: addr.fullAddress, dong: addr.dong });
-
-                  const rep = await getDongRepresentativeCoords(
-                    addr.dong,
-                    kakaoKey
-                  );
-                  if (rep) {
+                  if (addr.latitude && addr.longitude) {
+                    // 선택한 주소와 해당 좌표를 그대로 사용 (동명이동 오류 방지)
                     setDraft({
-                      latitude: rep.latitude,
-                      longitude: rep.longitude,
-                    });
-                  } else {
-                    setDraft({
+                      address: addr.fullAddress,
+                      dong: addr.dong,
                       latitude: addr.latitude,
                       longitude: addr.longitude,
                     });
+                  } else {
+                    alert(
+                      "좌표 정보가 없는 주소입니다. 다른 주소를 선택해주세요."
+                    );
                   }
 
                   setIsSheetOpen(false);
