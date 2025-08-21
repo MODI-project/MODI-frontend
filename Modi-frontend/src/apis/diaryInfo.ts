@@ -136,9 +136,29 @@ export const fetchDiariesByViewport = async (
     if (response.data.diaries) {
       // 기존 구조: { diaries: [...] }
       const result: DiariesResponse = response.data;
+      console.log("=== 서버에서 받아온 일기 데이터 ===");
+      result.diaries.forEach((diary, index) => {
+        console.log(`일기 ${index + 1}:`, {
+          id: diary.id,
+          address: diary.address,
+          latitude: diary.latitude,
+          longitude: diary.longitude,
+        });
+      });
+      console.log("=== 서버 데이터 끝 ===");
       return result.diaries || [];
     } else if (Array.isArray(response.data)) {
       // 직접 배열로 반환되는 경우
+      console.log("=== 서버에서 받아온 일기 데이터 (배열) ===");
+      response.data.forEach((diary, index) => {
+        console.log(`일기 ${index + 1}:`, {
+          id: diary.id,
+          address: diary.address,
+          latitude: diary.latitude,
+          longitude: diary.longitude,
+        });
+      });
+      console.log("=== 서버 데이터 끝 ===");
       return response.data;
     } else {
       // 다른 구조인 경우
