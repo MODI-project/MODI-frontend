@@ -126,6 +126,12 @@ const MapPage = () => {
         const lat = d.location?.latitude || d.latitude;
         const lng = d.location?.longitude || d.longitude;
 
+        console.log(`=== 일기 그룹핑 디버깅 ===`);
+        console.log("일기 ID:", d.id);
+        console.log("원본 주소:", address);
+        console.log("정규화된 주소:", normalizedAddress);
+        console.log("좌표:", { lat, lng });
+
         // 주소 토큰이 3개 미만(예: "중동"만 있는 경우)에는 좌표 기반 키 사용
         const tokenCount = normalizedAddress
           .trim()
@@ -135,6 +141,10 @@ const MapPage = () => {
           3
         )}`; // 약 ~100m 단위 그룹
         const key = tokenCount >= 3 ? normalizedAddress : geoKey;
+
+        console.log("토큰 개수:", tokenCount);
+        console.log("그룹 키:", key);
+        console.log("=== 그룹핑 디버깅 끝 ===");
 
         if (!addressGroups.has(key)) {
           addressGroups.set(key, []);
