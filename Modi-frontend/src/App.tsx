@@ -1,6 +1,6 @@
 import "./App.css";
 import { RouterProvider } from "react-router-dom";
-import { router } from "./routes/router";
+import Router from "./routes/router";
 import { CharacterProvider } from "./contexts/CharacterContext";
 import { GeolocationProvider } from "./contexts/GeolocationContext";
 import { AlertBusProvider } from "./contexts/AlertBusContext";
