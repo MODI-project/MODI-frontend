@@ -5,7 +5,7 @@ import ToggleSwitch from "../../components/toggle/ToggleSwitch";
 import { useNavigate } from "react-router-dom";
 import { handleWithdrawMembership } from "../../apis/UserAPIS/withdrawMembership";
 import Popup from "../../components/common/Popup";
-import { useNotificationControl } from "../../hooks/useNotificationControl";
+import { useNotificationManager } from "../../contexts/NotificationManagerContext";
 
 const Setting = () => {
   // 설정별 이벤트 처리
@@ -16,20 +16,15 @@ const Setting = () => {
     useState<boolean>(false);
 
   const navigate = useNavigate();
-  const { handleNotificationSettingChange } = useNotificationControl();
+  const { isEnabled, toggleNotifications } = useNotificationManager();
 
-  // 페이지 로드 시 알림 설정 상태 불러오기
+  // 페이지 로드 및 컨텍스트 변경 시 알림 설정 상태 동기화
   useEffect(() => {
-    const savedSetting = localStorage.getItem("notification_setting");
-    setNotificationEnabled(savedSetting === "true");
-  }, []);
+    setNotificationEnabled(isEnabled);
+  }, [isEnabled]);
 
   const handleNotificationToggle = () => {
-    const newValue = !notificationEnabled;
-    setNotificationEnabled(newValue);
-    localStorage.setItem("notification_setting", newValue.toString());
-    handleNotificationSettingChange(newValue); // 알림 제어 훅에 변경 알림
-    console.log("알림 설정 변경:", newValue ? "ON" : "OFF");
+    toggleNotifications();
   };
 
   const handleWithdrawalClick = () => {
@@ -39,15 +34,12 @@ const Setting = () => {
 
   const handleWithdrawConfirm = async () => {
     try {
-      console.log("회원 탈퇴 시작...");
       await handleWithdrawMembership();
 
       // 성공 시 로그인 페이지로 리다이렉트
       alert("회원 탈퇴가 완료되었습니다.");
       navigate("/");
     } catch (error: any) {
-      console.error("회원 탈퇴 실패:", error);
-
       // 사용자에게 에러 메시지 표시
       const errorMessage = error.userMessage || "회원 탈퇴에 실패했습니다.";
       alert(errorMessage);
