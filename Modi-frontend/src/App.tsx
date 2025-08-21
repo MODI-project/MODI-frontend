@@ -1,5 +1,6 @@
+import "./App.css";
 import { RouterProvider } from "react-router-dom";
-import { createBrowserRouter } from "react-router-dom";
+import { router } from "./routes/router";
 import { CharacterProvider } from "./contexts/CharacterContext";
 import { GeolocationProvider } from "./contexts/GeolocationContext";
 import { AlertBusProvider } from "./contexts/AlertBusContext";
@@ -19,121 +20,9 @@ import DiaryStylePage from "./pages/diary/DiaryStylePage";
 import NotificationPage from "./pages/notification/NotificationPage";
 import Setting from "./pages/setting/Setting";
 import NotificationGridPage from "./pages/notification/NotificationGridPage";
-import ProtectedRoute from "./components/common/ProtectedRoute";
 import "./App.css";
 
 function App() {
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <LoginPage />,
-    },
-    {
-      path: "/home",
-      element: (
-        <ProtectedRoute>
-          <HomePage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/search",
-      element: (
-        <ProtectedRoute>
-          <SearchPage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/emotion",
-      element: (
-        <ProtectedRoute>
-          <DiaryEmotionTag />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/detail",
-      element: (
-        <ProtectedRoute>
-          <DiaryWritePage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/keyword",
-      element: (
-        <ProtectedRoute>
-          <DiaryKeywordPage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/style",
-      element: (
-        <ProtectedRoute>
-          <DiaryStylePage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/recorddetail",
-      element: (
-        <ProtectedRoute>
-          <RecordDetailPage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/map",
-      element: (
-        <ProtectedRoute>
-          <MapPage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/mypage",
-      element: (
-        <ProtectedRoute>
-          <MyPage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/information-setting",
-      element: (
-        <ProtectedRoute>
-          <InfoSetting />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/notification",
-      element: (
-        <ProtectedRoute>
-          <NotificationPage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/setting",
-      element: (
-        <ProtectedRoute>
-          <Setting />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/notification-grid",
-      element: (
-        <ProtectedRoute>
-          <NotificationGridPage />
-        </ProtectedRoute>
-      ),
-    },
-  ]);
-
   return (
     <CharacterProvider>
       <DiaryDraftProvider>
