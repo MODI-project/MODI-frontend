@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./MapSearchBar.module.css";
 
-// 통합 검색 결과 타입
+// 통합 검색 결과 타입 (장소검색 기준)
 interface SearchResult {
-  title: string; // 표시용 이름(장소명 또는 도로명)
-  address_name: string; // 전체 주소
+  title: string; // 표시용 이름(장소명)
+  address_name: string; // 주소 (있으면 표시)
   x: string; // lon
   y: string; // lat
 }
@@ -41,7 +41,6 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
   const markersRef = useRef<any[]>([]);
   const infowindowRef = useRef<any>(null);
   const psRef = useRef<any>(null);
-  const geocoderRef = useRef<any>(null);
 
   // API 초기화
   const initializeApi = () => {
@@ -56,8 +55,6 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
       try {
         // 장소 검색 객체 생성
         psRef.current = new kakao.maps.services.Places();
-        // 지오코더 객체 생성
-        geocoderRef.current = new kakao.maps.services.Geocoder();
 
         // 인포윈도우 생성
         infowindowRef.current = new kakao.maps.InfoWindow({ zIndex: 1 });
@@ -91,16 +88,6 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
     }
   }, [map]);
 
-  // 주소 결과를 통합 타입으로 변환
-  const mapAddressResult = (item: any): SearchResult => {
-    return {
-      title: item.road_address?.address_name || item.address_name,
-      address_name: item.address_name,
-      x: item.x,
-      y: item.y,
-    };
-  };
-
   // 장소 결과를 통합 타입으로 변환
   const mapPlaceResult = (item: any): SearchResult => {
     return {
@@ -111,7 +98,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
     };
   };
 
-  // 키워드 검색을 요청하는 함수
+  // 키워드 검색을 요청하는 함수 (장소검색 전용)
   const searchPlaces = (searchKeyword?: string) => {
     const searchTerm = searchKeyword || keyword;
 
@@ -120,47 +107,13 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
       return false;
     }
 
-    if ((!psRef.current && !geocoderRef.current) || !isInitialized) {
+    if (!psRef.current || !isInitialized) {
       alert("지도 서비스를 초기화하는 중입니다. 잠시 후 다시 시도해주세요.");
       return false;
     }
 
     setIsLoading(true);
 
-    const kakao = (window as any).kakao;
-
-    // 1) 주소 검색 우선 시도
-    if (geocoderRef.current) {
-      try {
-        geocoderRef.current.addressSearch(
-          searchTerm,
-          (data: any[], status: any) => {
-            if (status === kakao.maps.services.Status.OK && data.length > 0) {
-              const results = data.map(mapAddressResult);
-              setPlaces(results);
-              setPagination(null); // 주소 검색엔 페이지네이션 없음
-              setCurrentPage(1);
-              setShowResults(true);
-              setIsLoading(false);
-            } else {
-              // 2) 주소 결과가 없으면 키워드 장소검색으로 폴백
-              try {
-                psRef.current.keywordSearch(searchTerm, placesSearchCB);
-              } catch (error) {
-                console.error("Search error:", error);
-                setIsLoading(false);
-                alert("검색 중 오류가 발생했습니다. 다시 시도해주세요.");
-              }
-            }
-          }
-        );
-        return;
-      } catch (e) {
-        // 지오코더 예외 시 바로 폴백
-      }
-    }
-
-    // 폴백: 키워드 장소검색
     try {
       psRef.current.keywordSearch(searchTerm, placesSearchCB);
     } catch (error) {
@@ -246,7 +199,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
     searchPlaces();
   };
 
-  const isApiReady = isInitialized && (psRef.current || geocoderRef.current);
+  const isApiReady = isInitialized && psRef.current;
 
   return (
     <div className={styles.map_search_bar_container}>
@@ -272,7 +225,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
         </button>
       </form>
 
-      {/* 검색 결과 목록 - 주소/장소 공통 */}
+      {/* 검색 결과 목록 - 장소검색 결과만 표시 */}
       {showResults && places.length > 0 && (
         <div className={styles.search_results}>
           <ul className={styles.places_list}>
@@ -294,7 +247,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({
             ))}
           </ul>
 
-          {/* 페이지네이션 - 장소검색일 때만 노출 */}
+          {/* 페이지네이션 */}
           {pagination && pagination.last > 1 && (
             <div className={styles.pagination}>
               {Array.from({ length: pagination.last }, (_, i) => i + 1).map(
