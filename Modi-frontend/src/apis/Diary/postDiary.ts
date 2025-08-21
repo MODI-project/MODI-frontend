@@ -95,58 +95,10 @@ export async function postDiary(
     form.append("image", imageToSend);
   }
 
-  // 🔎 개발환경에서만 깔끔한 디버그 로그
-  if (import.meta.env.MODE !== "production") {
-    const entries: Array<[string, unknown]> = [];
-    form.forEach((value, key) => {
-      if (value instanceof File) {
-        entries.push([
-          key,
-          {
-            kind: "File",
-            name: value.name,
-            type: value.type,
-            sizeKB: Math.round(value.size / 1024),
-          },
-        ]);
-      } else {
-        entries.push([key, value]);
-      }
-    });
-
-    if (draft.imageFile) {
-      console.table(
-        [
-          {
-            label: "original",
-            name: draft.imageFile.name,
-            type: draft.imageFile.type,
-            sizeKB: Math.round(draft.imageFile.size / 1024),
-          },
-          imageToSend && {
-            label: "compressed",
-            name: imageToSend.name,
-            type: imageToSend.type,
-            sizeKB: Math.round(imageToSend.size / 1024),
-          },
-        ].filter(Boolean)
-      );
-    }
-    console.table(entries);
-    console.groupEnd();
-  }
-
   const res = await apiClient.post<PostDiaryResponse>("/diaries", form, {
     maxBodyLength: Infinity,
     maxContentLength: Infinity,
   });
-
-  // 🔎 응답 로그도 보기 좋게
-  if (import.meta.env.MODE !== "production") {
-    console.groupCollapsed("✅ [POST /diaries] Response");
-    console.log("서버 응답:", res.data);
-    console.groupEnd();
-  }
 
   return res.data;
 }
