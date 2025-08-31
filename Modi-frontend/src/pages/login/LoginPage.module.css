@@ -1,25 +1,84 @@
-.loginPage {
-  position: relative;
-  width: 360px;
-  height: 800px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f5f5;
-  background-image: url("/images/background/intro-bg.svg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
 .loginPage_wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.googleLogin_btn {
+.loginPage_container {
+  display: flex;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 400px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url("/images/background/intro-bg.svg");
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+}
+
+.modi_information {
+  position: absolute;
+  top: 8%;
+  left: 10%;
+  display: flex;
+  flex-direction: column;
+}
+
+.modi_logo {
+  width: 72px;
+  height: 23px;
+  margin-bottom: 21px;
+}
+
+.modi_name {
+  color: #000;
+  font-family: var(--font-nanum-squareB, "NanumSquareRoundBold");
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%;
+  letter-spacing: -0.22px;
+  text-transform: capitalize;
+}
+
+.modi_introduction {
+  color: #000;
+  font-family: var(--font-nanum-square, "NanumSquareRound");
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 150%; /* 30px */
+  letter-spacing: -0.22px;
+  text-transform: capitalize;
+}
+
+.modi_character {
+  position: absolute;
+  top: 63%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  max-width: 327px;
+  max-height: 360px;
+  max-width: 327px;
+  max-height: 360px;
+}
+
+.loginPage_wrapper > GoogleLoginButton {
+  position: absolute;
+  height: 58px;
+  box-sizing: border-box;
+  padding: 17px;
+  text-align: center;
+}
+/* .googleLogin_btn {
   position: absolute;
   bottom: 46px;
   width: 328px;
@@ -30,9 +89,9 @@
 
   border-radius: 15px;
   background: #5c5c5c;
-}
+} */
 
-.googleLogin_btn span {
+/* .googleLogin_btn span {
   color: #fff;
   font-feature-settings: "liga" off, "clig" off;
   font-family: "NanumSquareRound", sans-serif;
@@ -41,6 +100,41 @@
   font-weight: 400;
   width: 97px;
   height: 22px;
-  line-height: 22px; /* 146.667% */
+  line-height: 22px; 
   letter-spacing: -0.43px;
+} */
+
+/* OAuth 콜백 스타일 */
+.oauth_callback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.loading_spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.message {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 0;
 }

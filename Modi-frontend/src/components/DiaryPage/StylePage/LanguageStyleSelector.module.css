@@ -1,0 +1,60 @@
+.LanguageStyleSelector_container {
+  padding: 20px;
+  border: 1px solid var(--color-gray2);
+  border-radius: 15px;
+  background-color: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.clicked {
+  background-color: #fbd7d5;
+}
+
+.topRow {
+  display: flex;
+  width: 100%;
+}
+
+/* 조건부 레이아웃 클래스 */
+.rowLayout {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.columnLayout {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.emotion {
+  font-family: var(--font-nanum-squareB);
+  font-weight: 600;
+  font-size: var(--font-subheadline);
+  line-height: 20px;
+  letter-spacing: -0.23px;
+}
+
+.content {
+  font-family: var(--font-nanum-square);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+}
+
+.previewButton {
+  font-family: var(--font-nanum-square);
+  background-color: var(--color-pink);
+  border-radius: 15px;
+  padding: 7px 12px;
+  font-size: var(--font-caption1);
+  cursor: pointer;
+}
+
+.previewButton:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}

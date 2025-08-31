@@ -1,4 +1,4 @@
-# Logs
+                                                                                        # Logs
 logs
 *.log
 npm-debug.log*
@@ -26,3 +26,6 @@ dist-ssr
 node_modules
 dist
 .vscode/*
+.env
+
+ssl/

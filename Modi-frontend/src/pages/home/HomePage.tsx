@@ -1,29 +1,134 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import style from "./HomePage.module.css";
 import Footer from "../../components/common/Footer";
+
+import PolaroidView from "./PolaroidView";
+import PhotoView from "./PhotoView";
+
 import Header from "../../components/common/Header";
+import { fetchMonthlyDiaries } from "../../apis/Diary/diaries.read";
+import EmptyDiaryView from "./EmptyDiaryView";
+import { useNavigate, useLocation } from "react-router-dom";
+import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
+import { useGeolocationControl } from "../../hooks/useGeolocationControl";
+import { useDongGeofence } from "../../hooks/useDongGeofence";
+import { useNotificationManager } from "../../contexts/NotificationManagerContext";
 
-// import HomeHeader from "./components/HomeHeader";
-// import PolaroidView from "./components/PolaroidView";
-// import PhotoView from "./components/PhotoView";
+// ✅ 추가 import
+import { loadUserInfo, MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 
-const HomePage = () => {
+// URL에서 code 파라미터 추출 함수
+const getCodeFromURL = (): string | null => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get("code");
+};
+
+export default function HomePage() {
+  const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [loading, setLoading] = useState(true);
+  const [hasMonthData, setHasMonthData] = useState<boolean | null>(null); // 현재 달에 일기가 하나라도 있는지
+  const isTokenRequesting = useRef(false); // 토큰 요청 중복 방지
+
+  // Geolocation 제어
+  useGeolocationControl();
+
+  // 지오펜스 및 알림 관리
+  useDongGeofence();
+  const { isEnabled, toggleNotifications } = useNotificationManager();
+
+  // code 파라미터가 있으면 토큰 요청 처리 (중복 방지)
+  useEffect(() => {
+    const code = getCodeFromURL();
+    if (code && !isTokenRequesting.current) {
+      isTokenRequesting.current = true;
+
+      handleTokenRequest(code)
+        .then(() => {
+          console.log("✅ 토큰 요청 완료");
+        })
+        .catch((error) => {
+          console.error("❌ 토큰 요청 실패:", error);
+          navigate("/login");
+        })
+        .finally(() => {
+          isTokenRequesting.current = false;
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, newUrl);
+        });
+    }
+  }, [location]);
+
+  // ✅ 사용자 정보 불러와서 nickname, character만 저장
+  useEffect(() => {
+    (async () => {
+      try {
+        const user: MeResponse = await loadUserInfo();
+
+        // nickname, character만 따로 저장
+        localStorage.setItem("nickname", user.nickname ?? "");
+        localStorage.setItem("character", user.character ?? "");
+
+        console.log("✅ 사용자 정보 저장 완료:", user.nickname, user.character);
+      } catch (err) {
+        console.error("❌ 사용자 정보 불러오기 실패:", err);
+      }
+    })();
+  }, []);
+
+  // 월별 일기 조회
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const list = await fetchMonthlyDiaries(year, month);
+        setHasMonthData(list.length > 0);
+      } catch (e) {
+        console.error("월별 일기 조회 실패:", e);
+        setHasMonthData(false);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
   return (
     <div className={style.home_wrapper}>
       <div className={style.home_container}>
-        <Header />
-        {/* <HomeHeader viewType={viewType} onChangeView={setViewType} />
+        <Header
+          left="/images/logo/Modi.svg"
+          right="/icons/notification_X.svg"
+          RightClick={() => {
+            navigate("/notification");
+          }}
+        />
+
         <main className={style.mainContent}>
-          {viewType === "polaroid" ? (
-            <PolaroidView diary={todayDiary} />
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "50vh",
+              }}
+            >
+              불러오는 중...
+            </div>
+          ) : hasMonthData === false ? (
+            <EmptyDiaryView />
+          ) : viewType === "photo" ? (
+            <PhotoView onSwitchView={() => setViewType("polaroid")} />
           ) : (
-            <PhotoView diaries={monthDiaries} />
+            <PolaroidView onSwitchView={() => setViewType("photo")} />
           )}
-        </main> */}
-        <Footer />
+        </main>
+        <Footer showBalloon={hasMonthData === false} />
       </div>
     </div>
   );
-};
-
-export default HomePage;
+}

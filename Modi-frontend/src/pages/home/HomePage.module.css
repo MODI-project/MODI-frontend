@@ -2,14 +2,243 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .home_container {
-  width: 360px;
-  height: 100%;
+  display: flex;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 400px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url("/images/background/normal-bg.svg");
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.photoGrid {
+  position: relative;
+  top: -16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 25px;
+
+  max-height: 58vh;
+  overflow-y: auto;
+}
+
+.modalInner {
+  display: flex;
+  width: auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0px;
+  padding: 16px;
+  padding-top: 32px;
+  padding-bottom: 100px;
+  margin: 0 auto;
+
+  height: auto; /* 고정 높이 없애기 */
+  max-height: calc(100vh - 1000px); /* 핸들바 + footer 높이를 뺀 값 */
+}
+
+.modalTitle {
+  align-self: stretch;
+  color: #2c2c2c;
+  font-feature-settings: "liga" off, "clig" off;
+
+  font-family: "NanumSquareRoundBold", "NanumSquareRound", sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 22px;
+  letter-spacing: -0.43px;
+}
+
+.footerWrapper {
+  padding: 0px;
+  position: fixed;
+  bottom: 0px;
+}
+
+.emotionTab {
+  position: relative;
+  top: -15px;
+  left: 16px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  margin-right: 16px;
+}
+
+.content {
+  flex: 1 0 auto;
+  padding-top: 190px;
+  width: 100%;
+  max-width: 400px; /* 최대 크기는 모바일 기준 */
+  height: auto; /* 내용물에 맞게 */
+  margin: 0 auto; /* 가운데 정렬 */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.carousel {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 0px;
+  overflow: hidden;
+  height: 350px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.carouselInner {
+  display: flex;
+  position: absolute;
+  top: 0px;
+
+  width: fit-content;
+  transition: transform 0.5s ease-in-out;
+}
+
+.left {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) rotate(-15deg) translateX(-190px)
+    translateY(-50px) scale(0.9);
+  transform-origin: bottom center;
+  z-index: 1;
+}
+
+/* 슬롯2: 중앙(현재) */
+.center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) rotate(0deg);
+  z-index: 2;
+}
+
+/* 슬롯3: 오른쪽 */
+.right {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) rotate(15deg) translateX(190px) translateY(-50px)
+    scale(0.9);
+  transform-origin: bottom center;
+  z-index: 1;
+}
+
+/* 빈 슬롯: 프레임 크기만큼 자리만 차지 */
+.emptySlot {
+  width: 328px; /* PolaroidFrame 너비에 맞춰주세요 */
+  height: 360px; /* PolaroidFrame 높이에 맞춰주세요 */
+}
+
+.staticInfo {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+.wrapper {
+  display: flex;
   flex-direction: column;
+  width: 400px;
   margin: 0 auto;
+  padding: 0 0px;
+}
+
+.polaroidCharacter {
+  margin-left: 16px;
+}
+
+.emptyState {
+  position: absolute;
+  width: auto;
+  height: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 330px;
+}
+
+.emptyWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.bubbleImg {
+  display: flex;
+  width: 296px;
+  height: 93px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 1000;
+}
+
+.emptycharacter {
+  display: flex;
+}
+
+.character {
+  position: relative;
+  bottom: 150px;
+  margin-left: 0px;
+}
+
+.characterBgContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.characterBgIcon {
+  position: absolute;
+  width: 100%;
+  height: 67px;
+}
+
+.bg1 {
+  top: -140px;
+  right: 110px;
+}
+
+.bg2 {
+  left: 190px;
+}
+
+.bg3 {
+  top: 290px;
+  right: 190px;
 }

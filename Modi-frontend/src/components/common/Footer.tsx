@@ -1,13 +1,29 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import style from "./Footer.module.css";
 import FooterIcon from "./instance/footer";
+import { useDiaryDraft } from "../../hooks/useDiaryDraft";
 
-const Footer = () => {
+interface FooterProps {
+  showBalloon?: boolean;
+}
+
+const Footer = ({ showBalloon = false }: FooterProps) => {
   const navigator = useNavigate();
   const location = useLocation();
+  const { resetDraft } = useDiaryDraft();
 
   return (
     <div className={style.footer_wrapper}>
+      {showBalloon && (
+        <div className={style.bubbleWrapper}>
+          <img
+            src={`/images/nodiary_home/Union.svg`}
+            alt="말풍선"
+            className={style.bubbleImage}
+          ></img>
+          <div className={style.bubble}>일기 기록하기</div>
+        </div>
+      )}
       <div className={style.footer_container}>
         {Object.values(FooterIcon).map((icon, index) => {
           const isCurrent = location.pathname.includes(
@@ -16,6 +32,7 @@ const Footer = () => {
           const iconSrc = isCurrent
             ? `/icons/clicked_${icon}.svg`
             : `/icons/${icon}.svg`;
+
           return (
             <img
               className={style.footer_button}
@@ -23,7 +40,12 @@ const Footer = () => {
               src={iconSrc}
               alt={icon}
               onClick={() => {
-                navigator(`/${icon === "add" ? "diary" : icon}`);
+                if (icon === "add") {
+                  resetDraft();
+                  navigator("/emotion");
+                } else {
+                  navigator(`/${icon}`);
+                }
               }}
             />
           );

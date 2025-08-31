@@ -1,109 +1,74 @@
-.RecordDetailPage {
-  position: relative;
+.RecordDetailPage_wrapper {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  width: 360px;
-  height: 800px;
-  background-image: url("/images/background.svg");
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
-
-.TopBar {
-  /* 헤더 나중에 추가하면 해당 css는 수정 필요 */
-  position: absolute;
-  top: 0;
+.RecordDetailPage {
+  width: 100vw;
+  height: 100vh;
+  max-width: 400px;
+  flex-direction: column;
+  background-image: url("/images/background/normal-bg.svg");
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
   box-sizing: border-box;
-  width: 360px;
-  height: 140px;
-  padding-top: 49px;
-  color: #2c2c2c;
-  text-align: center;
-  font-feature-settings: "liga" off, "clig" off;
-  /* headline */
-  font-family: "NanumSquareRoundOTF", sans-serif;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 22px; /* 137.5% */
-  letter-spacing: -0.43px;
+}
+.page_detail_container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 400px;
+  max-height: auto;
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
 }
 
 .btn_container {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  top: 140px;
-  right: 32px;
-  width: 184px;
-  height: 39px;
-}
-
-.btn {
+  padding-top: 150px;
+  padding-right: 16px;
   display: flex;
-  width: 40px;
-  height: 39px;
-  padding: 6px;
-  justify-content: center;
-  align-items: center;
-  gap: 11px;
-  border-radius: 20px;
-  border: 1px solid #cbcbc5;
-  cursor: pointer;
-  outline: none;
-  background: #fbfbfb;
+  justify-content: end;
+  gap: 8px;
 }
 
 .frame_container {
-  position: absolute;
-  top: 199px;
-  right: 50px;
-  border: none;
-  background: none;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  padding-top: 48px;
 }
 
 .message_container {
   position: absolute;
+  bottom: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  top: 549px;
-  right: 55px;
-  width: 250px;
+  width: 297px;
   height: 40px;
   padding: 16px;
   border-radius: 15px;
-  border: 1px solid #cbcbc5;
-  background: #fbf9f3;
+  border: 1px solid var(--gray2, #cbcbc5);
+  background: var(--color1, #fbfbfb);
+  /* shadow */
+  box-shadow: -1px 1px 2px 0 rgba(0, 0, 0, 0.25);
 }
 
 .message_text {
-  color: #2c2c2c;
+  color: var(--gray5, #2c2c2c);
   font-feature-settings: "liga" off, "clig" off;
+
   /* Caption1 */
-  font-family: "NanumSquareRound", sans-serif;
+  font-family: var(--font-nanum-square);
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
   line-height: 16px; /* 133.333% */
-}
-
-.BottomBar {
-  position: absolute;
-  bottom: 0;
-  display: flex;
-  box-sizing: border-box;
-  width: 360px;
-  height: 104px;
-  padding: 21px 30px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 9px;
-  flex-shrink: 0;
-
-  border-radius: 13.74px 13.74px 0px 0px;
-  border-top: 1px solid #cbcbc5;
-  background: #fbf9f3;
 }

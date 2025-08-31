@@ -1,0 +1,22 @@
+.wrapper {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  white-space: nowrap;
+}
+
+/*WebKit 브라우저 전용*/
+.wrapper::-webkit-scrollbar {
+  height: 4px;
+}
+.wrapper::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+.wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}

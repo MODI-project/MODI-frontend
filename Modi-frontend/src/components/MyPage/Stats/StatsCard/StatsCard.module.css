@@ -1,0 +1,29 @@
+.card {
+  border-radius: 15px;
+  border: 1px solid var(--gray2, #cbcbc5);
+  background: var(--color2, #fbf9f3);
+  display: flex;
+  padding: 18px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  position: relative;
+  right: 10px;
+  width: 290px;
+
+  flex-shrink: 0;
+}
+.title {
+  color: var(--gray5, #2c2c2c);
+  font-feature-settings: "liga" off, "clig" off;
+
+  /* sudheadline */
+  font-family: "NanumSquareRound";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: -0.23px;
+  align-self: stretch;
+}

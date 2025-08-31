@@ -1,0 +1,7 @@
+.LanguageStyle_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+  margin-bottom: 125px;
+}

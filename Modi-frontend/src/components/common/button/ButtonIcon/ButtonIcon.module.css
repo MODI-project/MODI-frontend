@@ -1,14 +1,35 @@
 .container {
+  display: flex;
   width: 40px;
-  height: 40px;
+  height: 39px;
+
+  padding: 6px;
+  justify-content: center;
+  align-items: center;
   flex-shrink: 0;
-  border-radius: 50%;
-  background-color: #eeedeb;
-  border: 1px solid #cbcbc5;
+  border-radius: 20px;
+  border: 1px solid var(--gray2, #cbcbc5);
+  background: var(--color1, #fbfbfb);
 }
 
 .icon {
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+.edit_icon {
   width: 21.818px;
   height: 21.818px;
   flex-shrink: 0;
+}
+
+.edit_container {
+  width: 40px;
+  height: 40px;
+  padding: 7px;
+  flex-shrink: 0;
+  border-radius: 20px;
+  border: 1px solid var(--gray2, #cbcbc5);
+  background-color: var(--color1, #fbfbfb);
 }

@@ -10,7 +10,7 @@ export default function ButtonIcon({ onClick }: ButtonIconProps) {
       <img
         src="/icons/edit.svg"
         alt="수정하기 아이콘"
-        className={styles.icon}
+        className={styles.edit_icon}
       />
     </button>
   );

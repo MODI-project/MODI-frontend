@@ -1,10 +1,32 @@
+// vite.config.ts
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import svgr from "vite-plugin-svgr";
+import fs from "fs";
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [svgr({ exportAsDefault: true }), react()],
   server: {
     open: true,
+    https: {
+      key: fs.readFileSync("./ssl/key.pem"),
+      cert: fs.readFileSync("./ssl/cert.pem"),
+    },
+    proxy: {
+      "/api": {
+        target: "https://modidiary.store",
+        changeOrigin: true,
+        secure: false,
+        // CORS 우회를 위해 Origin 헤더 제거
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq) => {
+            proxyReq.removeHeader("origin");
+          });
+        },
+      },
+    },
+  },
+  define: {
+    global: "globalThis",
   },
 });

@@ -1,7 +1,8 @@
 .header_wrapper {
   position: absolute;
   top: 0;
-  width: 360px;
+  width: 100%;
+  max-width: 400px;
   box-sizing: border-box;
   height: 140px;
   background-color: #fbf9f3;
@@ -9,10 +10,35 @@
   padding: 48px 16px 38px 16px;
   box-sizing: border-box;
   background-color: transparent;
+
+  z-index: 2000;
 }
 
 .header_container {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  align-items: center;
+  position: relative;
+}
+.func {
+  font-family: var(--font-nanum-squareB);
+  font-weight: 600;
+  font-size: var(--font-headline);
+  line-height: 22px;
+  letter-spacing: -0.43px;
+  text-align: center;
+}
+
+.button {
+  cursor: pointer;
+}
+
+.left {
+  position: absolute;
+  left: 0px;
+}
+
+.right {
+  position: absolute;
+  right: 0px;
 }

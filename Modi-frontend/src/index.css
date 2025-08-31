@@ -23,14 +23,15 @@
   src: url("/fonts/MalgeunHyanggi.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "NanumSquareRoundBold";
+  src: url("/fonts/NanumSquareRoundB.ttf") format("truetype");
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -38,7 +39,8 @@
   -moz-osx-font-smoothing: grayscale;
 
   /* Font Families */
-  --font-nanum-square: "NanumSquareRoundBold", sans-serif;
+  --font-nanum-squareB: "NanumSquareRoundBold", sans-serif;
+  --font-nanum-square: "NanumSquareRound", sans-serif;
   --font-dm-sans: "DM Sans", sans-serif;
   --font-eujin: "Eujin", sans-serif;
   --font-leeseoyoon: "LeeSeoYoon", sans-serif;
@@ -48,12 +50,12 @@
 
   /* Font Sizes */
   --font-title: 20px;
-  --font-headline: 17px;
-  --font-subheadline: 15px;
-  --font-body: 15px;
+  --font-headline: 16px;
+  --font-subheadline: 14px;
+  --font-body: 16px;
   --font-caption1: 12px;
   --font-caption2: 11px;
-  --font-button: 17px;
+  --font-button: 14px;
 
   /*  Colors  */
   --color-color1: #fbfbfb;
@@ -77,13 +79,13 @@
   height: 100%;
 }
 
+*:focus-visible {
+  outline: none;
+}
+
 a {
   font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
 }
 
 body {
@@ -106,41 +108,27 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
+  color: black;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+.react-mobile-picker-scroll .wheel-container {
+  padding-top: 40px !important; /* 빈칸 높이 */
+  padding-bottom: 40px !important; /* 위아래 동일하게 */
+  margin-top: -40px !important; /* 위로 당겨서 원래 위치 맞추기 */
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* 2) 기존 그레이 그라데이션 마스크 제거 */
+.react-mobile-picker-scroll .wheel-container,
+.react-mobile-picker-scroll .wheel-mask {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  background-color: transparent !important;
 }
 
-@font-face {
-  font-family: "Ownglyph_ryurue-Rg";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/2405-2@1.0/Ownglyph_ryurue-Rg.woff2")
-    format("woff2");
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "NanumSquareRound";
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff")
-    format("woff");
-  font-style: normal;
+/* 3) 스크롤바 트랙 숨기기 */
+.react-mobile-picker-scroll ::-webkit-scrollbar {
+  display: none !important;
 }
