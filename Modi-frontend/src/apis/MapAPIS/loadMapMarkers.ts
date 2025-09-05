@@ -2,7 +2,7 @@ import axios from "axios";
 import type { MapMarkerResponse, ViewportParams } from "../../types/map-marker";
 
 // 환경변수에서 API URL 가져오기 (개발환경에서는 localhost 사용)
-const API_BASE_URL = "https://modidiary.store/api";
+const API_BASE_URL = "https://modi-server.store/api";
 
 export const loadMapMarkers = async (
   viewport: ViewportParams

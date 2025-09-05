@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { SignUpRequest, SignUpResponse } from "../../types/UserInfo";
 
-const API_BASE_URL = "https://modidiary.store/api";
+const API_BASE_URL = "https://modi-server.store/api";
 
 export const handleUserSignUp = async (
   nickname: string,

@@ -1,6 +1,6 @@
 import apiClient from "../apiClient";
 
-const API_BASE_URL = "https://modidiary.store/api";
+const API_BASE_URL = "https://modi-server.store/api";
 
 interface WithdrawResponse {
   message: string;

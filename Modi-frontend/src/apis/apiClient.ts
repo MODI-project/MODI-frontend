@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 
 const apiClient = axios.create({
-  baseURL: "https://modidiary.store/api",
+  baseURL: "https://modi-server.store/api",
   withCredentials: true,
   xsrfCookieName: "XSRF-TOKEN", // ✅ 서버 쿠키 이름
   xsrfHeaderName: "X-XSRF-TOKEN",

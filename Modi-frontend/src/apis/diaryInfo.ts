@@ -2,7 +2,7 @@ import { DiaryData } from "../components/common/frame/Frame";
 import axios from "axios";
 export type { DiaryData };
 
-const API_BASE_URL = "https://modidiary.store/api";
+const API_BASE_URL = "https://modi-server.store/api";
 
 // 실제 서버 API 응답 타입
 interface DiariesResponse {

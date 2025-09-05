@@ -15,7 +15,7 @@ export type FavoriteItem = {
   imageSrc: string; // 화면에서 쓸 최종 절대 URL
 };
 
-const ORIGIN = "https://modidiary.store";
+const ORIGIN = "https://modi-server.store";
 
 const toAbsoluteUrl = (u?: string) =>
   !u ? "" : u.startsWith("http") ? u : `${ORIGIN}${u}`;

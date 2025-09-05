@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://modidiary.store/api";
+const API_BASE_URL = "https://modi-server.store/api";
 
 // 토큰 요청 Request 타입
 interface TokenRequest {
