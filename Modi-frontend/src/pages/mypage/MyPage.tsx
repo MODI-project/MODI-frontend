@@ -26,7 +26,7 @@ const MyPage = () => {
 
   useEffect(() => {
     const userInfoLoading = async () => {
-      const userInfo = await useLoadUserInfo().userInfo();
+      const userInfo: MeResponse = await useLoadUserInfo().userInfo();
       setNickname(userInfo.nickname);
       setEmail(userInfo.email);
     };
