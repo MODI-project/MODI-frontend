@@ -7,7 +7,7 @@ import Footer from "../../components/common/Footer";
 import FavoriteView from "./FavoriteView";
 import StatsView from "./StatsView";
 import { useNavigate } from "react-router-dom";
-import { loadUserInfo } from "../../apis/UserAPIS/loadUserInfo";
+import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 import { useGeolocationControl } from "../../hooks/useGeolocationControl";
 
 const TAB_LABELS = ["즐겨찾기", "월간 일기"] as const;
@@ -15,9 +15,9 @@ type TabLabel = (typeof TAB_LABELS)[number];
 
 const MyPage = () => {
   const [selectedTab, setSelectedTab] = useState<TabLabel>("즐겨찾기");
-  const [nickname, setNickname] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
+  const [userInfo, setUserInfo] = useState<MeResponse | null>(null);
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   // Geolocation 제어
@@ -26,9 +26,8 @@ const MyPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const me = await loadUserInfo();
-        setNickname(me.nickname);
-        setEmail(me.email);
+        const me = await useLoadUserInfo().userInfo();
+        setUserInfo(me);
       } catch (err: any) {
         console.error("유저 정보 불러오기 실패:", err);
         if (err?.response?.status === 401) {
@@ -59,7 +58,10 @@ const MyPage = () => {
         />
         <div className={style.fixedHeader}>
           <div className={style.content}>
-            <ProfileCard nickname={nickname} email={email} />
+            <ProfileCard
+              nickname={userInfo?.nickname ?? ""}
+              email={userInfo?.email ?? ""}
+            />
           </div>
           <div className={style.tab_bar}>
             <TabBar selected={selectedTab} onSelect={setSelectedTab} />
