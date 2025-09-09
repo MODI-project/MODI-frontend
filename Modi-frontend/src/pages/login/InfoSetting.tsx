@@ -20,6 +20,7 @@ interface LocationState {
 }
 
 const InitialSetting = () => {
+  const { fetchUserInfo } = useLoadUserInfo();
   const { setCharacter } = useCharacter();
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,7 +38,7 @@ const InitialSetting = () => {
     const loadExistingUserInfo = async () => {
       if (from === "/mypage") {
         try {
-          const userInfo: MeResponse = await useLoadUserInfo().userInfo();
+          const userInfo: MeResponse = await fetchUserInfo();
           setUserInfo(userInfo);
           setSelectedCharacter(userInfo.character);
           setCharacter(userInfo.character);

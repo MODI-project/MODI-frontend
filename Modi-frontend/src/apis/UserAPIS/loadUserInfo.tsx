@@ -10,11 +10,11 @@ export interface MeResponse {
 function useLoadUserInfo() {
   const { api } = useApi();
 
-  const userInfo = () => {
+  const fetchUserInfo = () => {
     return api.get<MeResponse>("/members/me").then((response) => response.data);
   };
 
-  return { userInfo };
+  return { fetchUserInfo };
 }
 
 export default useLoadUserInfo;

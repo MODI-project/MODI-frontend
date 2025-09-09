@@ -22,6 +22,7 @@ const CharacterContext = createContext<Ctx>({
 export const CharacterProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
+  const { fetchUserInfo } = useLoadUserInfo();
   const [character, setCharacter] = useState<CharacterType>(() => {
     const init = (localStorage.getItem("character") as CharacterType) || "momo"; // ✅ 기본값 momo
     return init;
@@ -52,7 +53,7 @@ export const CharacterProvider: React.FC<React.PropsWithChildren> = ({
 
   const refreshFromServer = async () => {
     try {
-      const me: MeResponse = await useLoadUserInfo().userInfo();
+      const me: MeResponse = await fetchUserInfo();
       saveCharacter(me.character ?? "momo"); // ✅ 없으면 momo
       saveNickname(me.nickname);
     } catch (e) {

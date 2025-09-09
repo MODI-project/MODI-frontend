@@ -24,6 +24,7 @@ const getCodeFromURL = (): string | null => {
 };
 
 export default function HomePage() {
+  const { fetchUserInfo } = useLoadUserInfo();
   const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,7 +60,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const HomeLoading = async () => {
-      const userInfo: MeResponse = await useLoadUserInfo().userInfo();
+      const userInfo: MeResponse = await fetchUserInfo();
       setUserInfo(userInfo);
     };
     HomeLoading();
