@@ -7,13 +7,14 @@ import Footer from "../../components/common/Footer";
 import FavoriteView from "./FavoriteView";
 import StatsView from "./StatsView";
 import { useNavigate } from "react-router-dom";
-import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
+import useLoadUserInfo from "../../apis/UserAPIS/loadUserInfo";
 import { useGeolocationControl } from "../../hooks/useGeolocationControl";
 
 const TAB_LABELS = ["즐겨찾기", "월간 일기"] as const;
 type TabLabel = (typeof TAB_LABELS)[number];
 
 const MyPage = () => {
+  const { fetchUserInfo } = useLoadUserInfo();
   const [selectedTab, setSelectedTab] = useState<TabLabel>("즐겨찾기");
   const [nickname, setNickname] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -26,7 +27,7 @@ const MyPage = () => {
 
   useEffect(() => {
     const userInfoLoading = async () => {
-      const userInfo: MeResponse = await useLoadUserInfo().userInfo();
+      const userInfo = await fetchUserInfo();
       setNickname(userInfo.nickname);
       setEmail(userInfo.email);
     };

@@ -22,14 +22,15 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   created_at,
   onClick,
 }) => {
+  const { fetchUserInfo } = useLoadUserInfo();
   const [character, setCharacter] = useState<string>("momo");
   const [hasBeenRead, setHasBeenRead] = useState<boolean>(isRead);
 
   // 사용자 정보 로드
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const LoadUserInfo = async () => {
       try {
-        const userInfo: MeResponse = await useLoadUserInfo().userInfo();
+        const userInfo: MeResponse = await fetchUserInfo();
         setCharacter(userInfo.character);
       } catch (error) {
         console.error("사용자 정보 로드 실패:", error);
@@ -37,7 +38,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
       }
     };
 
-    fetchUserInfo();
+    LoadUserInfo();
   }, []);
 
   // emotion에 따른 이미지 경로 생성
