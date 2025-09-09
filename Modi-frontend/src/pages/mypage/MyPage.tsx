@@ -15,7 +15,8 @@ type TabLabel = (typeof TAB_LABELS)[number];
 
 const MyPage = () => {
   const [selectedTab, setSelectedTab] = useState<TabLabel>("즐겨찾기");
-  const [userInfo, setUserInfo] = useState<MeResponse | null>(null);
+  const [nickname, setNickname] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -24,21 +25,13 @@ const MyPage = () => {
   useGeolocationControl();
 
   useEffect(() => {
-    (async () => {
-      try {
-        const me: MeResponse = await useLoadUserInfo().userInfo();
-        setUserInfo(me);
-      } catch (err: any) {
-        console.error("유저 정보 불러오기 실패:", err);
-        if (err?.response?.status === 401) {
-          // 쿠키 만료/미로그인
-          navigate("/login", { replace: true });
-        }
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [navigate]);
+    const userInfoLoading = async () => {
+      const userInfo = await useLoadUserInfo().userInfo();
+      setNickname(userInfo.nickname);
+      setEmail(userInfo.email);
+    };
+    userInfoLoading();
+  }, []);
 
   if (loading) return <div className={style.skeleton}>로딩중...</div>;
 
@@ -58,10 +51,7 @@ const MyPage = () => {
         />
         <div className={style.fixedHeader}>
           <div className={style.content}>
-            <ProfileCard
-              nickname={userInfo?.nickname ?? ""}
-              email={userInfo?.email ?? ""}
-            />
+            <ProfileCard nickname={nickname} email={email} />
           </div>
           <div className={style.tab_bar}>
             <TabBar selected={selectedTab} onSelect={setSelectedTab} />
