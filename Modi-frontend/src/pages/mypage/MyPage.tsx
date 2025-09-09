@@ -26,7 +26,7 @@ const MyPage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const me = await useLoadUserInfo().userInfo();
+        const me: MeResponse = await useLoadUserInfo().userInfo();
         setUserInfo(me);
       } catch (err: any) {
         console.error("유저 정보 불러오기 실패:", err);
