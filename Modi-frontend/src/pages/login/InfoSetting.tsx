@@ -37,7 +37,7 @@ const InitialSetting = () => {
     const loadExistingUserInfo = async () => {
       if (from === "/mypage") {
         try {
-          const userInfo = await useLoadUserInfo().userInfo();
+          const userInfo: MeResponse = await useLoadUserInfo().userInfo();
           setUserInfo(userInfo);
           setSelectedCharacter(userInfo.character);
           setCharacter(userInfo.character);
