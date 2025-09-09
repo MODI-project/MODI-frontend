@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
-import { loadUserInfo } from "../apis/UserAPIS/loadUserInfo";
+import useLoadUserInfo, { MeResponse } from "../apis/UserAPIS/loadUserInfo";
 
 export type CharacterType = "momo" | "boro" | "lumi" | "zuni" | null;
 
@@ -52,7 +52,7 @@ export const CharacterProvider: React.FC<React.PropsWithChildren> = ({
 
   const refreshFromServer = async () => {
     try {
-      const me = await loadUserInfo();
+      const me: MeResponse = await useLoadUserInfo().userInfo();
       saveCharacter(me.character ?? "momo"); // ✅ 없으면 momo
       saveNickname(me.nickname);
     } catch (e) {

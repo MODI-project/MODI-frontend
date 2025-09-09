@@ -15,7 +15,7 @@ import { useDongGeofence } from "../../hooks/useDongGeofence";
 import { useNotificationManager } from "../../contexts/NotificationManagerContext";
 
 // ✅ 추가 import
-import { loadUserInfo, MeResponse } from "../../apis/UserAPIS/loadUserInfo";
+import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 
 // URL에서 code 파라미터 추출 함수
 const getCodeFromURL = (): string | null => {
@@ -30,7 +30,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [hasMonthData, setHasMonthData] = useState<boolean | null>(null); // 현재 달에 일기가 하나라도 있는지
   const isTokenRequesting = useRef(false); // 토큰 요청 중복 방지
-
+  const [userInfo, setUserInfo] = useState<MeResponse | null>(null);
   // Geolocation 제어
   useGeolocationControl();
 
@@ -45,11 +45,8 @@ export default function HomePage() {
       isTokenRequesting.current = true;
 
       handleTokenRequest(code)
-        .then(() => {
-          console.log("✅ 토큰 요청 완료");
-        })
+        .then(() => {})
         .catch((error) => {
-          console.error("❌ 토큰 요청 실패:", error);
           navigate("/login");
         })
         .finally(() => {
@@ -60,21 +57,12 @@ export default function HomePage() {
     }
   }, [location]);
 
-  // ✅ 사용자 정보 불러와서 nickname, character만 저장
   useEffect(() => {
-    (async () => {
-      try {
-        const user: MeResponse = await loadUserInfo();
-
-        // nickname, character만 따로 저장
-        localStorage.setItem("nickname", user.nickname ?? "");
-        localStorage.setItem("character", user.character ?? "");
-
-        console.log("✅ 사용자 정보 저장 완료:", user.nickname, user.character);
-      } catch (err) {
-        console.error("❌ 사용자 정보 불러오기 실패:", err);
-      }
-    })();
+    const HomeLoading = async () => {
+      const userInfo: MeResponse = await useLoadUserInfo().userInfo();
+      setUserInfo(userInfo);
+    };
+    HomeLoading();
   }, []);
 
   // 월별 일기 조회

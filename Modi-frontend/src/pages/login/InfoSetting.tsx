@@ -6,7 +6,7 @@ import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButto
 import { useCharacter } from "../../contexts/CharacterContext";
 import { handleUserSignUp } from "../../apis/UserAPIS/signUp";
 import { handleEditUserInfo } from "../../apis/UserAPIS/editUserInfo";
-import { loadUserInfo } from "../../apis/UserAPIS/loadUserInfo";
+import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
 
 // URL에서 code 파라미터 추출 함수
@@ -24,21 +24,24 @@ const InitialSetting = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as LocationState)?.from;
-
   // 백엔드에서 신규/기존 여부를 분기하므로 프론트에서는 별도 분기 없이 처리
+  const [userInfo, setUserInfo] = useState<MeResponse | null>(null);
   const [selectedCharacter, setSelectedCharacter] = useState<string>("");
   const [nickname, setNickname] = useState<string>("");
-  const [showPreview, setShowPreview] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [nicknameError, setNicknameError] = useState<string>("");
+  const completeBtnRef = useRef<HTMLButtonElement>(null);
 
   // 기존 사용자 정보 불러오기 (마이페이지에서 수정하는 경우)
   useEffect(() => {
     const loadExistingUserInfo = async () => {
       if (from === "/mypage") {
         try {
-          const userInfo = await loadUserInfo();
-          setNickname(userInfo.nickname);
+          const userInfo: MeResponse = await useLoadUserInfo().userInfo();
+          setUserInfo(userInfo);
           setSelectedCharacter(userInfo.character);
           setCharacter(userInfo.character);
+          setNickname(userInfo.nickname);
         } catch (error) {
           console.error("기존 사용자 정보 불러오기 실패:", error);
           // 실패해도 계속 진행 가능
@@ -48,10 +51,6 @@ const InitialSetting = () => {
 
     loadExistingUserInfo();
   }, [from, setCharacter]);
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [nicknameError, setNicknameError] = useState<string>("");
-  const completeBtnRef = useRef<HTMLButtonElement>(null);
 
   // 페이지 로드 시 code 파라미터 확인 및 토큰 요청 (기존 회원인 경우)
   useEffect(() => {
@@ -96,9 +95,7 @@ const InitialSetting = () => {
 
   const handleCharacterSelect = (character: string) => {
     setSelectedCharacter(character);
-    // setCharacter(character as any); // API 요청 방지를 위해 제거
 
-    // 완료 버튼을 enabled 상태로 만들고 포커스
     if (completeBtnRef.current) {
       completeBtnRef.current.focus();
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./NotificationItem.module.css";
-import { loadUserInfo } from "../../apis/UserAPIS/loadUserInfo";
+import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 
 interface NotificationItemProps {
   id: number;
@@ -29,7 +29,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const userInfo = await loadUserInfo();
+        const userInfo: MeResponse = await useLoadUserInfo().userInfo();
         setCharacter(userInfo.character);
       } catch (error) {
         console.error("사용자 정보 로드 실패:", error);
