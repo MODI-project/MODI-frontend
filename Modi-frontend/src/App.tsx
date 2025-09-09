@@ -6,25 +6,25 @@ import { FrameTemplateProvider } from "./contexts/FrameTemplate";
 import { GeolocationProvider } from "./contexts/GeolocationContext";
 import { AlertBusProvider } from "./contexts/AlertBusContext";
 import { NotificationManagerProvider } from "./contexts/NotificationManagerContext";
-import { BrowserRouter } from "react-router-dom";
+import { Routes } from "react-router-dom";
 
 function App() {
   return (
-    <BrowserRouter>
-      <CharacterProvider>
-        <DiaryDraftProvider>
-          <FrameTemplateProvider>
-            <AlertBusProvider>
-              <GeolocationProvider>
-                <NotificationManagerProvider>
+    <CharacterProvider>
+      <DiaryDraftProvider>
+        <FrameTemplateProvider>
+          <AlertBusProvider>
+            <GeolocationProvider>
+              <NotificationManagerProvider>
+                <Routes>
                   <Router />
-                </NotificationManagerProvider>
-              </GeolocationProvider>
-            </AlertBusProvider>
-          </FrameTemplateProvider>
-        </DiaryDraftProvider>
-      </CharacterProvider>
-    </BrowserRouter>
+                </Routes>
+              </NotificationManagerProvider>
+            </GeolocationProvider>
+          </AlertBusProvider>
+        </FrameTemplateProvider>
+      </DiaryDraftProvider>
+    </CharacterProvider>
   );
 }
 
