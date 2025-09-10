@@ -27,12 +27,18 @@ const MyPage = () => {
 
   useEffect(() => {
     const userInfoLoading = async () => {
-      const userInfo = await fetchUserInfo();
-      setNickname(userInfo.nickname);
-      setEmail(userInfo.email);
+      try {
+        const userInfo = await fetchUserInfo();
+        setNickname(userInfo.nickname);
+        setEmail(userInfo.email);
+      } catch (error) {
+        console.error("사용자 정보 로딩 실패:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     userInfoLoading();
-  }, []);
+  }, [fetchUserInfo]);
 
   if (loading) return <div className={style.skeleton}>로딩중...</div>;
 
