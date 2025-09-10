@@ -44,18 +44,18 @@ const MyPage = () => {
 
   return (
     <div className={style.mypage_wrapper}>
+      <Header
+        left="/icons/setting.svg"
+        middle="마이페이지"
+        right="/icons/notification_X.svg"
+        LeftClick={() => {
+          navigate("/setting");
+        }}
+        RightClick={() => {
+          navigate("/notification");
+        }}
+      />
       <div className={style.mypage_container}>
-        <Header
-          left="/icons/setting.svg"
-          middle="마이페이지"
-          right="/icons/notification_X.svg"
-          LeftClick={() => {
-            navigate("/setting");
-          }}
-          RightClick={() => {
-            navigate("/notification");
-          }}
-        />
         <div className={style.fixedHeader}>
           <div className={style.content}>
             <ProfileCard nickname={nickname} email={email} />
@@ -66,8 +66,8 @@ const MyPage = () => {
         </div>
 
         {selectedTab === "즐겨찾기" ? <FavoriteView /> : <StatsView />}
-        <Footer />
       </div>
+      <Footer />
     </div>
   );
 };
