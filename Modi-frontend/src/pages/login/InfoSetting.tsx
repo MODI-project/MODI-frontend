@@ -51,7 +51,7 @@ const InitialSetting = () => {
     };
 
     loadExistingUserInfo();
-  }, [from, setCharacter]);
+  }, []);
 
   // 페이지 로드 시 code 파라미터 확인 및 토큰 요청 (기존 회원인 경우)
   useEffect(() => {
