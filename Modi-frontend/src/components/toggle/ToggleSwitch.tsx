@@ -9,12 +9,29 @@ const characterColorMap: Record<string, string> = {
   zuni: "#93D1E0",
 };
 
-const ToggleSwitch = () => {
-  const [isOn, setIsOn] = useState(true); // 알림 켜져있는게 기본값
+interface ToggleSwitchProps {
+  isOn?: boolean;
+  onToggle?: () => void;
+}
+
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
+  isOn: externalIsOn,
+  onToggle,
+}) => {
+  const [internalIsOn, setInternalIsOn] = useState(true); // 내부 상태 (기본값)
   const { character } = useCharacter();
 
+  // 외부에서 isOn이 제공되면 사용, 아니면 내부 상태 사용
+  const isOn = externalIsOn !== undefined ? externalIsOn : internalIsOn;
+
   const handleToggle = () => {
-    setIsOn(!isOn);
+    if (onToggle) {
+      // 외부에서 onToggle이 제공되면 외부 함수 호출
+      onToggle();
+    } else {
+      // 내부 상태만 변경
+      setInternalIsOn(!internalIsOn);
+    }
   };
 
   const charColor = characterColorMap[character ?? "momo"];

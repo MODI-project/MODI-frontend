@@ -8,17 +8,14 @@ const LoginPage = () => {
 
   const handleGoogleLogin = () => {
     // 백엔드 API 호출하여 Google 로그인 페이지로 리다이렉트
-    const backendOAuthUrl = `https://modidiary.store/api/oauth2/authorize/google`;
+    const backendOAuthUrl = `https://modi-server.store/api/oauth2/authorize/google`;
 
     console.log("Google 로그인 URL:", backendOAuthUrl);
 
     // 외부 URL로 이동하므로 window.location.href 사용
     // React Router가 내부 라우트로 인식하지 않도록 전체 URL 사용
-    if (backendOAuthUrl.startsWith("http")) {
+    if (backendOAuthUrl.startsWith("https")) {
       window.location.href = backendOAuthUrl;
-    } else {
-      // 상대 경로인 경우 현재 도메인과 결합
-      window.location.href = `${window.location.origin}${backendOAuthUrl}`;
     }
   };
 

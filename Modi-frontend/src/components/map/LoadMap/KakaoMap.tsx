@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import MapSearchBar from "../SearchPlace/MapSearchBar";
-import Geolocation from "../setCurrentPosition/Geolocation";
+import Geolocation from "../UserPosition/Geolocation";
 
 interface KakaoMapProps {
   latitude: number;
@@ -9,6 +9,11 @@ interface KakaoMapProps {
   showSearchBar?: boolean;
   onPlaceSelect?: (place: any) => void;
   onMapReady?: (map: any) => void;
+  onCurrentPositionChange?: (position: {
+    lat: number;
+    lng: number;
+    address?: string;
+  }) => void;
 }
 
 const KakaoMap = ({
@@ -18,6 +23,7 @@ const KakaoMap = ({
   showSearchBar = true,
   onPlaceSelect,
   onMapReady,
+  onCurrentPositionChange,
 }: KakaoMapProps) => {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const [mapInstance, setMapInstance] = useState<any>(null);
@@ -29,27 +35,6 @@ const KakaoMap = ({
   }, [onMapReady]);
 
   useEffect(() => {
-    console.log("KakaoMap useEffect 실행");
-    console.log(
-      "window.kakao 확인:",
-      typeof window.kakao !== "undefined" ? "존재함" : "존재하지 않음"
-    );
-    console.log(
-      "mapRef.current 확인:",
-      mapRef.current ? "존재함" : "존재하지 않음"
-    );
-    console.log(
-      "mapRef.current 스타일:",
-      mapRef.current
-        ? {
-            width: mapRef.current.style.width,
-            height: mapRef.current.style.height,
-            display: mapRef.current.style.display,
-            visibility: mapRef.current.style.visibility,
-          }
-        : "null"
-    );
-
     if (!window.kakao) {
       console.error("window.kakao가 존재하지 않습니다.");
       return;
@@ -61,30 +46,22 @@ const KakaoMap = ({
     }
 
     try {
-      console.log("지도 생성 시작...");
-      console.log("위도:", latitude, "경도:", longitude, "레벨:", level);
-
       const center = new window.kakao.maps.LatLng(latitude, longitude);
       const options = {
         center,
         level,
       };
 
-      console.log("지도 옵션:", options);
-
+      // 지도 생성
       const map = new window.kakao.maps.Map(mapRef.current, options);
-      console.log("지도 생성 완료:", map);
 
       setMapInstance(map);
 
       // 부모 컴포넌트에 지도 인스턴스 전달
       if (onMapReadyRef.current) {
-        console.log("onMapReady 콜백 호출");
         onMapReadyRef.current(map);
       }
-    } catch (error) {
-      console.error("지도 생성 중 오류 발생:", error);
-    }
+    } catch (error) {}
   }, [latitude, longitude, level]);
 
   return (
@@ -117,7 +94,10 @@ const KakaoMap = ({
           <MapSearchBar map={mapInstance} onPlaceSelect={onPlaceSelect} />
         </div>
       )}
-      <Geolocation map={mapInstance} />
+      <Geolocation
+        map={mapInstance}
+        onCurrentPositionChange={onCurrentPositionChange}
+      />
     </div>
   );
 };

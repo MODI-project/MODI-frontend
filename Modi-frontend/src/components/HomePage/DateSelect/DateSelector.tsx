@@ -32,7 +32,6 @@ const DateSelector: React.FC<Props> = ({
   const ITEM_HEIGHT = 40;
   const VISIBLE = viewType === "polaroid" ? 3 : 2;
   const PICKER_HEIGHT = ITEM_HEIGHT * VISIBLE;
-  const pad = Math.floor(VISIBLE / 2);
 
   // 파싱
   const [year, setYear] = useState(initialDate.slice(0, 4));
@@ -41,12 +40,9 @@ const DateSelector: React.FC<Props> = ({
     viewType === "polaroid" ? initialDate.slice(8, 10) : ""
   );
 
-  console.log("[DS] render", { initialDate, year, month, day });
-
   const prevYMRef = useRef({ year, month });
 
   useEffect(() => {
-    console.log("[DS] initialDate effect", { initialDate, viewType });
     const parts = initialDate.split("-");
     setYear(parts[0]);
     setMonth(parts[1] ?? month);
@@ -86,7 +82,6 @@ const DateSelector: React.FC<Props> = ({
   );
 
   useEffect(() => {
-    console.log("[DS] days recalculated", { year, month, days });
     if (viewType !== "polaroid") return;
     if (days.length === 0) return;
     const changedYM =
@@ -104,7 +99,6 @@ const DateSelector: React.FC<Props> = ({
     }
     const date =
       viewType === "polaroid" ? `${year}-${month}-${day}` : `${year}-${month}`;
-    console.log("[DS] emit onChange", date);
     onChange(date);
   }, [year, month, day, viewType, onChange]);
 
@@ -114,9 +108,21 @@ const DateSelector: React.FC<Props> = ({
       : "#ccc";
 
   // 4) 화면에 표시할 문자열 배열
-  const yearOpts = years.map((y) => `${y}년`);
-  const monthOpts = months.map((m) => `${Number(m)}월`);
-  const dayOpts = days.map((d) => `${Number(d)}일`);
+  // helpers
+  const zws = "\u200B";
+  const uniquify = (arr: string[]) => arr.map((t, i) => t + zws.repeat(i + 1));
+
+  // 옵션 문자열
+  const yearOpts = useMemo(() => uniquify(years.map((y) => `${y}년`)), [years]);
+  const monthOpts = useMemo(
+    () => uniquify(months.map((m) => `${Number(m)}월`)),
+    [months]
+  );
+  const dayOpts = useMemo(
+    () => uniquify(days.map((d) => `${Number(d)}일`)),
+    [days]
+  );
+
   return (
     <div
       className={styles.picker}
@@ -132,7 +138,7 @@ const DateSelector: React.FC<Props> = ({
       <div className={styles.selectionOverlay} />
       <div className={styles.columnWrapper}>
         <WheelPicker
-          key="year"
+          key={`year-${years.join("")}`}
           scrollerId="year-picker"
           data={yearOpts}
           animation="wheel"
@@ -141,29 +147,21 @@ const DateSelector: React.FC<Props> = ({
           fontSize={14}
           defaultSelection={years.indexOf(year)}
           updateSelection={(idx: number) => {
-            console.log("[DS] year updateSelection", {
-              idx,
-              value: years[idx],
-            });
             setYear(years[idx]);
           }}
         />
 
         {/* Month Picker */}
         <WheelPicker
-          key={`month-${year}`}
+          key={`month-${year}-${months.join("")}`}
           scrollerId="month-picker"
           data={monthOpts}
           animation="wheel"
           height={PICKER_HEIGHT}
           parentHeight={PICKER_HEIGHT}
           fontSize={14}
-          defaultSelection={months.indexOf(month)}
+          defaultSelection={Math.max(0, months.indexOf(month))}
           updateSelection={(idx: number) => {
-            console.log("[DS] month updateSelection", {
-              idx,
-              value: months[idx],
-            });
             setMonth(months[idx].padStart(2, "0"));
           }}
         />
@@ -171,19 +169,15 @@ const DateSelector: React.FC<Props> = ({
         {/* Day Picker (폴라로이드 모드) */}
         {viewType === "polaroid" && (
           <WheelPicker
-            key={`day-${year}-${month}`}
+            key={`day-${year}-${month}-${days.join("")}`}
             scrollerId="day-picker"
             data={dayOpts}
             animation="wheel"
             height={PICKER_HEIGHT}
             parentHeight={PICKER_HEIGHT}
             fontSize={14}
-            defaultSelection={days.indexOf(day)}
+            defaultSelection={Math.max(0, days.indexOf(day))}
             updateSelection={(idx: number) => {
-              console.log("[DS] day updateSelection", {
-                idx,
-                value: days[idx],
-              });
               setDay(days[idx].padStart(2, "0"));
             }}
           />

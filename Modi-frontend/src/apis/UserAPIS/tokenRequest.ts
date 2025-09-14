@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://modidiary.store/api";
+const API_BASE_URL = "https://modi-server.store/api";
 
 // 토큰 요청 Request 타입
 interface TokenRequest {
@@ -12,31 +12,50 @@ export const requestToken = async (code: string): Promise<void> => {
   console.log("=== 토큰 요청 API 호출 시작 ===");
   console.log("API URL:", `${API_BASE_URL}/oauth2/set-cookie`);
   console.log("요청 데이터:", { code });
+  console.log("현재 쿠키 상태:", document.cookie);
 
   try {
     const response = await axios.post(
       `${API_BASE_URL}/oauth2/set-cookie`,
       { code } as TokenRequest,
       {
+        withCredentials: true, // HttpOnly 쿠키 자동 전송
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true, // HttpOnly 쿠키 자동 전송
       }
     );
 
-    console.log("✅ 토큰 요청 성공:", response.status);
-    console.log("응답 헤더:", response.headers);
-
-    // Set-Cookie 헤더 확인
+    // Set-Cookie 헤더 상세 분석
     const setCookieHeader = response.headers["set-cookie"];
     if (setCookieHeader) {
-      console.log("Set-Cookie 헤더:", setCookieHeader);
+      // access_token 쿠키 분석
+      const accessTokenCookie = setCookieHeader.find((cookie: string) =>
+        cookie.includes("access_token")
+      );
+
+      if (accessTokenCookie) {
+        // 토큰 값이 비어있는지 확인
+        if (accessTokenCookie.includes("access_token=")) {
+          const tokenValue = accessTokenCookie
+            .split("access_token=")[1]
+            ?.split(";")[0];
+          if (!tokenValue || tokenValue === "") {
+            console.warn("access_token 값이 비어있습니다!");
+            console.warn("백엔드에서 토큰 생성에 실패했을 가능성이 높습니다.");
+          } else {
+          }
+        }
+      } else {
+        console.warn("access_token 쿠키를 찾을 수 없습니다!");
+      }
+    } else {
+      console.warn("Set-Cookie 헤더가 없습니다!");
     }
 
     return response.data;
   } catch (error: any) {
-    console.error("❌ 토큰 요청 실패 - 상세 에러 정보:");
+    console.error("토큰 요청 실패 - 상세 에러 정보:");
     console.error("에러 타입:", error.constructor.name);
     console.error("에러 메시지:", error.message);
 
@@ -61,9 +80,9 @@ export const handleTokenRequest = async (code: string): Promise<void> => {
     console.log("code:", code);
 
     await requestToken(code);
-    console.log("✅ 토큰 요청 완료 - HttpOnly 쿠키로 access_token 설정됨");
+    console.log("토큰 요청 완료 - HttpOnly 쿠키로 access_token 설정됨");
   } catch (error: any) {
-    console.error("❌ handleTokenRequest 실패:");
+    console.error("handleTokenRequest 실패:");
     console.error("에러 타입:", error.constructor.name);
     console.error("에러 메시지:", error.message);
 

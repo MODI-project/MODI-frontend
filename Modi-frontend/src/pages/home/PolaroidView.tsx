@@ -1,17 +1,17 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import pageStyles from "./HomePage.module.css";
 import HomeHeader from "../../components/HomePage/HomeHeader/HomeHeader";
-import DateSelector, {
-  DiaryItem,
-} from "../../components/HomePage/DateSelect/DateSelector";
+import DateSelector from "../../components/HomePage/DateSelect/DateSelector";
 import ButtonBar from "../../components/common/button/ButtonBar/PrimaryButton";
 import DatePickerBottomSheet from "../../components/common/DatePickerBottomSheet";
 import PolaroidFrame from "../../components/HomePage/Diary/Polaroid/PolaroidFrame";
 import EmotionCharacter from "../../components/HomePage/Diary/Polaroid/EmotionCharacter";
 import EmotionTagList from "../../components/HomePage/Diary/Polaroid/EmotionTagList";
 import { useCharacter } from "../../contexts/CharacterContext";
-// 목업 데이터 사용 (아래 3개)
-import { mockFetchDiaries } from "../../apis/diaryInfo";
+import {
+  fetchDailyGroups,
+  type DailyGroup,
+} from "../../apis/Diary/diaries.read";
 import { DiaryData } from "../../components/common/frame/Frame";
 import { Emotion } from "../../data/diaries";
 
@@ -21,40 +21,80 @@ interface PolaroidViewProps {
 
 export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  // 목업 데이터 사용 (아래 2개)
-  const [mockDiaries, setMockDiaries] = useState<DiaryData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const hasOpened = useRef(false);
   const { character } = useCharacter();
+  const [groups, setGroups] = useState<DailyGroup[]>([]);
+  const [loading, setLoading] = useState(true);
+  // 기록이 존재하는 월 목록 및 월별 캐시(폴라로이드 전용)
+  const [availableMonths, setAvailableMonths] = useState<string[]>([]);
+  const groupsCache = useRef<Map<string, DailyGroup[]>>(new Map());
+  const [pickerItems, setPickerItems] = useState<{ date: string }[]>([]);
+
+  // 현재 조회 중인 월(YYYY-MM)
+  const [viewYM, setViewYM] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
+  });
+
+  // YYYY-MM 문자열에 개월수 더하기/빼기
+  const addMonths = (ym: string, delta: number) => {
+    const [y, m] = ym.split("-").map(Number);
+    const d = new Date(y, m - 1 + delta, 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  };
 
   const allDates = useMemo(() => {
-    return mockDiaries
-      .map((d) => {
-        const [y, m, dd] = d.date.split("-");
-        return `${y}-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`;
-      })
+    // groups = [{ date:"YYYY-MM-DD", diaries:[...] }, ... ]
+    return [...groups]
+      .map((g) => g.date.slice(0, 10))
       .sort((a, b) => a.localeCompare(b));
-  }, [mockDiaries]);
+  }, [groups]);
 
-  const dateItems = useMemo(
-    () => allDates.map((d) => ({ date: d })),
-    [allDates]
-  );
-
-  const diaryMap = useMemo(() => {
-    return mockDiaries.reduce<Record<string, DiaryData>>((acc, d) => {
-      const [y, m, dd] = d.date.split("-");
-      const key = `${y}-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`;
-      acc[key] = d;
-      return acc;
-    }, {});
-  }, [mockDiaries]);
+  // DateSelector에 공급할 아이템(여러 월의 일자 포함)
+  const dateItems = pickerItems;
+  const diaryMap: Record<string, DiaryData> = useMemo(() => {
+    const acc: Record<string, DiaryData> = {};
+    for (const g of groups) {
+      const dateKey = g.date.slice(0, 10);
+      const sorted = [...(g.diaries ?? [])].sort((a, b) => {
+        const ta = (a as any).created_at ?? "";
+        const tb = (b as any).created_at ?? "";
+        const byTime = tb.localeCompare(ta);
+        if (byTime) return byTime;
+        return (b.id ?? 0) - (a.id ?? 0);
+      });
+      const top = sorted[0];
+      if (top) acc[dateKey] = top; // 단일 DiaryData 저장
+    }
+    return acc;
+  }, [groups]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const viewDate = allDates[currentIndex] || allDates[0] || "";
-  const [tempDate, setTempDate] = useState<string>(viewDate);
 
   const prevOpen = useRef(false);
+
+  const diariesByDate = useMemo(() => {
+    const m: Record<string, DiaryData[]> = {};
+    for (const g of groups) {
+      const k = g.date.slice(0, 10);
+      m[k] = [...(g.diaries ?? [])].sort((a, b) => {
+        const ta = (a as any).created_at ?? "";
+        const tb = (b as any).created_at ?? "";
+        const byTime = tb.localeCompare(ta);
+        return byTime || (b.id ?? 0) - (a.id ?? 0);
+      });
+    }
+    return m;
+  }, [groups]);
+
+  const [subIndex, setSubIndex] = useState(0);
+  const viewDate = allDates[currentIndex] || allDates[0] || "";
+  const [tempDate, setTempDate] = useState<string>(viewDate);
+  const currList = diariesByDate[viewDate] ?? [];
+  const currentDiary: DiaryData | null = currList[subIndex] ?? null;
+
   useEffect(() => {
     if (isSheetOpen && !prevOpen.current) {
       setTempDate(viewDate);
@@ -62,53 +102,85 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     prevOpen.current = isSheetOpen;
   }, [isSheetOpen, viewDate]);
 
-  const currentIdx = allDates.length > 0 ? allDates.indexOf(viewDate) : -1;
-
-  // 보여줄 날짜: 가장 최근이 오른쪽 (목업 데이터 사용! allDiaries 대신 mockDiaries만 바꾼 것!)
-  const prevKey = allDates[currentIdx - 1];
-  const nextKey = allDates[currentIdx + 1];
-  const slots: (DiaryData | null)[] = [
-    prevKey ? diaryMap[prevKey] ?? null : null,
-    diaryMap[viewDate] ?? null,
-    nextKey ? diaryMap[nextKey] ?? null : null,
-  ];
-
-  // 목업 데이터 로드
   useEffect(() => {
-    const loadMockData = async () => {
+    const idx = allDates.indexOf(tempDate);
+    if (idx !== -1 && idx !== currentIndex) {
+      setCurrentIndex(idx);
+      setSubIndex(0);
+    }
+  }, [tempDate, allDates]);
+
+  const indices = [currentIndex - 1, currentIndex, currentIndex + 1];
+  // 선택된 월(viewYM)의 일별 목록 로드
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
       try {
-        console.log("목업 데이터 로드 시작");
-        const data = await mockFetchDiaries();
-        console.log("목업 데이터 로드 완료:", data);
-        setMockDiaries(data);
-        // 데이터 로드 후 최신 일기가 가운데에 오도록 인덱스 설정
-        setCurrentIndex(Math.max(0, data.length - 1));
-        console.log("currentIndex 설정:", Math.max(0, data.length - 1));
+        const [y, m] = viewYM.split("-").map(Number);
+        const data = await fetchDailyGroups(y, m);
+        const sorted = [...data].sort((a, b) => a.date.localeCompare(b.date));
+        setGroups(sorted);
+        setCurrentIndex(sorted.length ? sorted.length - 1 : 0); // 최신 날짜로 포커스
+
+        // 캐시 및 사용 가능한 월 목록 업데이트
+        groupsCache.current.set(viewYM, sorted);
+        if (sorted.length > 0) {
+          setAvailableMonths((prev) => {
+            const s = new Set(prev);
+            s.add(viewYM);
+            return Array.from(s).sort();
+          });
+        }
+
+        // 피커 아이템 재구성
+        const monthsForPicker = new Set([viewYM, ...availableMonths]);
+        const items: string[] = [];
+        monthsForPicker.forEach((ym) => {
+          const gs = groupsCache.current.get(ym) ?? [];
+          gs.forEach((g) => items.push(g.date.slice(0, 10)));
+        });
+        items.sort((a, b) => a.localeCompare(b));
+        setPickerItems(items.map((d) => ({ date: d })));
       } catch (error) {
-        console.error("목업 데이터 로드 실패:", error);
+        setGroups([]);
+        setCurrentIndex(0);
       } finally {
         setLoading(false);
       }
-    };
-    loadMockData();
-  }, []);
+    })();
+  }, [viewYM]);
 
-  const currentDiary = diaryMap[viewDate] ?? mockDiaries[0];
+  const lastSub = Math.max(0, currList.length - 1);
+  const atFirst = currentIndex === 0 && subIndex === 0;
+  const atLast = currentIndex === allDates.length - 1 && subIndex === lastSub;
 
   const handlePrev = () => {
+    if (atFirst) return; // 더 이상 못 가면 멈춤
+    if (subIndex > 0) {
+      setSubIndex((i) => i - 1);
+      return;
+    }
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+      const prevDate = allDates[currentIndex - 1];
+      const prevList = diariesByDate[prevDate] ?? [];
+      setCurrentIndex((i) => i - 1);
+      setSubIndex(Math.max(0, prevList.length - 1));
     }
   };
 
   const handleNext = () => {
+    if (atLast) return; // 더 이상 못 가면 멈춤
+    if (subIndex < currList.length - 1) {
+      setSubIndex((i) => i + 1);
+      return;
+    }
     if (currentIndex < allDates.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      setCurrentIndex((i) => i + 1);
+      setSubIndex(0);
     }
   };
 
   const handleChange = (newDate: string) => {
-    console.log("[Parent] onChange from DateSelector:", newDate);
     setTempDate(newDate);
   };
 
@@ -128,22 +200,64 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     touchEndX.current = null;
   };
 
-  const handleSwipeGesture = () => {
-    if (touchStartX.current === null || touchEndX.current === null) return;
-    const distance = touchStartX.current - touchEndX.current;
-
-    if (distance > 50) {
-      // 왼쪽으로 스와이프 → 다음
-      handleNext();
-    } else if (distance < -50) {
-      // 오른쪽으로 스와이프 → 이전
-      handlePrev();
+  useEffect(() => {
+    const idx = allDates.indexOf(tempDate);
+    if (idx !== -1 && idx !== currentIndex) {
+      setCurrentIndex(idx);
+      setSubIndex(0);
     }
+  }, [tempDate, allDates]);
 
-    // 초기화
-    touchStartX.current = null;
-    touchEndX.current = null;
-  };
+  // 모달이 열릴 때 주변 월(예: -6~+6개월) 프로빙하여 기록 있는 월/일을 피커에 반영
+  useEffect(() => {
+    if (!isSheetOpen) return;
+    (async () => {
+      const monthsToCheck: string[] = [];
+      for (let d = -6; d <= 6; d++) {
+        monthsToCheck.push(addMonths(viewYM, d));
+      }
+
+      const tasks: Promise<void>[] = [];
+      monthsToCheck.forEach((ym) => {
+        // 이미 캐시되어 있으면 스킵
+        if (groupsCache.current.has(ym)) return;
+        tasks.push(
+          (async () => {
+            try {
+              const [y, m] = ym.split("-").map(Number);
+              const data = await fetchDailyGroups(y, m);
+              groupsCache.current.set(ym, data);
+              if (data.length > 0) {
+                setAvailableMonths((prev) => {
+                  const s = new Set(prev);
+                  s.add(ym);
+                  return Array.from(s).sort();
+                });
+              }
+            } catch {
+              /* ignore */
+            }
+          })()
+        );
+      });
+
+      await Promise.allSettled(tasks);
+
+      // 피커 아이템 재구성
+      const monthsForPicker = new Set([
+        viewYM,
+        ...availableMonths,
+        ...monthsToCheck,
+      ]);
+      const items: string[] = [];
+      monthsForPicker.forEach((ym) => {
+        const gs = groupsCache.current.get(ym) ?? [];
+        gs.forEach((g) => items.push(g.date.slice(0, 10)));
+      });
+      items.sort((a, b) => a.localeCompare(b));
+      setPickerItems(items.map((d) => ({ date: d })));
+    })();
+  }, [isSheetOpen]);
 
   if (loading) {
     return (
@@ -186,21 +300,36 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
             handleTouchEnd(e);
           }}
         >
-          <div
-            className={pageStyles.carouselInner}
-            style={{
-              transform: `translateX(-${currentIndex * 100}%)`,
-            }}
-          >
-            {slots.map((d, i) => (
-              <div key={i} className={pageStyles[`slot${i + 1}`]}>
-                {d ? (
-                  <PolaroidFrame diaryData={d} diaryId={d.id} />
-                ) : (
-                  <div className={pageStyles.emptySlot} />
-                )}
-              </div>
-            ))}
+          <div className={pageStyles.carouselInner}>
+            {indices.map((i, idx) => {
+              let cls = pageStyles.hidden;
+              if (idx === 0) cls = pageStyles.left;
+              else if (idx === 1) cls = pageStyles.center;
+              else if (idx === 2) cls = pageStyles.right;
+
+              let diary: DiaryData | null = null;
+              if (i === currentIndex) {
+                // 현재 날짜: 여러 개 중 subIndex로 선택
+                diary = diariesByDate[allDates[i]]?.[subIndex] ?? null;
+              } else {
+                // 이전/다음 날짜: 대표 일기(첫 번째)
+                diary = diariesByDate[allDates[i]]?.[0] ?? null;
+              }
+
+              return (
+                <div key={i} className={cls}>
+                  {diary ? (
+                    <PolaroidFrame
+                      key={diary.id}
+                      diaryData={diary}
+                      diaryId={diary.id}
+                    />
+                  ) : (
+                    <div className={pageStyles.emptySlot} />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
         {/* ← 이 아래는 "항상 현재 일기" 것만 고정으로 보여줍니다 */}
@@ -237,10 +366,9 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
             location="modal"
             label="확인"
             onClick={() => {
-              console.log("[Parent] confirm click", { tempDate });
-              const newIdx = allDates.indexOf(tempDate);
-              console.log("[Parent] resolve index", { newIdx });
-              if (newIdx !== -1) setCurrentIndex(newIdx);
+              // 선택된 날짜의 월로 전환하여 해당 월 데이터를 로드
+              const ym = tempDate.slice(0, 7);
+              setViewYM(ym);
               setIsSheetOpen(false);
             }}
             size="primary"

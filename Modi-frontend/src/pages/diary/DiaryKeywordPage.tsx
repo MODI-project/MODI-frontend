@@ -24,7 +24,7 @@ const DiaryKeywordPage = () => {
         <Header
           left="/icons/back.svg"
           LeftClick={() => navigate(-1)}
-          middle="기록 작성하기"
+          middle="기록하기"
           right="/icons/X.svg"
           RightClick={() => setIsPopupOpen(true)}
         />
@@ -57,17 +57,23 @@ const DiaryKeywordPage = () => {
       {/* 팝업 */}
       {isPopupOpen && (
         <Popup
-          title={["작성한 일기가 저장되지 않아요!", "화면을 닫을까요?"]}
-          buttons={[
-            {
-              label: "아니오",
-              onClick: () => setIsPopupOpen(false),
-            },
-            {
-              label: "예",
-              onClick: handlePopupConfirm,
-            },
+          title={[
+            draft.mode === "edit"
+              ? "수정된 기록이 저장되지 않아요!"
+              : "작성된 기록이 저장되지 않아요!",
+            "정말 종료하시겠어요?",
           ]}
+          buttons={
+            draft.mode === "edit"
+              ? [
+                  { label: "예", onClick: handlePopupConfirm },
+                  { label: "아니오", onClick: () => setIsPopupOpen(false) },
+                ]
+              : [
+                  { label: "아니오", onClick: () => setIsPopupOpen(false) },
+                  { label: "예", onClick: handlePopupConfirm },
+                ]
+          }
         />
       )}
     </div>

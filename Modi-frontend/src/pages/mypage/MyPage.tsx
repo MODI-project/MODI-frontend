@@ -7,35 +7,38 @@ import Footer from "../../components/common/Footer";
 import FavoriteView from "./FavoriteView";
 import StatsView from "./StatsView";
 import { useNavigate } from "react-router-dom";
-import { loadUserInfo } from "../../apis/UserAPIS/loadUserInfo";
+import useLoadUserInfo from "../../apis/UserAPIS/loadUserInfo";
+import { useGeolocationControl } from "../../hooks/useGeolocationControl";
 
 const TAB_LABELS = ["즐겨찾기", "월간 일기"] as const;
 type TabLabel = (typeof TAB_LABELS)[number];
 
 const MyPage = () => {
+  const { fetchUserInfo } = useLoadUserInfo();
   const [selectedTab, setSelectedTab] = useState<TabLabel>("즐겨찾기");
   const [nickname, setNickname] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
+  // Geolocation 제어
+  useGeolocationControl();
+
   useEffect(() => {
-    (async () => {
+    const userInfoLoading = async () => {
       try {
-        const me = await loadUserInfo();
-        setNickname(me.nickname);
-        setEmail(me.email);
-      } catch (err: any) {
-        console.error("유저 정보 불러오기 실패:", err);
-        if (err?.response?.status === 401) {
-          // 쿠키 만료/미로그인
-          navigate("/login", { replace: true });
-        }
+        const userInfo = await fetchUserInfo();
+        setNickname(userInfo.nickname);
+        setEmail(userInfo.email);
+      } catch (error) {
+        console.error("사용자 정보 로딩 실패:", error);
       } finally {
         setLoading(false);
       }
-    })();
-  }, [navigate]);
+    };
+    userInfoLoading();
+  }, [fetchUserInfo]);
 
   if (loading) return <div className={style.skeleton}>로딩중...</div>;
 
@@ -45,7 +48,7 @@ const MyPage = () => {
         <Header
           left="/icons/setting.svg"
           middle="마이페이지"
-          right="/icons/notification_O.svg"
+          right="/icons/notification_X.svg"
           LeftClick={() => {
             navigate("/setting");
           }}

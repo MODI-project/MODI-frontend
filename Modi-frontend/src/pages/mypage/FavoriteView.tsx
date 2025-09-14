@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FavoriteItem, getFavorites } from "../../apis/favorites";
+import { FavoriteItem, getFavorites } from "../../apis/MyPageAPIS/favorites";
 import FavoriteDiary from "../../components/MyPage/Favorite/FavoriteDiary";
 import styles from "./MyPage.module.css";
 
@@ -7,16 +7,15 @@ export default function FavoriteView() {
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
 
   useEffect(() => {
-    const fetchFavorites = async () => {
+    (async () => {
       try {
-        const res = await getFavorites();
-        setFavorites(res.data); // API 응답 데이터 저장
+        const list = await getFavorites();
+        // 디버그: 들어오는 최종 URL 확인
+        setFavorites(list);
       } catch (err) {
         console.error("❌ 즐겨찾기 불러오기 실패:", err);
       }
-    };
-
-    fetchFavorites();
+    })();
   }, []);
 
   return (
@@ -25,7 +24,7 @@ export default function FavoriteView() {
         <FavoriteDiary
           key={d.id}
           id={d.id}
-          photoUrl={d.thumbnailUrl}
+          photoUrl={d.imageSrc}
           date={d.date}
           emotion={""}
           clicked={false}

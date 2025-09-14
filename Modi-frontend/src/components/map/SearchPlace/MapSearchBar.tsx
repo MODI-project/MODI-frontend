@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./MapSearchBar.module.css";
 
-// 타입 정의
-interface Place {
-  place_name: string;
-  road_address_name?: string;
-  address_name: string;
-  phone: string;
-  x: string;
-  y: string;
+// 통합 검색 결과 타입 (장소검색 기준)
+interface SearchResult {
+  title: string; // 표시용 이름(장소명)
+  address_name: string; // 주소 (있으면 표시)
+  x: string; // lon
+  y: string; // lat
 }
 
 interface Pagination {
@@ -19,12 +17,21 @@ interface Pagination {
 
 interface MapSearchBarProps {
   map?: any;
-  onPlaceSelect?: (place: Place) => void;
+  onPlaceSelect?: (place: SearchResult) => void;
+  currentPosition?: {
+    lat: number;
+    lng: number;
+    address?: string;
+  } | null;
 }
 
-const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
+const MapSearchBar: React.FC<MapSearchBarProps> = ({
+  map,
+  onPlaceSelect,
+  currentPosition,
+}) => {
   const [keyword, setKeyword] = useState<string>("");
-  const [places, setPlaces] = useState<Place[]>([]);
+  const [places, setPlaces] = useState<SearchResult[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,25 +44,12 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
 
   // API 초기화
   const initializeApi = () => {
-    console.log("MapSearchBar API 초기화 시작");
-
     if (!map) {
-      console.log("map prop이 없습니다.");
       return false;
     }
 
     // map 객체를 통해 kakao API에 접근
     const kakao = (window as any).kakao;
-
-    console.log(
-      "kakao 확인:",
-      typeof kakao !== "undefined" ? "존재함" : "존재하지 않음"
-    );
-    console.log("kakao.maps 확인:", kakao?.maps ? "존재함" : "존재하지 않음");
-    console.log(
-      "kakao.maps.services 확인:",
-      kakao?.maps?.services ? "존재함" : "존재하지 않음"
-    );
 
     if (typeof kakao !== "undefined" && kakao.maps && kakao.maps.services) {
       try {
@@ -65,34 +59,26 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
         // 인포윈도우 생성
         infowindowRef.current = new kakao.maps.InfoWindow({ zIndex: 1 });
 
-        console.log("Kakao Maps API initialized successfully");
         setIsInitialized(true);
         return true;
       } catch (error) {
-        console.error("Failed to initialize Kakao Maps API:", error);
         setIsInitialized(false);
         return false;
       }
     } else {
-      console.log("Kakao Maps API not available");
       setIsInitialized(false);
       return false;
     }
   };
 
   useEffect(() => {
-    console.log("MapSearchBar useEffect 실행");
-    console.log("map prop 확인:", map ? "존재함" : "존재하지 않음");
-
     // map prop이 있을 때만 초기화 시도
     if (map) {
-      console.log("map prop 존재, API 초기화 시도");
-
       // 약간의 지연을 두고 초기화 시도 (카카오맵 API가 완전히 로드될 시간을 줌)
       const timer = setTimeout(() => {
         const initSuccess = initializeApi();
         if (!initSuccess) {
-          console.warn("Kakao Maps API initialization failed");
+          console.warn("카카오맵 API 초기화 실패");
         }
       }, 100);
 
@@ -102,7 +88,17 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
     }
   }, [map]);
 
-  // 키워드 검색을 요청하는 함수
+  // 장소 결과를 통합 타입으로 변환
+  const mapPlaceResult = (item: any): SearchResult => {
+    return {
+      title: item.place_name,
+      address_name: item.road_address_name || item.address_name,
+      x: item.x,
+      y: item.y,
+    };
+  };
+
+  // 키워드 검색을 요청하는 함수 (장소검색 전용)
   const searchPlaces = (searchKeyword?: string) => {
     const searchTerm = searchKeyword || keyword;
 
@@ -112,16 +108,12 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
     }
 
     if (!psRef.current || !isInitialized) {
-      console.error("Places service is not initialized");
-      console.error("psRef.current:", psRef.current);
-      console.error("isInitialized:", isInitialized);
       alert("지도 서비스를 초기화하는 중입니다. 잠시 후 다시 시도해주세요.");
       return false;
     }
 
     setIsLoading(true);
 
-    // 장소검색 객체를 통해 키워드로 장소검색을 요청
     try {
       psRef.current.keywordSearch(searchTerm, placesSearchCB);
     } catch (error) {
@@ -132,18 +124,15 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
   };
 
   // 장소검색이 완료됐을 때 호출되는 콜백함수
-  const placesSearchCB = (
-    data: Place[],
-    status: any,
-    pagination: Pagination
-  ) => {
+  const placesSearchCB = (data: any[], status: any, pagination: Pagination) => {
     setIsLoading(false);
 
     const kakao = (window as any).kakao;
 
     if (status === kakao.maps.services.Status.OK) {
       // 정상적으로 검색이 완료됐으면 검색 목록만 표출 (마커 없이)
-      setPlaces(data);
+      const results = data.map(mapPlaceResult);
+      setPlaces(results);
       setPagination(pagination);
       setCurrentPage(pagination.current);
       setShowResults(true); // 검색 결과 표시
@@ -168,15 +157,10 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
     }
   };
 
-  // 장소 선택 처리
-  const handlePlaceSelect = (place: Place) => {
-    console.log("장소 선택됨:", place);
-    console.log("map 객체:", map);
-    console.log("kakao 객체:", (window as any).kakao);
-
-    // 검색 input 텍스트를 선택한 장소명으로 변경
-    setKeyword(place.place_name);
-    console.log("검색 input 텍스트 변경:", place.place_name);
+  // 장소/주소 선택 처리
+  const handlePlaceSelect = (place: SearchResult) => {
+    // 검색 input 텍스트를 선택한 항목으로 변경
+    setKeyword(place.title);
 
     if (onPlaceSelect) {
       onPlaceSelect(place);
@@ -187,17 +171,12 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
     if (map && (window as any).kakao) {
       const kakao = (window as any).kakao;
 
-      console.log("좌표 변환 전:", { x: place.x, y: place.y });
-
       // 기존 마커 제거
       markersRef.current.forEach((marker) => marker.setMap(null));
       markersRef.current = [];
 
       // 새로운 마커 생성
       const position = new kakao.maps.LatLng(Number(place.y), Number(place.x));
-
-      console.log("생성된 position:", position);
-      console.log("위도:", position.getLat(), "경도:", position.getLng());
 
       const marker = new kakao.maps.Marker({
         map,
@@ -222,15 +201,6 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
 
   const isApiReady = isInitialized && psRef.current;
 
-  console.log(
-    "MapSearchBar 렌더링 - isApiReady:",
-    isApiReady,
-    "isInitialized:",
-    isInitialized,
-    "psRef.current:",
-    !!psRef.current
-  );
-
   return (
     <div className={styles.map_search_bar_container}>
       <form onSubmit={handleSearch}>
@@ -239,7 +209,7 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
           type="text"
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
-          placeholder={isApiReady ? "주소를 입력하세요." : "지도 로딩 중..."}
+          placeholder={"주소를 입력하세요"}
           disabled={!isApiReady}
         />
         <button
@@ -255,18 +225,23 @@ const MapSearchBar: React.FC<MapSearchBarProps> = ({ map, onPlaceSelect }) => {
         </button>
       </form>
 
-      {/* 검색 결과 목록 - 마커 없이 텍스트만 */}
+      {/* 검색 결과 목록 - 장소검색 결과만 표시 */}
       {showResults && places.length > 0 && (
         <div className={styles.search_results}>
           <ul className={styles.places_list}>
             {places.map((place, index) => (
               <li
-                key={`${place.place_name}-${index}`}
+                key={`${place.title}-${index}`}
                 className={styles.place_item}
                 onClick={() => handlePlaceSelect(place)}
               >
                 <div className={styles.place_info}>
-                  <span className={styles.place_name}>{place.place_name}</span>
+                  <span className={styles.place_name}>{place.title}</span>
+                  {place.address_name && (
+                    <span className={styles.place_addr}>
+                      {place.address_name}
+                    </span>
+                  )}
                 </div>
               </li>
             ))}

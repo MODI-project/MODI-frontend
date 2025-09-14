@@ -1,13 +1,38 @@
 import styles from "./MapPage.module.css";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { mockDiaries } from "../../apis/diaryInfo";
-import { DiaryData } from "../../apis/diaryInfo";
+import { fetchDiariesByViewport } from "../../apis/diaryInfo";
 import MapMarker from "../../components/map/MapMarking/MapMarker";
 import { loadKakaoMapAPI } from "../../utils/kakaoMapLoader";
 import KakaoMap from "../../components/map/LoadMap/KakaoMap";
 import MapSearchBar from "../../components/map/SearchPlace/MapSearchBar";
 import Footer from "../../components/common/Footer";
 import { useCharacter } from "../../contexts/CharacterContext";
+import LocationDiariesBottomSheet from "../../components/map/MapMarking/LocationDiariesBottomSheet";
+import { useGeolocation } from "../../contexts/GeolocationContext";
+import { useNavigate } from "react-router-dom";
+
+// 주소 정규화 함수: 행정구역명 차이를 통일
+function normalizeAddress(address: string): string {
+  if (!address) return "";
+
+  return address
+    .replace(/^부산광역시\s/, "부산 ")
+    .replace(/^서울특별시\s/, "서울 ")
+    .replace(/^대구광역시\s/, "대구 ")
+    .replace(/^인천광역시\s/, "인천 ")
+    .replace(/^광주광역시\s/, "광주 ")
+    .replace(/^대전광역시\s/, "대전 ")
+    .replace(/^울산광역시\s/, "울산 ")
+    .replace(/^세종특별자치시\s/, "세종 ")
+    .replace(/^제주특별자치도\s/, "제주 ")
+    .replace(/^강원도\s/, "강원 ")
+    .replace(/^충청북도\s/, "충북 ")
+    .replace(/^충청남도\s/, "충남 ")
+    .replace(/^전라북도\s/, "전북 ")
+    .replace(/^전라남도\s/, "전남 ")
+    .replace(/^경상북도\s/, "경북 ")
+    .replace(/^경상남도\s/, "경남 ");
+}
 
 interface Diary {
   id: number;
@@ -15,6 +40,8 @@ interface Diary {
   lng?: number;
   emotion: string;
   postCount: number;
+  dong?: string;
+  address?: string;
 }
 
 const MapPage = () => {
@@ -24,28 +51,28 @@ const MapPage = () => {
   const [mapInstance, setMapInstance] = useState<any>(null);
   const [diaries, setDiaries] = useState<Diary[]>([]);
   const { character } = useCharacter();
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [selectedPosition, setSelectedPosition] = useState<{
+    lat: number;
+    lng: number;
+    address?: string;
+  } | null>(null);
+  const [currentPosition, setCurrentPosition] = useState<{
+    lat: number;
+    lng: number;
+    address?: string;
+  } | null>(null);
+
+  // 현재 위치 정보 가져오기
+  const { lat, lng, startTracking } = useGeolocation();
+  const navigate = useNavigate();
 
   const loadMap = async () => {
     try {
       setLoading(true);
       setError(null);
-      console.log("카카오맵 API 로딩 시작...");
-      console.log(
-        "API 키 확인:",
-        import.meta.env.VITE_KAKAO_MAP_API_KEY ? "설정됨" : "설정되지 않음"
-      );
 
       await loadKakaoMapAPI();
-
-      console.log("카카오맵 API 로딩 완료!");
-      console.log(
-        "window.kakao 확인:",
-        typeof window.kakao !== "undefined" ? "존재함" : "존재하지 않음"
-      );
-      console.log(
-        "window.kakao.maps 확인:",
-        window.kakao?.maps ? "존재함" : "존재하지 않음"
-      );
 
       setLoaded(true);
       setLoading(false);
@@ -56,78 +83,129 @@ const MapPage = () => {
     }
   };
 
+  // 페이지 진입 시 위치 추적 시작
+  useEffect(() => {
+    startTracking();
+  }, [startTracking]);
+
   useEffect(() => {
     loadMap();
   }, []);
+  // 지도 뷰포트 기반 일기 데이터 로드
+  const loadDiariesByViewport = async (map: any) => {
+    if (!map) return;
+
+    try {
+      // 지도의 현재 뷰포트 경계 가져오기
+      const bounds = map.getBounds();
+      const swLatLng = bounds.getSouthWest();
+      const neLatLng = bounds.getNorthEast();
+
+      // 뷰포트 경계에 약간의 여유 추가 (0.01도 ≈ 1km)
+      const buffer = 0.01;
+      const expandedViewport = {
+        swLat: swLatLng.getLat() - buffer,
+        swLng: swLatLng.getLng() - buffer,
+        neLat: neLatLng.getLat() + buffer,
+        neLng: neLatLng.getLng() + buffer,
+      };
+
+      const diaryData = await fetchDiariesByViewport(
+        expandedViewport.swLat,
+        expandedViewport.swLng,
+        expandedViewport.neLat,
+        expandedViewport.neLng
+      );
+
+      // 전체 주소 기준으로 일기들을 그룹화 (동명이동 문제 해결)
+      const addressGroups = new Map<string, any[]>();
+
+      diaryData.forEach((d: any) => {
+        const address = d.location?.address || "";
+        const normalizedAddress = normalizeAddress(address);
+        const lat = d.location?.latitude || d.latitude;
+        const lng = d.location?.longitude || d.longitude;
+
+        // 좌표가 없는 경우 해당 일기 제외
+        if (!lat || !lng) {
+          return;
+        }
+
+        // 주소 토큰이 3개 미만(예: "중동"만 있는 경우)에는 좌표 기반 키 사용
+        const tokenCount = normalizedAddress
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean).length;
+        const geoKey = `geo:${Number(lat).toFixed(3)},${Number(lng).toFixed(
+          3
+        )}`; // 약 ~100m 단위 그룹
+        const key = tokenCount >= 3 ? normalizedAddress : geoKey;
+
+        if (!addressGroups.has(key)) {
+          addressGroups.set(key, []);
+        }
+        addressGroups.get(key)!.push(d);
+      });
+
+      const mapped: Diary[] = Array.from(addressGroups.entries()).map(
+        ([groupKey, diaries]) => {
+          // 같은 그룹의 일기들을 날짜순으로 정렬하여 가장 최근 일기 찾기
+          const sortedDiaries = diaries.sort(
+            (a, b) =>
+              new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
+          );
+          const latestDiary = sortedDiaries[0]; // 가장 최근 일기
+
+          const lat = latestDiary.location?.latitude || latestDiary.latitude;
+          const lng = latestDiary.location?.longitude || latestDiary.longitude;
+          const addr = normalizeAddress(
+            latestDiary.location?.address || latestDiary.address || ""
+          );
+
+          return {
+            id: latestDiary.id,
+            lat,
+            lng,
+            emotion: latestDiary.emotion,
+            postCount: diaries.length,
+            dong: addr ? addr.split(" ").pop() : undefined,
+            address: addr || undefined,
+          };
+        }
+      );
+
+      // 좌표 유효성 검사
+      const validMarkers = mapped.filter((diary) => {
+        const isValid =
+          diary.lat &&
+          diary.lng &&
+          !isNaN(diary.lat) &&
+          !isNaN(diary.lng) &&
+          diary.lat !== 0 &&
+          diary.lng !== 0;
+
+        if (!isValid) {
+          console.warn(`유효하지 않은 마커 좌표:`, diary);
+        }
+        return isValid;
+      });
+
+      setDiaries(validMarkers);
+    } catch (error) {
+      console.error("뷰포트 기반 일기 데이터 로드 실패:", error);
+      setDiaries([]); // 에러 시 빈 배열로 설정
+    }
+  };
+
+  // 지도가 준비되면 초기 일기 데이터 로드
   useEffect(() => {
-    console.log("=== mockDiaries 원본 데이터 ===");
-    console.log("mockDiaries 개수:", mockDiaries.length);
-    mockDiaries.forEach((diary, index) => {
-      console.log(`원본 데이터 ${index + 1}:`, {
-        id: diary.id,
-        latitude: diary.latitude,
-        longitude: diary.longitude,
-        emotion: diary.emotion,
-        address: diary.address,
-      });
-    });
-
-    const mapped: Diary[] = mockDiaries.map((d) => ({
-      id: d.id,
-      lat: d.latitude, // number 인 것이 보장됨
-      lng: d.longitude,
-      emotion: d.emotion,
-      postCount: 1,
-    }));
-
-    console.log("=== 변환된 마커 데이터 ===");
-    console.log("마커 데이터 설정:", mapped);
-    console.log("마커 개수:", mapped.length);
-    mapped.forEach((diary, index) => {
-      console.log(`마커 ${index + 1}:`, {
-        id: diary.id,
-        lat: diary.lat,
-        lng: diary.lng,
-        emotion: diary.emotion,
-        postCount: diary.postCount,
-      });
-    });
-
-    // 좌표 유효성 검사
-    const validMarkers = mapped.filter((diary) => {
-      const isValid =
-        diary.lat &&
-        diary.lng &&
-        !isNaN(diary.lat) &&
-        !isNaN(diary.lng) &&
-        diary.lat !== 0 &&
-        diary.lng !== 0;
-
-      if (!isValid) {
-        console.warn(`유효하지 않은 마커 좌표:`, diary);
-      }
-      return isValid;
-    });
-
-    console.log("=== 유효한 마커 데이터 ===");
-    console.log("유효한 마커 개수:", validMarkers.length);
-    validMarkers.forEach((diary, index) => {
-      console.log(`유효한 마커 ${index + 1}:`, {
-        id: diary.id,
-        lat: diary.lat,
-        lng: diary.lng,
-        emotion: diary.emotion,
-      });
-    });
-
-    setDiaries(validMarkers);
-  }, []);
+    if (mapInstance) {
+      loadDiariesByViewport(mapInstance);
+    }
+  }, [mapInstance]);
 
   const handlePlaceSelect = useCallback(
     (place: any) => {
-      console.log("선택된 장소:", place);
-
-      // 선택된 장소로 지도 이동
       if (mapInstance && place.x && place.y) {
         try {
           const kakao = (window as any).kakao;
@@ -136,22 +214,10 @@ const MapPage = () => {
               parseFloat(place.y),
               parseFloat(place.x)
             );
-
-            // 지도 중심 이동
             mapInstance.setCenter(newCenter);
-
-            // 적절한 확대 레벨로 설정 (상세한 뷰)
             mapInstance.setLevel(3);
-
-            console.log("지도 이동 완료:", {
-              place: place.place_name,
-              lat: place.y,
-              lng: place.x,
-            });
           }
-        } catch (error) {
-          console.error("지도 이동 중 오류 발생:", error);
-        }
+        } catch (error) {}
       }
     },
     [mapInstance]
@@ -161,21 +227,37 @@ const MapPage = () => {
     loadMap();
   }, []);
 
-  const handleMapReady = useCallback((map: any) => {
-    console.log("지도 인스턴스 생성 완료:", map);
-    setMapInstance(map);
+  const handleDiaryClick = useCallback(
+    (diaryId: number) => {
+      navigate(`/recorddetail`, { state: { diaryId } });
+    },
+    [navigate]
+  );
 
-    // 지도 이벤트 리스너 추가 (선택사항)
-    const kakao = (window as any).kakao;
-    if (kakao && kakao.maps) {
-      // 지도 이동/줌 이벤트 리스너 (현재는 비활성화)
-      // kakao.maps.event.addListener(map, "bounds_changed", async () => {
-      //   console.log("지도 영역 변경됨 - 마커 업데이트");
-      // });
-    }
+  const handleMapReady = useCallback(
+    (map: any) => {
+      setMapInstance(map);
 
-    console.log("mockDiaries 데이터를 사용하여 마커 표시");
-  }, []);
+      // 현재 위치가 있으면 지도 중심을 현재 위치로 이동
+      if (lat && lng) {
+        const kakao = (window as any).kakao;
+        if (kakao && kakao.maps) {
+          const currentPos = new kakao.maps.LatLng(lat, lng);
+          map.setCenter(currentPos);
+        }
+      }
+
+      // 지도 이벤트 리스너 추가
+      const kakao = (window as any).kakao;
+      if (kakao && kakao.maps) {
+        // 지도 이동/줌 이벤트 리스너 - 뷰포트 변경 시 일기 데이터 다시 로드
+        kakao.maps.event.addListener(map, "bounds_changed", async () => {
+          await loadDiariesByViewport(map);
+        });
+      }
+    },
+    [lat, lng]
+  );
 
   if (loading) {
     return (
@@ -222,10 +304,11 @@ const MapPage = () => {
               }}
             >
               <KakaoMap
-                latitude={37.5407923}
-                longitude={127.0710699}
+                latitude={lat || 37.5407923} // 현재 위치가 있으면 사용, 없으면 기본값
+                longitude={lng || 127.0710699}
                 showSearchBar={false}
                 onMapReady={handleMapReady}
+                onCurrentPositionChange={setCurrentPosition}
               />
             </div>
 
@@ -236,8 +319,10 @@ const MapPage = () => {
                   <MapSearchBar
                     map={mapInstance}
                     onPlaceSelect={handlePlaceSelect}
+                    currentPosition={currentPosition}
                   />
                 </div>
+
                 {/* 마커 렌더링 */}
                 {diaries.map((d, idx) => (
                   <MapMarker
@@ -245,6 +330,10 @@ const MapPage = () => {
                     map={mapInstance}
                     diary={d}
                     character={character!}
+                    onClick={(position) => {
+                      setSelectedPosition(position);
+                      setSheetOpen(true);
+                    }}
                   />
                 ))}
               </>
@@ -256,6 +345,12 @@ const MapPage = () => {
             <p className={styles.loading_text}>지도를 초기화하는 중...</p>
           </div>
         )}
+        <LocationDiariesBottomSheet
+          isOpen={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+          position={selectedPosition}
+          onClickDiary={handleDiaryClick}
+        />
         <Footer />
       </div>
     </div>

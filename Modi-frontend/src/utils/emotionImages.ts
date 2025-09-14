@@ -21,10 +21,6 @@ const modules = import.meta.glob(["../assets/emotion_home/**/*.svg"], {
   eager: true,
 });
 
-console.log("💡 emotion modules keys:", Object.keys(modules));
-
-console.log("🌱 modules:", modules);
-
 export const emotionIconMap: Partial<
   Record<CharacterKey, Partial<Record<Emotion, string>>>
 > = {};
@@ -36,10 +32,9 @@ Object.entries(modules).forEach(([path, url]) => {
   const match = fileName.match(/home_[^-]+-([^.]+)\.svg/)!;
   if (!match) return;
 
-  const slug = match[1]; // "sad"
-  console.log("🪲 found slug:", slug, "for file:", fileName);
-  const emotion = slugToEmotion[slug]; // "슬픔"
-  console.log("🪲 mapped emotion:", emotion);
+  const slug = match[1];
+  const emotion = slugToEmotion[slug];
+
   if (!emotion) return;
 
   if (!emotionIconMap[characterKey]) {

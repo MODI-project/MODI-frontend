@@ -28,7 +28,7 @@
   flex-direction: column;
   width: 296px;
   height: 230px;
-  gap: 2.5vh;
+  gap: 5vh;
   padding: 0;
   box-sizing: border-box;
 }
@@ -47,17 +47,6 @@
   background: var(--color2, #fbf9f3);
 }
 
-.setting_button_list {
-  display: flex;
-  flex-direction: column;
-  width: 296px;
-  height: 162px;
-  box-sizing: border-box;
-  gap: 0;
-  border-radius: 15px;
-  background: var(--color2, #fbf9f3);
-}
-
 .setting_item {
   display: flex;
   justify-content: space-between;
@@ -68,25 +57,12 @@
   padding: 16px;
   border: 1px solid var(--gray2, #cbcbc5);
   background: var(--color2, #fbf9f3);
+  border-radius: 15px;
 }
 
 .setting_item:hover {
   background: var(--gray3, #e8e8e8);
   transition: background 0.3s;
-}
-
-.setting_item:first-child {
-  border-radius: 15px 15px 0 0;
-  border-bottom: none;
-}
-
-.setting_item:nth-child(2) {
-  border-radius: 0;
-}
-
-.setting_item:last-child {
-  border-radius: 0 0 15px 15px;
-  border-top: none;
 }
 
 span {

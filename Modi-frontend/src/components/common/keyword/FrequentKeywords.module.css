@@ -14,13 +14,14 @@
 }
 
 .keyword_chip {
+  font: inherit;
   background-color: var(--color-pink);
   padding: 7px 12px;
   border-radius: 999px;
-  font-size: 14px;
-  white-space: nowrap;
   font-size: var(--font-caption1);
   line-height: 16px;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .margin_big {

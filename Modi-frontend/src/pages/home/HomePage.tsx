@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import style from "./HomePage.module.css";
 import Footer from "../../components/common/Footer";
 
@@ -6,10 +6,16 @@ import PolaroidView from "./PolaroidView";
 import PhotoView from "./PhotoView";
 
 import Header from "../../components/common/Header";
-import { mockDiaries } from "../../apis/diaryInfo"; // 또는 상태 관리 데이터
+import { fetchMonthlyDiaries } from "../../apis/Diary/diaries.read";
 import EmptyDiaryView from "./EmptyDiaryView";
 import { useNavigate, useLocation } from "react-router-dom";
 import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
+import { useGeolocationControl } from "../../hooks/useGeolocationControl";
+import { useDongGeofence } from "../../hooks/useDongGeofence";
+import { useNotificationManager } from "../../contexts/NotificationManagerContext";
+
+// ✅ 추가 import
+import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 
 // URL에서 code 파라미터 추출 함수
 const getCodeFromURL = (): string | null => {
@@ -18,47 +24,91 @@ const getCodeFromURL = (): string | null => {
 };
 
 export default function HomePage() {
+  const { fetchUserInfo } = useLoadUserInfo();
   const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
   const navigate = useNavigate();
   const location = useLocation();
+  const [loading, setLoading] = useState(true);
+  const [hasMonthData, setHasMonthData] = useState<boolean | null>(null); // 현재 달에 일기가 하나라도 있는지
+  const isTokenRequesting = useRef(false); // 토큰 요청 중복 방지
+  const [userInfo, setUserInfo] = useState<MeResponse | null>(null);
+  // Geolocation 제어
+  useGeolocationControl();
 
-  // code 파라미터가 있으면 토큰 요청 처리
+  // 지오펜스 및 알림 관리
+  useDongGeofence();
+  const { isEnabled, toggleNotifications } = useNotificationManager();
+
+  // code 파라미터가 있으면 토큰 요청 처리 (중복 방지)
   useEffect(() => {
     const code = getCodeFromURL();
-    if (code) {
-      console.log("=== 홈 페이지에서 code 파라미터 감지 ===");
-      console.log("code:", code);
-      console.log("기존 회원이므로 토큰 요청 처리");
+    if (code && !isTokenRequesting.current) {
+      isTokenRequesting.current = true;
 
-      // 토큰 요청 API 호출
       handleTokenRequest(code)
-        .then(() => {
-          console.log("✅ 토큰 요청 완료");
-        })
+        .then(() => {})
         .catch((error) => {
-          console.error("❌ 토큰 요청 실패:", error);
           navigate("/login");
         })
         .finally(() => {
-          // URL에서 code 파라미터 제거
+          isTokenRequesting.current = false;
           const newUrl = window.location.pathname;
           window.history.replaceState({}, document.title, newUrl);
         });
     }
-  }, [location, navigate]);
+  }, [location]);
+
+  useEffect(() => {
+    const HomeLoading = async () => {
+      const userInfo: MeResponse = await fetchUserInfo();
+      setUserInfo(userInfo);
+    };
+    HomeLoading();
+  }, []);
+
+  // 월별 일기 조회
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const list = await fetchMonthlyDiaries(year, month);
+        setHasMonthData(list.length > 0);
+      } catch (e) {
+        console.error("월별 일기 조회 실패:", e);
+        setHasMonthData(false);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
   return (
     <div className={style.home_wrapper}>
       <div className={style.home_container}>
         <Header
           left="/images/logo/Modi.svg"
-          right="/icons/notification_O.svg"
+          right="/icons/notification_X.svg"
           RightClick={() => {
             navigate("/notification");
           }}
         />
 
         <main className={style.mainContent}>
-          {mockDiaries.length === 0 ? (
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "50vh",
+              }}
+            >
+              불러오는 중...
+            </div>
+          ) : hasMonthData === false ? (
             <EmptyDiaryView />
           ) : viewType === "photo" ? (
             <PhotoView onSwitchView={() => setViewType("polaroid")} />
@@ -66,7 +116,7 @@ export default function HomePage() {
             <PolaroidView onSwitchView={() => setViewType("photo")} />
           )}
         </main>
-        <Footer showBalloon={mockDiaries.length === 0} />
+        <Footer showBalloon={hasMonthData === false} />
       </div>
     </div>
   );

@@ -19,13 +19,12 @@ const AddressInput = () => {
     if (!trimmed) return;
 
     searchKakaoAddress(trimmed)
-      .then((data) => setResults(data))
+      .then(setResults)
       .catch((err) => console.error(err));
   };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+    if (e.key === "Enter") handleSearch();
   };
 
   return (
@@ -56,7 +55,7 @@ const AddressInput = () => {
         <div className={styles.search_container}>
           <input
             type="text"
-            placeholder="주소 검색"
+            placeholder="OO동을 입력해주세요"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -79,11 +78,21 @@ const AddressInput = () => {
               <li
                 key={i}
                 className={styles.address_item}
-                onClick={() => {
-                  setDraft({
-                    address: addr.fullAddress,
-                    dong: addr.dong,
-                  });
+                onClick={async () => {
+                  if (addr.latitude && addr.longitude) {
+                    // 선택한 주소와 해당 좌표를 그대로 사용 (동명이동 오류 방지)
+                    setDraft({
+                      address: addr.fullAddress,
+                      dong: addr.dong,
+                      latitude: addr.latitude,
+                      longitude: addr.longitude,
+                    });
+                  } else {
+                    alert(
+                      "좌표 정보가 없는 주소입니다. 다른 주소를 선택해주세요."
+                    );
+                  }
+
                   setIsSheetOpen(false);
                   setHasSearched(false);
                 }}

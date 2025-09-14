@@ -1,0 +1,107 @@
+.geolocation_container {
+  position: absolute;
+  bottom: 110px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.myPos {
+  background-color: transparent;
+  background-image: url("/icons/map.svg");
+  background-size: 24px;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  justify-content: center;
+}
+
+.myPos:hover {
+  background-color: var(--gray2, #cbcbc5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.myPos:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.myPos:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.loading {
+  background: #f0f0f0;
+  color: #666;
+}
+
+.loading_text {
+  color: #666;
+  font-size: 13px;
+}
+
+.location_icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+}
+
+.permission_denied {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.retry_button {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  transition: all 0.2s ease;
+  min-width: 120px;
+  text-align: center;
+}
+
+.retry_button:hover {
+  background: #ff5252;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+  transform: translateY(-1px);
+}
+
+.retry_button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+}
+
+.tracking {
+  background-color: #007aff !important;
+  border-color: #007aff !important;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.6);
+  }
+  100% {
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+  }
+}

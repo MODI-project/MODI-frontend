@@ -56,6 +56,7 @@
 .search_icon {
   width: 24px;
   margin-right: 10px;
+  margin-bottom: 3px;
 }
 
 .no_result {
@@ -68,4 +69,47 @@
 .no_result_image {
   width: 164px;
   height: auto;
+}
+
+.result_wrapper {
+  padding-bottom: 87px;
+  overflow: scroll;
+}
+
+.date_heading {
+  font-family: var(--font-nanum-squareB);
+  font-weight: 600;
+  font-size: var(--font-title);
+  line-height: 25px;
+  letter-spacing: -0.43px;
+  margin: 12px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.card_img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 14px;
+  background: #eee;
+}
+
+.card_caption {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #555;
+  text-align: left;
 }
