@@ -58,7 +58,7 @@ async function fetchDiariesByLocation(position: {
       return [];
     }
 
-    const API_BASE_URL = "https://modidiary.store/api";
+    const API_BASE_URL = "https://modidiary-server.store/api";
     const { data } = await axios.get(`${API_BASE_URL}/diaries/nearby`, {
       params: {
         swLat: 33.0, // 한국 전체 영역 (제주도 포함)
