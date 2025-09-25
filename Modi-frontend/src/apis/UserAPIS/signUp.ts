@@ -13,7 +13,7 @@ export const handleUserSignUp = async (
       nickname,
       character,
     };
-
+    // 로그인하고 리디랙션되는 페이지를 하나 만들어서 여기서 분기처리를 하자 -> 명세 수정 필요
     // signUp 로직을 통합: axios로 직접 회원가입 요청
     const requestBody = code ? { ...userInfo, code } : userInfo;
     const response = await axios.post(`${API_BASE_URL}/members`, requestBody, {
@@ -25,7 +25,6 @@ export const handleUserSignUp = async (
 
     console.log("회원가입 성공");
     const data: SignUpResponse = response.data;
-    localStorage.setItem("userInfo", JSON.stringify(data));
 
     return data;
   } catch (error: any) {
