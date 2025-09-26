@@ -70,10 +70,10 @@ const InitialSetting = () => {
     }
   }, [navigate]);
 
-  // 한글 초성만인지 확인하는 함수
-  const isOnlyKoreanInitials = (value: string): boolean => {
-    // 한글 초성만으로 구성된 문자열인지 확인
-    const koreanInitialsRegex = /^[ㄱ-ㅎ]+$/;
+  // 한글 초성이 포함되어 있는지 확인하는 함수
+  const containsKoreanInitials = (value: string): boolean => {
+    // 한글 초성이 하나라도 포함되어 있는지 확인
+    const koreanInitialsRegex = /[ㄱ-ㅎ]/;
     return koreanInitialsRegex.test(value);
   };
 
@@ -87,9 +87,9 @@ const InitialSetting = () => {
       return false;
     }
 
-    // 한글 초성만 입력된 경우
-    if (isOnlyKoreanInitials(value)) {
-      setNicknameError("초성은 닉네임으로 사용할 수 없습니다.");
+    // 한글 초성이 포함된 경우
+    if (containsKoreanInitials(value)) {
+      setNicknameError("초성은 사용할 수 없습니다.");
       return false;
     }
 
