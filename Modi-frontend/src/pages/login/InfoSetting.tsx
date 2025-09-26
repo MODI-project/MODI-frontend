@@ -70,6 +70,13 @@ const InitialSetting = () => {
     }
   }, [navigate]);
 
+  // 한글 초성만인지 확인하는 함수
+  const isOnlyKoreanInitials = (value: string): boolean => {
+    // 한글 초성만으로 구성된 문자열인지 확인
+    const koreanInitialsRegex = /^[ㄱ-ㅎ]+$/;
+    return koreanInitialsRegex.test(value);
+  };
+
   // 닉네임 입력 규칙 검증
   const validateNickname = (value: string): boolean => {
     // 한글, 영어, 숫자만 허용
@@ -77,6 +84,12 @@ const InitialSetting = () => {
 
     if (!value.trim()) {
       setNicknameError("닉네임을 입력해주세요.");
+      return false;
+    }
+
+    // 한글 초성만 입력된 경우
+    if (isOnlyKoreanInitials(value)) {
+      setNicknameError("초성은 닉네임으로 사용할 수 없습니다.");
       return false;
     }
 
@@ -104,6 +117,12 @@ const InitialSetting = () => {
 
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
+    // 8자 제한을 엄격하게 적용
+    if (value.length > 8) {
+      return; // 8자를 초과하면 입력을 무시
+    }
+
     setNickname(value);
 
     // 실시간 유효성 검사 (에러 메시지 초기화)
