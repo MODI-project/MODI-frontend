@@ -19,23 +19,25 @@ export default function FontStyle() {
     if (!draft.font) setDraft({ font: DEFAULT_FONT });
   }, [draft.font, setDraft]);
 
-  const selectedFont = draft.font ?? DEFAULT_FONT;
+  const selected = draft.font ?? DEFAULT_FONT;
 
   return (
     <ul className={styles.font_list}>
-      {FONTS.map((f, i) => (
-        <li
-          key={f.value}
-          className={[
-            styles.font_item,
-            styles[f.cls],
-            selectedFont === f.value ? styles.selected : "",
-          ].join(" ")}
-          onClick={() => setDraft({ font: f.value })}
-        >
-          {f.label}
-        </li>
-      ))}
+      {FONTS.map((f, i) => {
+        const isSelected = selected === f.value;
+        const selectedCls = isSelected ? styles[`selected${i + 1}`] : "";
+        return (
+          <li
+            key={f.value}
+            className={[styles.font_item, styles[f.cls], selectedCls].join(" ")}
+            onClick={() => setDraft({ font: f.value })}
+            role="button"
+            aria-pressed={isSelected}
+          >
+            {f.label}
+          </li>
+        );
+      })}
     </ul>
   );
 }
