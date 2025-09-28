@@ -124,6 +124,8 @@
   padding: 24px 20px;
   align-items: flex-start;
   gap: 10px;
+  overflow-y: scroll;
+  scrollbar-width: none;
   flex-shrink: 0;
   border-radius: 15px;
   border: 1px solid var(--gray3, #9c9c9c);
@@ -240,7 +242,7 @@
   align-self: stretch;
   color: var(--gray5, #2c2c2c);
   font-feature-settings: "liga" off, "clig" off;
-
+  overflow: scroll;
   /* body */
   font-family: NanumSquareRound;
   font-size: 14px;
