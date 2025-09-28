@@ -242,7 +242,6 @@
   align-self: stretch;
   color: var(--gray5, #2c2c2c);
   font-feature-settings: "liga" off, "clig" off;
-  overflow: scroll;
   /* body */
   font-family: NanumSquareRound;
   font-size: 14px;
