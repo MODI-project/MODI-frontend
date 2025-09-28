@@ -14,6 +14,7 @@ const toneTextMap: Record<string, string> = {
   bored: "지루함",
   angry: "화남",
   calm: "차분함",
+  none: "없음",
 };
 
 export default function StyleStatsCard({
@@ -21,14 +22,19 @@ export default function StyleStatsCard({
 }: {
   data: { label: string; value: number }[];
 }) {
+  // 데이터 없으면 전체 카드 숨김
+  if (!data || data.length === 0) return null;
+
   const [maxLabel, setMaxLabel] = useState<string | null>(null);
+
+  // 타이틀도 안전하게
+  const title = maxLabel
+    ? `${toneTextMap[maxLabel] ?? maxLabel} 언어 스타일을 가장 많이 사용했어요`
+    : null;
 
   return (
     <div className={styles.card}>
-      <h3 className={styles.title}>
-        {maxLabel ? toneTextMap[maxLabel] ?? maxLabel : ""} 언어 스타일을 가장
-        많이 사용했어요
-      </h3>
+      {title && <h3 className={styles.title}>{title}</h3>}
       <StyleStatsBarList data={data} onMaxLabelChange={setMaxLabel} />
     </div>
   );

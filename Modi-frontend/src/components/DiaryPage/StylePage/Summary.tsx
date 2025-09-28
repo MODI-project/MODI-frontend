@@ -36,16 +36,16 @@ const Summary = () => {
 
   return (
     <div className={styles.Summary_container}>
-      <button
-        className={styles.Aa}
-        onClick={() => setIsFontStyleOpen(!isFontStyleOpen)}
+      {/* <button
+        // className={styles.Aa}
+        // // onClick={() => setIsFontStyleOpen(!isFontStyleOpen)}
         type="button"
       >
         Aa
         <img src="/icons/drop.svg" />
-      </button>
+      </button> */}
 
-      {isFontStyleOpen && <FontStyle />}
+      <FontStyle />
 
       <input
         className={styles.content}
