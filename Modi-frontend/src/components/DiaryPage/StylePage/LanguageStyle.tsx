@@ -4,6 +4,7 @@ import LanguageStyleSelector from "./LanguageStyleSelector";
 import { DiaryDraftContext } from "../../../contexts/DiaryDraftContext";
 import { fetchLanguageStyles } from "../../../apis/Diary/languageStyle";
 import { generateStyledSummary } from "../../../apis/Diary/styleSummary";
+import { nonWhiteSpace } from "html2canvas/dist/types/css/syntax/parser";
 
 const FIXED_START = [{ style: "없음" }];
 const FIXED_END = [{ style: "다이어리" }, { style: "인터넷밈" }];
@@ -102,12 +103,13 @@ const LanguageStyle = () => {
     const label = items[index].style;
     const styled = previews[label] ?? draft.noEmotionSummary ?? "";
 
+    const normalize = (s?: string) => (s ?? "").trim();
     setDraft({
       style: label,
-      // tone은 서버에 전달되는 필드이므로 선택된 스타일을 그대로 매핑한다.
-      // "없음"은 빈 문자열로 보낸다.
-      tone: label === "없음" ? "" : label,
       summary: styled,
+      ...(normalize(label) === "없음"
+        ? { tone: undefined } // 없으면 tone 비움(상태에선 undefined)
+        : { tone: label }), // 있으면 세팅
     });
   };
 

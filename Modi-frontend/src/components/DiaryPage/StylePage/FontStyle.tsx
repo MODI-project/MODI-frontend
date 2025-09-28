@@ -1,47 +1,41 @@
 import styles from "./FontStyle.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DiaryDraftContext } from "../../../contexts/DiaryDraftContext";
 import { useContext } from "react";
 
-const FontStyle = () => {
-  const { draft, setDraft } = useContext(DiaryDraftContext);
-  const [selectedFont, setSelectedFont] = useState(draft.font);
+const FONTS = [
+  { label: "온글잎 류류체", value: "온글잎 류류체" },
+  { label: "이서윤체", value: "이서윤체" },
+  { label: "온글잎 박다현체", value: "온글잎 박다현체" },
+];
 
-  const handleFontSelect = (font: string) => {
-    setSelectedFont(font);
-    setDraft({ font: font });
-  };
+const DEFAULT_FONT = FONTS[0].value;
+
+export default function FontStyle() {
+  const { draft, setDraft } = useContext(DiaryDraftContext);
+
+  // 초진입 시 draft.font가 비어 있으면 맨 위 폰트를 기본값으로 세팅
+  useEffect(() => {
+    if (!draft.font) setDraft({ font: DEFAULT_FONT });
+  }, [draft.font, setDraft]);
+
+  const selectedFont = draft.font ?? DEFAULT_FONT;
 
   return (
-    <div>
-      <ul className={styles.font_list}>
+    <ul className={styles.font_list}>
+      {FONTS.map((f, i) => (
         <li
-          className={`${styles.font_item} ${styles.font_1} ${
-            selectedFont === "온글맆 류류체" ? styles.selected1 : ""
-          }`}
-          onClick={() => handleFontSelect("온글맆 류류체")}
+          key={f.value}
+          className={[
+            styles.font_item,
+            styles[`font_${i + 1}`], // 개별 폰트 스타일이 필요하면 유지
+            selectedFont === f.value ? styles.selected : "",
+          ].join(" ")}
+          onClick={() => setDraft({ font: f.value })}
         >
-          온글맆 류류체
+          {f.label}
         </li>
-        <li
-          className={`${styles.font_item} ${styles.font_2} ${
-            selectedFont === "이서윤체" ? styles.selected2 : ""
-          }`}
-          onClick={() => handleFontSelect("이서윤체")}
-        >
-          이서윤체
-        </li>
-        <li
-          className={`${styles.font_item} ${styles.font_3} ${
-            selectedFont === "온글맆 박다현체" ? styles.selected3 : ""
-          }`}
-          onClick={() => handleFontSelect("온글맆 박다현체")}
-        >
-          온글맆 박다현체
-        </li>
-      </ul>
-    </div>
+      ))}
+    </ul>
   );
-};
-
-export default FontStyle;
+}

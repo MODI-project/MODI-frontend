@@ -17,16 +17,24 @@ export const getStatistics = (year: string, month: string) =>
     `/diaries/statistics?year=${year}&month=${month}`
   );
 
+const normalize = (s?: string) => (s ?? "").trim().toLowerCase();
+
 export async function fetchStatisticsByYm(ym: string) {
   const [year, month] = ym.split("-");
   const { data } = await getStatistics(year, month);
 
-  const toneData = (data.topTones ?? []).map((it) => ({
-    label: it.name, // 서버 name
-    value: it.count, // 서버 count
-  }));
+  const toneData = (data.topTones ?? [])
+    .filter((it) => it.count > 0) // 0건 제거 (선택)
+    .filter((it) => {
+      const k = normalize(it.name);
+      // '없음', 빈 문자열, none/unknown 류 제거
+      return k && k !== "없음" && k !== "none" && k !== "unknown";
+    })
+    .map((it) => ({ label: it.name, value: it.count }));
+
   return {
     totalCount: data.totalCount,
-    toneData,
+    toneData, // 여기까지 오면 “보여줄 데이터만” 남음
+    hasToneStats: toneData.length > 0, // 필요하면 플래그도 같이
   };
 }
