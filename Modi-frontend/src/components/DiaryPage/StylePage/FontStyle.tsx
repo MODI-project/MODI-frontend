@@ -4,9 +4,9 @@ import { DiaryDraftContext } from "../../../contexts/DiaryDraftContext";
 import { useContext } from "react";
 
 const FONTS = [
-  { label: "온글잎 류류체", value: "온글잎 류류체" },
-  { label: "이서윤체", value: "이서윤체" },
-  { label: "온글잎 박다현체", value: "온글잎 박다현체" },
+  { label: "온글잎 류류체", value: "온글잎 류류체", cls: "font_1" },
+  { label: "이서윤체", value: "이서윤체", cls: "font_2" },
+  { label: "온글잎 박다현체", value: "온글잎 박다현체", cls: "font_3" },
 ];
 
 const DEFAULT_FONT = FONTS[0].value;
@@ -28,7 +28,7 @@ export default function FontStyle() {
           key={f.value}
           className={[
             styles.font_item,
-            styles[`font_${i + 1}`], // 개별 폰트 스타일이 필요하면 유지
+            styles[f.cls],
             selectedFont === f.value ? styles.selected : "",
           ].join(" ")}
           onClick={() => setDraft({ font: f.value })}
