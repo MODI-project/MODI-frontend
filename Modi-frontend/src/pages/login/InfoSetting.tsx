@@ -21,6 +21,7 @@ interface LocationState {
 
 const InitialSetting = () => {
   const { fetchUserInfo } = useLoadUserInfo();
+  const { editUserInfo } = useEditUserInfo();
   const { setCharacter } = useCharacter();
   const navigate = useNavigate();
   const location = useLocation();
@@ -161,7 +162,8 @@ const InitialSetting = () => {
 
       // 분기처리 - 마이페이지에서 온 경우 회원정보 수정, 최초 회원가입인 경우 회원가입
       if (from === "/mypage") {
-        userInfo = await useEditUserInfo().editUserInfo(payload);
+        // userInfo = await useEditUserInfo().editUserInfo(payload);
+        userInfo = await editUserInfo(payload);
       } else {
         userInfo = await handleUserSignUp(
           finalNickname,
