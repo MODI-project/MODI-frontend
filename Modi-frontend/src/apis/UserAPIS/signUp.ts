@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { SignUpRequest, SignUpResponse } from "../../types/UserInfo";
+import type { MeRequest, MeResponse } from "../../types/UserInfo";
 
 const API_BASE_URL = "https://modi-server.store/api";
 
@@ -7,9 +7,9 @@ export const handleUserSignUp = async (
   nickname: string,
   character: string,
   code?: string | null
-): Promise<SignUpResponse> => {
+): Promise<MeResponse> => {
   try {
-    const userInfo: SignUpRequest = {
+    const userInfo: MeRequest = {
       nickname,
       character,
     };
@@ -24,7 +24,7 @@ export const handleUserSignUp = async (
     });
 
     console.log("회원가입 성공");
-    const data: SignUpResponse = response.data;
+    const data: MeResponse = response.data;
 
     return data;
   } catch (error: any) {

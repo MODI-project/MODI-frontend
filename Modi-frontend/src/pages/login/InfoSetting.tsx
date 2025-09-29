@@ -5,7 +5,7 @@ import styles from "./InfoSetting.module.css";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import { useCharacter } from "../../contexts/CharacterContext";
 import { handleUserSignUp } from "../../apis/UserAPIS/signUp";
-import { handleEditUserInfo } from "../../apis/UserAPIS/editUserInfo";
+import useEditUserInfo from "../../apis/UserAPIS/editUserInfo";
 import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
 
@@ -161,10 +161,7 @@ const InitialSetting = () => {
 
       // 분기처리 - 마이페이지에서 온 경우 회원정보 수정, 최초 회원가입인 경우 회원가입
       if (from === "/mypage") {
-        userInfo = await handleEditUserInfo(
-          payload.nickname,
-          payload.character
-        );
+        userInfo = await useEditUserInfo().editUserInfo(payload);
       } else {
         userInfo = await handleUserSignUp(
           finalNickname,
