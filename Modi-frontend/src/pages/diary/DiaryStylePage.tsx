@@ -249,7 +249,7 @@ const DiaryStylePage = () => {
       <div className={styles.DiaryStyle_container}>
         <Header
           left="/icons/back.svg"
-          LeftClick={() => navigate(-3)} // 감정 태그 선택화면으로 되돌아감
+          LeftClick={() => navigate("/emotion")} // 감정 태그 선택화면으로 되돌아감
           middle={"기록하기"}
           right="/icons/X.svg"
           RightClick={() => setIsPopupOpen(true)}
