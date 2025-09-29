@@ -129,7 +129,7 @@ const DiaryWritePage = () => {
       <div className={styles.DiaryWrite_container}>
         <Header
           left="/icons/back.svg"
-          LeftClick={() => navigate(-2)} // 감정 태그 선택화면으로 되돌아감
+          LeftClick={() => navigate(-1)}
           middle="기록하기"
           right="/icons/X.svg"
           RightClick={() => setIsPopupOpen(true)}
