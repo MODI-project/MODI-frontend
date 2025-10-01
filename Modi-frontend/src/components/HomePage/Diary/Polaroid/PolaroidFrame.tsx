@@ -81,7 +81,11 @@ const PolaroidFrame: React.FC<Props> = ({
   const handleFrameClick = () => {
     if (!resolvedDiary) return;
     navigate("/recorddetail", {
-      state: { diaryId: resolvedDiary.id, diaryData: resolvedDiary },
+      state: {
+        diaryId: resolvedDiary.id,
+        diaryData: resolvedDiary,
+        fromView: true,
+      },
     });
   };
 
