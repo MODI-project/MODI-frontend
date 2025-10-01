@@ -346,8 +346,15 @@ const RecordDetailPage = () => {
             middle="기록 상세보기"
             right="/icons/header_home.svg"
             LeftClick={() => {
-              if (location.state?.fromCreate) navigate("/home");
-              else navigate(-1);
+              if (location.state?.fromCreate) {
+                navigate("/home");
+              } else if (location.state?.fromEdit) {
+                navigate(-1);
+              } else if (location.state?.fromView) {
+                navigate(-1);
+              } else {
+                navigate(-1);
+              }
             }}
             RightClick={() => navigate("/home")}
           />

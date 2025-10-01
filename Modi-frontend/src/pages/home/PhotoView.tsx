@@ -160,6 +160,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
       state: {
         diaryId: diary.id,
         diaryData: diary,
+        fromView: true,
       },
     });
   };
