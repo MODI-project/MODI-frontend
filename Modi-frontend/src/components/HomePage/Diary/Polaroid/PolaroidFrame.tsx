@@ -85,6 +85,7 @@ const PolaroidFrame: React.FC<Props> = ({
         diaryId: resolvedDiary.id,
         diaryData: resolvedDiary,
         fromView: true,
+        viewType: "polaroid",
       },
     });
   };
