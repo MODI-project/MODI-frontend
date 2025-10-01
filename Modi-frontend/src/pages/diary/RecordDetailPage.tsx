@@ -351,7 +351,14 @@ const RecordDetailPage = () => {
               } else if (location.state?.fromEdit) {
                 navigate(-1);
               } else if (location.state?.fromView) {
-                navigate("/home");
+                const viewType = location.state?.viewType;
+                if (viewType === "photo") {
+                  navigate("/home?view=photo");
+                } else if (viewType === "polaroid") {
+                  navigate("/home?view=polaroid");
+                } else {
+                  navigate("/home");
+                }
               } else {
                 navigate(-1);
               }

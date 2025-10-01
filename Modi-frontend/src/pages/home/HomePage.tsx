@@ -28,6 +28,15 @@ export default function HomePage() {
   const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
   const navigate = useNavigate();
   const location = useLocation();
+
+  // URL 파라미터에서 viewType 설정
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const viewParam = urlParams.get("view");
+    if (viewParam === "photo" || viewParam === "polaroid") {
+      setViewType(viewParam);
+    }
+  }, [location.search]);
   const [loading, setLoading] = useState(true);
   const [hasMonthData, setHasMonthData] = useState<boolean | null>(null); // 현재 달에 일기가 하나라도 있는지
   const isTokenRequesting = useRef(false); // 토큰 요청 중복 방지

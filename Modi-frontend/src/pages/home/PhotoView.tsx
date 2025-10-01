@@ -161,6 +161,7 @@ export default function PhotoView({ onSwitchView }: PhotoViewProps) {
         diaryId: diary.id,
         diaryData: diary,
         fromView: true,
+        viewType: "photo",
       },
     });
   };
