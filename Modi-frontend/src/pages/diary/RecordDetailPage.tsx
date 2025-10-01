@@ -351,7 +351,7 @@ const RecordDetailPage = () => {
               } else if (location.state?.fromEdit) {
                 navigate(-1);
               } else if (location.state?.fromView) {
-                navigate(-1);
+                navigate("/home");
               } else {
                 navigate(-1);
               }
