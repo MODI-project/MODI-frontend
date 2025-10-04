@@ -54,7 +54,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userData = await fetchUserInfo();
       login(userData);
     } catch (error) {
+      // 403 또는 401 에러는 로그인하지 않은 상태로 간주
       logout();
+    } finally {
+      setIsLoading(false);
     }
   };
 

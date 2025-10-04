@@ -14,7 +14,7 @@ import { useGeolocationControl } from "../../hooks/useGeolocationControl";
 import { useDongGeofence } from "../../hooks/useDongGeofence";
 import { useNotificationManager } from "../../contexts/NotificationManagerContext";
 
-import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
+import { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 import { useAuth } from "../../contexts/AuthContext";
 
 // URL에서 code 파라미터 추출 함수
@@ -24,8 +24,7 @@ const getCodeFromURL = (): string | null => {
 };
 
 export default function HomePage() {
-  const { fetchUserInfo } = useLoadUserInfo();
-  const { login } = useAuth();
+  const { user: authUser } = useAuth();
   const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,7 +40,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [hasMonthData, setHasMonthData] = useState<boolean | null>(null); // 현재 달에 일기가 하나라도 있는지
   const isTokenRequesting = useRef(false); // 토큰 요청 중복 방지
-  const [userInfo, setUserInfo] = useState<MeResponse | null>(null);
+  const [userInfo, setUserInfo] = useState<MeResponse | null>(authUser);
   // Geolocation 제어
   useGeolocationControl();
 
@@ -68,20 +67,10 @@ export default function HomePage() {
     }
   }, [location]);
 
+  // AuthContext의 사용자 정보와 동기화
   useEffect(() => {
-    const HomeLoading = async () => {
-      try {
-        const userInfo: MeResponse = await fetchUserInfo();
-        setUserInfo(userInfo);
-
-        // AuthContext에 로그인 상태 업데이트
-        login(userInfo);
-      } catch (error) {
-        console.error("사용자 정보 로드 실패:", error);
-      }
-    };
-    HomeLoading();
-  }, [fetchUserInfo, login]);
+    setUserInfo(authUser);
+  }, [authUser]);
 
   // 월별 일기 조회
   useEffect(() => {
