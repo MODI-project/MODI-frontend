@@ -8,7 +8,6 @@ import { handleUserSignUp } from "../../apis/UserAPIS/signUp";
 import useEditUserInfo from "../../apis/UserAPIS/editUserInfo";
 import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 import { handleTokenRequest } from "../../apis/UserAPIS/tokenRequest";
-import { useAuth } from "../../contexts/AuthContext";
 
 // URL에서 code 파라미터 추출 함수
 const getCodeFromURL = (): string | null => {
@@ -24,7 +23,6 @@ const InitialSetting = () => {
   const { fetchUserInfo } = useLoadUserInfo();
   const { editUserInfo } = useEditUserInfo();
   const { setCharacter } = useCharacter();
-  const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = (location.state as LocationState)?.from;
@@ -35,13 +33,6 @@ const InitialSetting = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [nicknameError, setNicknameError] = useState<string>("");
   const completeBtnRef = useRef<HTMLButtonElement>(null);
-
-  // 이미 로그인된 사용자는 홈으로 리다이렉트 (마이페이지에서 온 경우 제외)
-  useEffect(() => {
-    if (!isLoading && isAuthenticated && from !== "/mypage") {
-      navigate("/home", { replace: true });
-    }
-  }, [isAuthenticated, isLoading, from, navigate]);
 
   // 기존 사용자 정보 불러오기 (마이페이지에서 수정하는 경우)
   useEffect(() => {
