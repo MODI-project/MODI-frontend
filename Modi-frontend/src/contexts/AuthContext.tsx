@@ -5,6 +5,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
+import { useLocation } from "react-router-dom";
 import useLoadUserInfo, { MeResponse } from "../apis/UserAPIS/loadUserInfo";
 
 interface AuthContextType {
@@ -34,6 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<MeResponse | null>(null);
   const { fetchUserInfo } = useLoadUserInfo();
+  const location = useLocation();
 
   const login = (userData: MeResponse) => {
     setUser(userData);
@@ -61,10 +63,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // 앱 시작 시 인증 상태 확인
+  // 앱 시작 시 인증 상태 확인 (로그인 페이지 제외)
   useEffect(() => {
-    checkAuth();
-  }, []);
+    // 로그인 페이지가 아닐 때만 인증 확인
+    if (location.pathname !== "/") {
+      checkAuth();
+    } else {
+      // 로그인 페이지에서는 로딩 상태만 false로 설정
+      setIsLoading(false);
+    }
+  }, [location.pathname]);
 
   const value: AuthContextType = {
     isAuthenticated,
