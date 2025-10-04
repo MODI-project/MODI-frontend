@@ -2,24 +2,13 @@ import { useEffect, useState } from "react";
 import PrimaryButton from "../../components/common/button/ButtonBar/PrimaryButton";
 import styles from "./LoginPage.module.css";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading } = useAuth();
-
-  useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      navigate("/home", { replace: true });
-    }
-  }, [isAuthenticated, isLoading, navigate]);
 
   const handleGoogleLogin = () => {
     // 백엔드 API 호출하여 Google 로그인 페이지로 리다이렉트
     const backendOAuthUrl = `https://modi-server.store/api/oauth2/authorize/google`;
-
-    // 간단한 테스트를 위해 alert 먼저 표시
-    alert("버튼이 클릭되었습니다!");
 
     console.log("=== Google 로그인 시작 ===");
     console.log("Google 로그인 URL:", backendOAuthUrl);

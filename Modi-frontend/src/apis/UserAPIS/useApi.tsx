@@ -4,11 +4,9 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 
 function useApi() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
   const controller = new AbortController();
 
   const commonRequestInterceptor = (config: InternalAxiosRequestConfig) => {
@@ -36,8 +34,6 @@ function useApi() {
   api.interceptors.response.use(commonResponseInterceptor, (error) => {
     if (error.response?.status === HttpStatusCode.Unauthorized) {
       controller.abort();
-      // AuthContext의 로그아웃 함수 호출하여 상태 동기화
-      logout();
       alert("로그인이 필요합니다.");
       navigate("/");
     }
