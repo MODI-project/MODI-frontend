@@ -51,13 +51,21 @@ export default function HomePage() {
   // code 파라미터가 있으면 토큰 요청 처리 (중복 방지)
   useEffect(() => {
     const code = getCodeFromURL();
+    console.log("=== OAuth 콜백 처리 시작 ===");
+    console.log("현재 URL:", window.location.href);
+    console.log("code 파라미터:", code);
+
     if (code && !isTokenRequesting.current) {
       isTokenRequesting.current = true;
+      console.log("토큰 요청 시작:", code);
 
       handleTokenRequest(code)
-        .then(() => {})
+        .then(() => {
+          console.log("토큰 요청 성공");
+        })
         .catch((error) => {
-          navigate("/login");
+          console.error("토큰 요청 실패:", error);
+          navigate("/");
         })
         .finally(() => {
           isTokenRequesting.current = false;
