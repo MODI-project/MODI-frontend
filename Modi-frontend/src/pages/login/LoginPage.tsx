@@ -18,11 +18,18 @@ const LoginPage = () => {
     // 백엔드 API 호출하여 Google 로그인 페이지로 리다이렉트
     const backendOAuthUrl = `https://modi-server.store/api/oauth2/authorize/google`;
 
+    // 간단한 테스트를 위해 alert 먼저 표시
+    alert("버튼이 클릭되었습니다!");
+
+    console.log("=== Google 로그인 시작 ===");
     console.log("Google 로그인 URL:", backendOAuthUrl);
+    console.log("현재 도메인:", window.location.origin);
+    console.log("예상 리다이렉트 URL:", `${window.location.origin}/home`);
 
     // 외부 URL로 이동하므로 window.location.href 사용
     // React Router가 내부 라우트로 인식하지 않도록 전체 URL 사용
     if (backendOAuthUrl.startsWith("https")) {
+      console.log("Google OAuth 페이지로 리다이렉트 중...");
       window.location.href = backendOAuthUrl;
     }
   };
