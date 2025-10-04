@@ -80,23 +80,29 @@ export default function HomePage() {
     setUserInfo(authUser);
   }, [authUser]);
 
-  // 월별 일기 조회
+  // 월별 일기 조회 (OAuth 콜백 중에는 제외)
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth() + 1;
-        const list = await fetchMonthlyDiaries(year, month);
-        setHasMonthData(list.length > 0);
-      } catch (e) {
-        console.error("월별 일기 조회 실패:", e);
-        setHasMonthData(false);
-      } finally {
-        setLoading(false);
-      }
-    })();
+    const code = getCodeFromURL();
+    // OAuth 콜백 중이 아닐 때만 월별 일기 조회
+    if (!code) {
+      (async () => {
+        setLoading(true);
+        try {
+          const now = new Date();
+          const year = now.getFullYear();
+          const month = now.getMonth() + 1;
+          const list = await fetchMonthlyDiaries(year, month);
+          setHasMonthData(list.length > 0);
+        } catch (e) {
+          console.error("월별 일기 조회 실패:", e);
+          setHasMonthData(false);
+        } finally {
+          setLoading(false);
+        }
+      })();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   return (
