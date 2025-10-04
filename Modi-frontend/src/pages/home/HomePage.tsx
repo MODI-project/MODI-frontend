@@ -14,8 +14,8 @@ import { useGeolocationControl } from "../../hooks/useGeolocationControl";
 import { useDongGeofence } from "../../hooks/useDongGeofence";
 import { useNotificationManager } from "../../contexts/NotificationManagerContext";
 
-// ✅ 추가 import
 import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
+import { useAuth } from "../../contexts/AuthContext";
 
 // URL에서 code 파라미터 추출 함수
 const getCodeFromURL = (): string | null => {
@@ -25,6 +25,7 @@ const getCodeFromURL = (): string | null => {
 
 export default function HomePage() {
   const { fetchUserInfo } = useLoadUserInfo();
+  const { login } = useAuth();
   const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
   const navigate = useNavigate();
   const location = useLocation();
@@ -69,11 +70,18 @@ export default function HomePage() {
 
   useEffect(() => {
     const HomeLoading = async () => {
-      const userInfo: MeResponse = await fetchUserInfo();
-      setUserInfo(userInfo);
+      try {
+        const userInfo: MeResponse = await fetchUserInfo();
+        setUserInfo(userInfo);
+
+        // AuthContext에 로그인 상태 업데이트
+        login(userInfo);
+      } catch (error) {
+        console.error("사용자 정보 로드 실패:", error);
+      }
     };
     HomeLoading();
-  }, []);
+  }, [fetchUserInfo, login]);
 
   // 월별 일기 조회
   useEffect(() => {
