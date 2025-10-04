@@ -63,16 +63,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // 앱 시작 시 인증 상태 확인 (로그인 페이지 제외)
+  // 앱 시작 시 인증 상태 확인 (로그인 페이지 및 OAuth 콜백 제외)
   useEffect(() => {
-    // 로그인 페이지가 아닐 때만 인증 확인
-    if (location.pathname !== "/") {
+    // 로그인 페이지가 아니고, OAuth 콜백이 아닐 때만 인증 확인
+    const isOAuthCallback = location.search.includes("code=");
+
+    if (location.pathname !== "/" && !isOAuthCallback) {
       checkAuth();
     } else {
-      // 로그인 페이지에서는 로딩 상태만 false로 설정
+      // 로그인 페이지나 OAuth 콜백에서는 로딩 상태만 false로 설정
       setIsLoading(false);
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   const value: AuthContextType = {
     isAuthenticated,
