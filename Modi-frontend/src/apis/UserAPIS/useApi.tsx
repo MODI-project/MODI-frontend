@@ -38,8 +38,13 @@ function useApi() {
       controller.abort();
       // AuthContext의 로그아웃 함수 호출하여 상태 동기화
       logout();
-      alert("로그인이 필요합니다.");
-      navigate("/");
+
+      // OAuth 콜백 처리 중이 아닐 때만 리다이렉트
+      const isOAuthCallback = window.location.search.includes("code=");
+      if (!isOAuthCallback) {
+        alert("로그인이 필요합니다.");
+        navigate("/");
+      }
     }
 
     return Promise.reject(error);
