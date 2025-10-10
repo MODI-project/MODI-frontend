@@ -29,3 +29,10 @@ dist
 .env
 
 ssl/
+
+# TypeScript build artifacts
+*.tsbuildinfo
+src/**/*.js
+src/**/*.jsx
+!vite.config.js
+vite.config.js

@@ -24,6 +24,9 @@ import Setting from "./pages/setting/Setting";
 import MapSearchBar from "./components/map/SearchPlace/MapSearchBar";
 import NotificationGridPage from "./pages/notification/NotificationGridPage";
 
+// Route Guard
+import ProtectedRoute from "./components/common/ProtectedRoute";
+
 function App() {
   return (
     <CharacterProvider>
@@ -34,25 +37,117 @@ function App() {
               <NotificationManagerProvider>
                 <Routes>
                   <Route path="/" element={<LoginPage />} />
-                  <Route path="/home" element={<HomePage />} />
-                  <Route path="/search" element={<SearchPage />} />
-                  <Route path="/emotion" element={<DiaryEmotionTag />} />
-                  <Route path="/detail" element={<DiaryWritePage />} />
-                  <Route path="/keyword" element={<DiaryKeywordPage />} />
-                  <Route path="/style" element={<DiaryStylePage />} />
-                  <Route path="/recorddetail" element={<RecordDetailPage />} />
-                  <Route path="/map" element={<MapPage />} />
-                  <Route path="/mypage" element={<MyPage />} />
+                  <Route
+                    path="/home"
+                    element={
+                      <ProtectedRoute>
+                        <HomePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/search"
+                    element={
+                      <ProtectedRoute>
+                        <SearchPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/emotion"
+                    element={
+                      <ProtectedRoute>
+                        <DiaryEmotionTag />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/detail"
+                    element={
+                      <ProtectedRoute>
+                        <DiaryWritePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/keyword"
+                    element={
+                      <ProtectedRoute>
+                        <DiaryKeywordPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/style"
+                    element={
+                      <ProtectedRoute>
+                        <DiaryStylePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/recorddetail"
+                    element={
+                      <ProtectedRoute>
+                        <RecordDetailPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/map"
+                    element={
+                      <ProtectedRoute>
+                        <MapPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/mypage"
+                    element={
+                      <ProtectedRoute>
+                        <MyPage />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="/information-setting"
-                    element={<InfoSetting />}
+                    element={
+                      <ProtectedRoute>
+                        <InfoSetting />
+                      </ProtectedRoute>
+                    }
                   />
-                  <Route path="/notification" element={<NotificationPage />} />
-                  <Route path="/setting" element={<Setting />} />
-                  <Route path="/map-search-bar" element={<MapSearchBar />} />
+                  <Route
+                    path="/notification"
+                    element={
+                      <ProtectedRoute>
+                        <NotificationPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/setting"
+                    element={
+                      <ProtectedRoute>
+                        <Setting />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/map-search-bar"
+                    element={
+                      <ProtectedRoute>
+                        <MapSearchBar />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="/notification-grid"
-                    element={<NotificationGridPage />}
+                    element={
+                      <ProtectedRoute>
+                        <NotificationGridPage />
+                      </ProtectedRoute>
+                    }
                   />
                 </Routes>
               </NotificationManagerProvider>
