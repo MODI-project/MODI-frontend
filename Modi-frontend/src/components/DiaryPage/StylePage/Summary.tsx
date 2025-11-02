@@ -6,7 +6,6 @@ import { generateSummary } from "../../../apis/Diary/summary";
 
 const Summary = () => {
   const { draft, setDraft } = useContext(DiaryDraftContext);
-  const [isFontStyleOpen, setIsFontStyleOpen] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
 
   const handleRegenerate = async () => {
@@ -46,7 +45,7 @@ const Summary = () => {
         Aa
       </button>
 
-      {isFontStyleOpen && <FontStyle />}
+      <FontStyle />
 
       <input
         className={styles.content}
