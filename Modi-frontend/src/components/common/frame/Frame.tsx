@@ -4,7 +4,7 @@ import {
 } from "../../../contexts/FrameTemplate";
 import styles from "./Frame.module.css";
 import React, { useState, forwardRef } from "react";
-import { DEFAULT_FONT } from "../../../utils/fontMap";
+import { mapFontName, DEFAULT_FONT } from "../../../utils/fontMap";
 
 const FALLBACK_IMG = "https://placehold.co/215x286";
 
@@ -167,13 +167,14 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
   const frontStyle = frontBg ? { backgroundImage: `url(${frontBg})` } : {};
 
   // font 적용
-  const appliedFont = diaryData?.font || DEFAULT_FONT;
+  const rawFont = diaryData?.font ?? DEFAULT_FONT;
+  const appliedFont = mapFontName(rawFont);
 
   return (
     <div
       ref={ref}
       className={`${styles.frame_wrapper} ${!isAbled ? styles.disabled : ""}`}
-      style={wrapperStyle}
+      style={{ ...wrapperStyle, fontFamily: `${appliedFont}, sans-serif` }}
       onClick={handleFrameClick}
     >
       {/* 앞면 */}

@@ -4,9 +4,9 @@ import { DiaryDraftContext } from "../../../contexts/DiaryDraftContext";
 import { useContext } from "react";
 
 const FONTS = [
-  { label: "온글잎 류류체", value: "온글잎 류류체", cls: "font_1" },
-  { label: "이서윤체", value: "이서윤체", cls: "font_2" },
-  { label: "온글잎 박다현체", value: "온글잎 박다현체", cls: "font_3" },
+  { label: "온글잎류류체", value: "Onryuruu", cls: "font_1" },
+  { label: "이서윤체", value: "LeeSeoYoon", cls: "font_2" },
+  { label: "온글잎박다현체", value: "ParkDaHyun", cls: "font_3" },
 ];
 
 const DEFAULT_FONT = FONTS[0].value;
