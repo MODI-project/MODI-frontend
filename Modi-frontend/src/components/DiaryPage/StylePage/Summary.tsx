@@ -34,6 +34,8 @@ const Summary = () => {
     }
   };
 
+  const fontFamily = draft.font ?? "LeeSeoYoon";
+
   return (
     <div className={styles.Summary_container}>
       <button
@@ -44,7 +46,7 @@ const Summary = () => {
         Aa
       </button>
 
-      <FontStyle />
+      {isFontStyleOpen && <FontStyle />}
 
       <input
         className={styles.content}

@@ -161,6 +161,7 @@ const DiaryStylePage = () => {
       tags,
       content: typeof d.content === "string" ? d.content : draft.content ?? "",
       frame: String(d.frame ?? d.frameId ?? draft.templateId ?? "1"),
+      font: typeof d.font === "string" ? d.font : draft.font ?? "LeeSeoYoon",
     };
 
     navigate("/recorddetail", {
