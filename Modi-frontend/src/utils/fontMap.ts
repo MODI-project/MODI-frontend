@@ -1,6 +1,6 @@
 export const SERVER_TO_CSS_FONT: Record<string, string> = {
-  "온글맆 박다현체": "ParkDaHyun",
-  "온글맆 류류체": "Onryuruu",
+  온글맆박다현체: "ParkDaHyun",
+  온글맆류류체: "Onryuruu",
   이서윤체: "LeeSeoYoon",
   ParkDaHyun: "ParkDaHyun",
   Onryuruu: "Onryuruu",

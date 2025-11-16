@@ -3,8 +3,9 @@ import {
   frameIdMapping,
 } from "../../../contexts/FrameTemplate";
 import styles from "./Frame.module.css";
-import React, { useState, forwardRef } from "react";
+import React, { useState, forwardRef, useContext } from "react";
 import { mapFontName, DEFAULT_FONT } from "../../../utils/fontMap";
+import { DiaryDraftContext } from "../../../contexts/DiaryDraftContext";
 
 const FALLBACK_IMG = "https://placehold.co/215x286";
 
@@ -97,6 +98,7 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
   const { frameId } = useFrameTemplate();
   const [isFlipped, setIsFlipped] = useState(false);
   const [showMoreTags, setShowMoreTags] = useState(false);
+  const { draft } = useContext(DiaryDraftContext);
 
   const currentFrameId = diaryData?.frame || frameId;
 
@@ -167,8 +169,10 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
   const frontStyle = frontBg ? { backgroundImage: `url(${frontBg})` } : {};
 
   // font 적용
-  const rawFont = diaryData?.font ?? DEFAULT_FONT;
+  const rawFont = diaryData?.font ?? draft?.font ?? DEFAULT_FONT;
   const appliedFont = mapFontName(rawFont);
+
+  console.log("[Frame] render / font =", rawFont);
 
   return (
     <div
@@ -197,7 +201,13 @@ const Frame = forwardRef<HTMLDivElement, FrameProps>(function Frame(
           />
         </div>
         <div className={styles.summary_container}>
-          <span className={styles.summary} style={{ fontFamily: appliedFont }}>
+          <span
+            className={styles.summary}
+            style={{
+              ...wrapperStyle,
+              fontFamily: `${appliedFont}, sans-serif`,
+            }}
+          >
             {displayData.summary}
           </span>
         </div>

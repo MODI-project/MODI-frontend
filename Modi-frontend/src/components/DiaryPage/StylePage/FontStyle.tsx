@@ -4,9 +4,9 @@ import { DiaryDraftContext } from "../../../contexts/DiaryDraftContext";
 import { useContext } from "react";
 
 const FONTS = [
-  { label: "온글잎류류체", value: "Onryuruu", cls: "font_1" },
+  { label: "온글맆류류체", value: "Onryuruu", cls: "font_1" },
   { label: "이서윤체", value: "LeeSeoYoon", cls: "font_2" },
-  { label: "온글잎박다현체", value: "ParkDaHyun", cls: "font_3" },
+  { label: "온글맆박다현체", value: "ParkDaHyun", cls: "font_3" },
 ];
 
 const DEFAULT_FONT = FONTS[0].value;
@@ -30,7 +30,10 @@ export default function FontStyle() {
           <li
             key={f.value}
             className={[styles.font_item, styles[f.cls], selectedCls].join(" ")}
-            onClick={() => setDraft({ font: f.value })}
+            onClick={() => {
+              console.log("[FontStyle] selected =", f.value);
+              setDraft({ font: f.value });
+            }}
             role="button"
             aria-pressed={isSelected}
           >
