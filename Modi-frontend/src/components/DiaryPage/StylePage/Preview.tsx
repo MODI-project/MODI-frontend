@@ -1,6 +1,7 @@
 import styles from "./Preview.module.css";
 import { useContext } from "react";
 import { DiaryDraftContext } from "../../../contexts/DiaryDraftContext";
+import { mapFontName, DEFAULT_FONT } from "../../../utils/fontMap";
 
 const Preview = () => {
   const { draft } = useContext(DiaryDraftContext);
@@ -48,11 +49,16 @@ const Preview = () => {
     characterFolder === "momo" || characterFolder === "boro";
   const characterBg = characterFolder ? characterBgMap[characterFolder] : null;
 
-  console.log("[Preview] render / font =", draft.font);
+  const appliedFont = mapFontName(draft.font ?? DEFAULT_FONT);
+
+  console.log("[Preview] appliedFont =", appliedFont);
 
   return (
     <div className={styles.preview_wrapper}>
-      <div className={styles.frame_container}>
+      <div
+        className={styles.frame_container}
+        style={{ fontFamily: `${appliedFont}, sans-serif` }}
+      >
         {/* 기본 배경 */}
         {!isCharacterTemplate ? (
           <img
