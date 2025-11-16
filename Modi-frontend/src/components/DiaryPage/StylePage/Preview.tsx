@@ -37,16 +37,18 @@ const Preview = () => {
   };
 
   const fontMap: Record<string, string> = {
-    "온글맆 류류체": "var(--font-onryuruu)",
+    온글맆류류체: "var(--font-onryuruu)",
     이서윤체: "var(--font-leeseoyoon)",
-    "온글맆 박다현체": "var(--font-parkdahyun)",
+    온글맆박다현체: "var(--font-parkdahyun)",
   };
 
-  const defaultFont = "온글맆 류류체";
+  const defaultFont = "온글맆류류체";
 
   const requiresOverlay =
     characterFolder === "momo" || characterFolder === "boro";
   const characterBg = characterFolder ? characterBgMap[characterFolder] : null;
+
+  console.log("[Preview] render / font =", draft.font);
 
   return (
     <div className={styles.preview_wrapper}>
