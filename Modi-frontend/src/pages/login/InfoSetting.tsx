@@ -15,6 +15,14 @@ const getCodeFromURL = (): string | null => {
   return urlParams.get("code");
 };
 
+// URL에서 isNew 파라미터 추출 함수
+const getIsNewFromURL = (): boolean | null => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isNew = urlParams.get("isNew");
+  if (isNew === null) return null;
+  return isNew === "true";
+};
+
 interface LocationState {
   from?: string;
 }
@@ -64,44 +72,53 @@ const InitialSetting = () => {
 
       // URL에서 code 파라미터 확인
       const code = getCodeFromURL();
+      const isNew = getIsNewFromURL();
 
       if (code) {
         // code가 있으면 먼저 토큰 요청
         try {
           await handleTokenRequest(code);
+
+          // isNew 파라미터가 있으면 이를 우선 사용
+          if (isNew !== null) {
+            if (isNew === false) {
+              // 기존 회원이므로 홈으로 리다이렉트
+              const newUrl = window.location.pathname;
+              window.history.replaceState({}, document.title, newUrl);
+              navigate("/home");
+              return;
+            }
+            // isNew === true인 경우는 페이지에 머물러야 함 (신규 회원)
+            return;
+          }
+
+          // isNew 파라미터가 없으면 기존 로직 사용 (하위 호환성)
           // 토큰 요청 성공 후 사용자 정보 확인
           try {
             const userInfo = await fetchUserInfo();
             // 회원정보가 완성되어 있는지 확인 (nickname과 character가 모두 있는 경우)
             if (userInfo.nickname && userInfo.character) {
               // 기존 회원이므로 홈으로 리다이렉트
+              // code 파라미터를 URL에서 제거
+              const newUrl = window.location.pathname;
+              window.history.replaceState({}, document.title, newUrl);
               navigate("/home");
               return;
             }
             // 신규 회원인 경우 (nickname이나 character가 없는 경우)는 페이지에 머물러야 함
+            // code는 회원가입 완료 시까지 유지
           } catch (fetchError: any) {
             // 사용자 정보 조회 실패 시 (500 에러 등)
             // 신규 회원일 가능성이 높으므로 페이지에 머물러야 함
+            // code는 회원가입 완료 시까지 유지
           }
         } catch (tokenError) {
           console.error("토큰 요청 실패:", tokenError);
           // 토큰 요청 실패 시 회원가입 페이지에서 계속 진행 가능
         }
-      } else {
-        // code가 없으면 이미 토큰이 발급되어 있을 수 있으므로 사용자 정보 확인
-        try {
-          const userInfo = await fetchUserInfo();
-          if (userInfo.nickname && userInfo.character) {
-            // 기존 회원이므로 홈으로 리다이렉트
-            navigate("/home");
-            return;
-          }
-          // 신규 회원인 경우는 페이지에 머물러야 함
-        } catch (error) {
-          // 사용자 정보 조회 실패 시 페이지에 머물러야 함
-          console.log("사용자 정보 조회 실패:", error);
-        }
       }
+      // code가 없으면 신규 회원가입 플로우가 아니므로 아무것도 하지 않음
+      // (마이페이지에서 온 경우는 위에서 이미 처리됨)
     };
 
     checkUserInfo();
@@ -210,6 +227,10 @@ const InitialSetting = () => {
 
       // API 호출 성공 후에만 캐릭터 정보 업데이트
       setCharacter(selectedCharacter as any);
+
+      // code 파라미터를 URL에서 제거
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
 
       if (location.state?.from === "/mypage") {
         navigate("/mypage");
