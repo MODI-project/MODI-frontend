@@ -59,8 +59,23 @@ export default function HomePage() {
       console.log("토큰 요청 시작:", code);
 
       handleTokenRequest(code)
-        .then(() => {
+        .then(async () => {
           console.log("토큰 요청 성공");
+          // 토큰 요청 성공 후 사용자 정보 확인
+          try {
+            const userInfo = await fetchUserInfo();
+            // 회원정보가 완성되어 있는지 확인 (nickname과 character가 모두 있는 경우)
+            if (!userInfo.nickname || !userInfo.character) {
+              // 신규 회원이므로 회원정보 입력 페이지로 리디렉션
+              navigate("/information-setting", { state: { code } });
+              return;
+            }
+            // 기존 회원이므로 홈에 머물러도 됨
+            setUserInfo(userInfo);
+          } catch (error) {
+            // 사용자 정보 조회 실패 시 회원정보 입력 페이지로 리디렉션 (신규 회원일 가능성)
+            navigate("/information-setting", { state: { code } });
+          }
         })
         .catch((error) => {
           console.error("토큰 요청 실패:", error);
@@ -72,7 +87,7 @@ export default function HomePage() {
           window.history.replaceState({}, document.title, newUrl);
         });
     }
-  }, [location]);
+  }, [location, navigate, fetchUserInfo]);
 
   useEffect(() => {
     const HomeLoading = async () => {
