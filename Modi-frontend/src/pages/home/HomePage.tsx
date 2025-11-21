@@ -39,6 +39,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [hasMonthData, setHasMonthData] = useState<boolean | null>(null); // 현재 달에 일기가 하나라도 있는지
   const isTokenRequesting = useRef(false); // 토큰 요청 중복 방지
+  const processedCode = useRef<string | null>(null); // 이미 처리한 code 추적
   const [userInfo, setUserInfo] = useState<MeResponse | null>(null);
   // Geolocation 제어
   useGeolocationControl();
@@ -50,50 +51,71 @@ export default function HomePage() {
   // code 파라미터가 있으면 토큰 요청 처리 (중복 방지)
   useEffect(() => {
     const code = getCodeFromURL();
+
+    // code가 없으면 건너뜀
+    if (!code) {
+      return;
+    }
+
+    // 이미 처리한 code면 건너뜀 (중복 실행 방지)
+    if (processedCode.current === code) {
+      return;
+    }
+
+    // 이미 토큰 요청 중이면 건너뜀
+    if (isTokenRequesting.current) {
+      return;
+    }
+
     console.log("=== OAuth 콜백 처리 시작 ===");
     console.log("현재 URL:", window.location.href);
     console.log("code 파라미터:", code);
 
-    if (code && !isTokenRequesting.current) {
-      isTokenRequesting.current = true;
-      console.log("토큰 요청 시작:", code);
+    isTokenRequesting.current = true;
+    processedCode.current = code;
+    console.log("토큰 요청 시작:", code);
 
-      handleTokenRequest(code)
-        .then(async () => {
-          console.log("토큰 요청 성공");
-          // 토큰 요청 성공 후 사용자 정보 확인
-          try {
-            const userInfo = await fetchUserInfo();
-            // 회원정보가 완성되어 있는지 확인 (nickname과 character가 모두 있는 경우)
-            if (!userInfo.nickname || !userInfo.character) {
-              // 신규 회원이므로 회원정보 입력 페이지로 리디렉션
-              navigate("/information-setting", { state: { code } });
-              return;
-            }
-            // 기존 회원이므로 홈에 머물러도 됨
-            setUserInfo(userInfo);
-          } catch (error) {
-            // 사용자 정보 조회 실패 시 회원정보 입력 페이지로 리디렉션 (신규 회원일 가능성)
+    handleTokenRequest(code)
+      .then(async () => {
+        console.log("토큰 요청 성공");
+        // 토큰 요청 성공 후 사용자 정보 확인
+        try {
+          const userInfo = await fetchUserInfo();
+          // 회원정보가 완성되어 있는지 확인 (nickname과 character가 모두 있는 경우)
+          if (!userInfo.nickname || !userInfo.character) {
+            // 신규 회원이므로 회원정보 입력 페이지로 리디렉션
             navigate("/information-setting", { state: { code } });
+            return;
           }
-        })
-        .catch((error) => {
-          console.error("토큰 요청 실패:", error);
-          navigate("/");
-        })
-        .finally(() => {
-          isTokenRequesting.current = false;
-          const newUrl = window.location.pathname;
-          window.history.replaceState({}, document.title, newUrl);
-        });
-    }
-  }, [location, navigate, fetchUserInfo]);
+          // 기존 회원이므로 홈에 머물러도 됨
+          setUserInfo(userInfo);
+        } catch (error) {
+          // 사용자 정보 조회 실패 시 회원정보 입력 페이지로 리디렉션 (신규 회원일 가능성)
+          navigate("/information-setting", { state: { code } });
+        }
+      })
+      .catch((error) => {
+        console.error("토큰 요청 실패:", error);
+        navigate("/");
+      })
+      .finally(() => {
+        isTokenRequesting.current = false;
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]); // navigate와 fetchUserInfo는 안정적이므로 의존성에서 제외
 
   // code가 없을 때만 사용자 정보 로드 (code가 있으면 위의 useEffect에서 처리)
   useEffect(() => {
     const code = getCodeFromURL();
     // code가 있으면 토큰 요청 useEffect에서 처리하므로 여기서는 건너뜀
     if (code) {
+      return;
+    }
+
+    // 이미 사용자 정보가 있으면 건너뜀 (중복 요청 방지)
+    if (userInfo) {
       return;
     }
 
@@ -108,7 +130,7 @@ export default function HomePage() {
       }
     };
     HomeLoading();
-  }, [navigate, fetchUserInfo]);
+  }, [navigate]); // fetchUserInfo와 userInfo 제거 (필요시에만 실행)
 
   // 월별 일기 조회
   useEffect(() => {
