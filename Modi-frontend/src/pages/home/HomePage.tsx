@@ -89,13 +89,26 @@ export default function HomePage() {
     }
   }, [location, navigate, fetchUserInfo]);
 
+  // code가 없을 때만 사용자 정보 로드 (code가 있으면 위의 useEffect에서 처리)
   useEffect(() => {
+    const code = getCodeFromURL();
+    // code가 있으면 토큰 요청 useEffect에서 처리하므로 여기서는 건너뜀
+    if (code) {
+      return;
+    }
+
     const HomeLoading = async () => {
-      const userInfo: MeResponse = await fetchUserInfo();
-      setUserInfo(userInfo);
+      try {
+        const userInfo: MeResponse = await fetchUserInfo();
+        setUserInfo(userInfo);
+      } catch (error) {
+        console.error("사용자 정보 로드 실패:", error);
+        // 에러 발생 시 로그인 페이지로 리디렉션
+        navigate("/");
+      }
     };
     HomeLoading();
-  }, []);
+  }, [navigate, fetchUserInfo]);
 
   // 월별 일기 조회
   useEffect(() => {

@@ -57,48 +57,55 @@ const InitialSetting = () => {
   // 페이지 로드 시 code 파라미터 확인 및 토큰 요청 (기존 회원인 경우)
   useEffect(() => {
     const checkUserInfo = async () => {
-      // 먼저 사용자 정보를 확인 (이미 토큰이 발급되어 있을 수 있음)
-      try {
-        const userInfo = await fetchUserInfo();
-        // 회원정보가 완성되어 있는지 확인 (nickname과 character가 모두 있는 경우)
-        if (userInfo.nickname && userInfo.character) {
-          // 기존 회원이므로 홈으로 리다이렉트
-          navigate("/home");
-          return;
-        }
-        // 신규 회원인 경우 (nickname이나 character가 없는 경우)는 페이지에 머물러야 함
-      } catch (error) {
-        // 사용자 정보 조회 실패 시 (토큰이 없거나 신규 회원일 수 있음)
-        // URL에서 code 파라미터 확인
-        const code = getCodeFromURL();
-        if (code) {
-          // code가 있으면 토큰 요청
+      // 마이페이지에서 온 경우는 이미 처리됨
+      if (from === "/mypage") {
+        return;
+      }
+
+      // URL에서 code 파라미터 확인
+      const code = getCodeFromURL();
+
+      if (code) {
+        // code가 있으면 먼저 토큰 요청
+        try {
+          await handleTokenRequest(code);
+          // 토큰 요청 성공 후 사용자 정보 확인
           try {
-            await handleTokenRequest(code);
-            // 토큰 요청 성공 후 다시 사용자 정보 확인
-            try {
-              const userInfo = await fetchUserInfo();
-              if (userInfo.nickname && userInfo.character) {
-                // 기존 회원이므로 홈으로 리다이렉트
-                navigate("/home");
-                return;
-              }
-              // 신규 회원인 경우 페이지에 머물러야 함
-            } catch (fetchError) {
-              console.error("토큰 발급 후 사용자 정보 조회 실패:", fetchError);
-              // 신규 회원일 가능성이 높으므로 페이지에 머물러야 함
+            const userInfo = await fetchUserInfo();
+            // 회원정보가 완성되어 있는지 확인 (nickname과 character가 모두 있는 경우)
+            if (userInfo.nickname && userInfo.character) {
+              // 기존 회원이므로 홈으로 리다이렉트
+              navigate("/home");
+              return;
             }
-          } catch (tokenError) {
-            console.error("토큰 요청 실패:", tokenError);
-            // 토큰 요청 실패 시 회원가입 페이지에서 계속 진행 가능
+            // 신규 회원인 경우 (nickname이나 character가 없는 경우)는 페이지에 머물러야 함
+          } catch (fetchError: any) {
+            // 사용자 정보 조회 실패 시 (500 에러 등)
+            // 신규 회원일 가능성이 높으므로 페이지에 머물러야 함
           }
+        } catch (tokenError) {
+          console.error("토큰 요청 실패:", tokenError);
+          // 토큰 요청 실패 시 회원가입 페이지에서 계속 진행 가능
         }
-        // code가 없고 사용자 정보도 조회 실패한 경우는 페이지에 머물러야 함
+      } else {
+        // code가 없으면 이미 토큰이 발급되어 있을 수 있으므로 사용자 정보 확인
+        try {
+          const userInfo = await fetchUserInfo();
+          if (userInfo.nickname && userInfo.character) {
+            // 기존 회원이므로 홈으로 리다이렉트
+            navigate("/home");
+            return;
+          }
+          // 신규 회원인 경우는 페이지에 머물러야 함
+        } catch (error) {
+          // 사용자 정보 조회 실패 시 페이지에 머물러야 함
+          console.log("사용자 정보 조회 실패:", error);
+        }
       }
     };
 
     checkUserInfo();
-  }, [navigate, fetchUserInfo]);
+  }, [navigate, fetchUserInfo, from]);
 
   // 한글 초성이 포함되어 있는지 확인하는 함수
   const containsKoreanInitials = (value: string): boolean => {
