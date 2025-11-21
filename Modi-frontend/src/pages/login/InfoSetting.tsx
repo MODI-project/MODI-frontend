@@ -60,16 +60,27 @@ const InitialSetting = () => {
     if (code) {
       // 기존 회원이 회원가입 페이지에 온 경우 토큰 요청
       handleTokenRequest(code)
-        .then(() => {
-          // 토큰이 있으면 홈으로 리다이렉트
-          navigate("/home");
+        .then(async () => {
+          // 토큰 요청 성공 후 사용자 정보 확인
+          try {
+            const userInfo = await fetchUserInfo();
+            // 회원정보가 완성되어 있는지 확인 (nickname과 character가 모두 있는 경우)
+            if (userInfo.nickname && userInfo.character) {
+              // 기존 회원이므로 홈으로 리다이렉트
+              navigate("/home");
+            }
+            // 신규 회원인 경우 (nickname이나 character가 없는 경우)는 페이지에 머물러야 함
+          } catch (error) {
+            console.error("사용자 정보 조회 실패:", error);
+            // 사용자 정보 조회 실패 시 회원가입 페이지에서 계속 진행 가능
+          }
         })
         .catch((error) => {
           console.error("토큰 요청 실패:", error);
           // 실패해도 회원가입 페이지에서 계속 진행 가능
         });
     }
-  }, [navigate]);
+  }, [navigate, fetchUserInfo]);
 
   // 한글 초성이 포함되어 있는지 확인하는 함수
   const containsKoreanInitials = (value: string): boolean => {
