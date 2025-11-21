@@ -22,6 +22,14 @@ const getCodeFromURL = (): string | null => {
   return urlParams.get("code");
 };
 
+// URL에서 isNew 파라미터 추출 함수
+const getIsNewFromURL = (): boolean | null => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isNew = urlParams.get("isNew");
+  if (isNew === null) return null;
+  return isNew === "true";
+};
+
 export default function HomePage() {
   const { fetchUserInfo } = useLoadUserInfo();
   const [viewType, setViewType] = useState<"photo" | "polaroid">("polaroid");
@@ -51,6 +59,7 @@ export default function HomePage() {
   // code 파라미터가 있으면 토큰 요청 처리 (중복 방지)
   useEffect(() => {
     const code = getCodeFromURL();
+    const isNew = getIsNewFromURL();
 
     // code가 없으면 건너뜀
     if (!code) {
@@ -67,32 +76,61 @@ export default function HomePage() {
       return;
     }
 
-    console.log("=== OAuth 콜백 처리 시작 ===");
-    console.log("현재 URL:", window.location.href);
-    console.log("code 파라미터:", code);
-
     isTokenRequesting.current = true;
     processedCode.current = code;
-    console.log("토큰 요청 시작:", code);
 
     handleTokenRequest(code)
-      .then(async () => {
+      .then(() => {
         console.log("토큰 요청 성공");
-        // 토큰 요청 성공 후 사용자 정보 확인
-        try {
-          const userInfo = await fetchUserInfo();
-          // 회원정보가 완성되어 있는지 확인 (nickname과 character가 모두 있는 경우)
-          if (!userInfo.nickname || !userInfo.character) {
-            // 신규 회원이므로 회원정보 입력 페이지로 리디렉션
-            navigate("/information-setting", { state: { code } });
+
+        // isNew 파라미터가 있으면 이를 우선 사용
+        if (isNew !== null) {
+          if (isNew === true) {
+            // 신규 회원이므로 회원정보 입력 페이지로 리디렉션 (isNew 파라미터 포함)
+            navigate(`/information-setting?code=${code}&isNew=true`, {
+              state: { code },
+            });
+            return;
+          } else {
+            // 기존 회원이므로 사용자 정보 로드 후 홈에 머물기
+            fetchUserInfo()
+              .then((userInfo) => {
+                setUserInfo(userInfo);
+                // code와 isNew 파라미터 제거
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+              })
+              .catch((error) => {
+                console.error("사용자 정보 로드 실패:", error);
+                // 에러 발생 시에도 code와 isNew 파라미터 제거
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+              });
             return;
           }
-          // 기존 회원이므로 홈에 머물러도 됨
-          setUserInfo(userInfo);
-        } catch (error) {
-          // 사용자 정보 조회 실패 시 회원정보 입력 페이지로 리디렉션 (신규 회원일 가능성)
-          navigate("/information-setting", { state: { code } });
         }
+
+        // isNew 파라미터가 없으면 기존 로직 사용 (하위 호환성)
+        fetchUserInfo()
+          .then((userInfo) => {
+            // 회원정보가 완성되어 있는지 확인 (nickname과 character가 모두 있는 경우)
+            if (!userInfo.nickname || !userInfo.character) {
+              // 신규 회원이므로 회원정보 입력 페이지로 리디렉션
+              navigate(`/information-setting?code=${code}`, {
+                state: { code },
+              });
+              return;
+            }
+            // 기존 회원이므로 홈에 머물러도 됨
+            setUserInfo(userInfo);
+            // 기존 회원인 경우 code 파라미터 제거
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+          })
+          .catch((error) => {
+            // 사용자 정보 조회 실패 시 회원정보 입력 페이지로 리디렉션 (신규 회원일 가능성)
+            navigate(`/information-setting?code=${code}`, { state: { code } });
+          });
       })
       .catch((error) => {
         console.error("토큰 요청 실패:", error);
@@ -100,8 +138,6 @@ export default function HomePage() {
       })
       .finally(() => {
         isTokenRequesting.current = false;
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]); // navigate와 fetchUserInfo는 안정적이므로 의존성에서 제외
