@@ -25,8 +25,8 @@ const normalize = (r: any): DiaryData => ({
   summary: r.summary ?? "",
   emotion: r.emotion ?? "",
   tags: Array.isArray(r.tags) ? r.tags : [],
-  content: r.content,
-  address: r.address,
+  content: r.content ?? "",
+  address: r.address ?? "",
   latitude: r.latitude,
   longitude: r.longitude,
   tone: r.tone,
@@ -36,12 +36,25 @@ const normalize = (r: any): DiaryData => ({
 
 export const fetchMonthlyDiaries = async (
   year: number,
-  month: number
+  month: number,
+  page = 0,
+  size = 20
 ): Promise<DiaryData[]> => {
-  const { data } = await apiClient.get("/diaries", { params: { year, month } });
-  const list = Array.isArray(data) ? data : data?.diaries ?? data?.items ?? [];
-  const mapped = list.map(normalize);
-  return mapped;
+  const { data } = await apiClient.get("/diaries", {
+    params: { year, month, page, size },
+  });
+
+  const list = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.content)
+    ? data.content
+    : Array.isArray(data?.diaries)
+    ? data.diaries
+    : Array.isArray(data?.items)
+    ? data.items
+    : [];
+
+  return list.map(normalize);
 };
 
 export type DailyGroup = {
@@ -113,10 +126,10 @@ function normalizeDiaryDetail(r: any): DiaryData {
           t && typeof t === "object" ? t.name ?? "" : String(t)
         )
       : [],
-    content: r.content,
+    content: r.content ?? "",
     address: r.location?.address ?? "",
-    latitude: r.location?.latitude,
-    longitude: r.location?.longitude,
+    latitude: r.location?.latitude ?? null,
+    longitude: r.location?.longitude ?? null,
     tone: typeof r.tone === "object" ? r.tone.name : r.tone ?? "",
     font: mapFontName(r.font),
     frame: toFrame(r),
