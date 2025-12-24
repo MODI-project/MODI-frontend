@@ -8,7 +8,7 @@ import PolaroidButton from "../../common/button/ButtonIcon/PolaroidButton";
 import PhotoButton from "../../common/button/ButtonIcon/PhotoButton";
 interface Props {
   viewType: "polaroid" | "photo";
-  currentDate: string;
+  currentDate?: string;
   onPrev: () => void;
   onNext: () => void;
   onOpenModal: () => void;
@@ -24,21 +24,27 @@ export default function HomeHeader({
   onSwitchView,
 }: Props) {
   // 텍스트 포맷:
-  const parsedDate = new Date(
-    viewType === "polaroid" ? currentDate : `${currentDate}-01`
-  );
+  const raw = currentDate ?? "";
+  const parsedDate = new Date(viewType === "polaroid" ? raw : `${raw}-01`);
+
+  const isValid = raw && !Number.isNaN(parsedDate.getTime());
 
   const month = parsedDate.toLocaleDateString("en", { month: "short" });
 
-  const label =
-    viewType === "polaroid"
+  const label = (() => {
+    if (!isValid) return "기록 없음";
+
+    const month = parsedDate.toLocaleDateString("en", { month: "short" });
+
+    return viewType === "polaroid"
       ? `${parsedDate.getFullYear()} ${month}. ${parsedDate.getDate()}`
       : `${parsedDate.getFullYear()} ${month}`;
+  })();
 
   return (
     <div className={styles.header}>
       <div className={styles.center}>
-        <button onClick={onPrev} className={styles.nav}>
+        <button onClick={onPrev} disabled={!isValid} className={styles.nav}>
           <LeftArrow />
         </button>
         <button
@@ -51,7 +57,7 @@ export default function HomeHeader({
           <span className={styles.label}>{label}</span>
           <DownArrow />
         </button>
-        <button onClick={onNext} className={styles.nav}>
+        <button onClick={onNext} disabled={!isValid} className={styles.nav}>
           <RightArrow />
         </button>
       </div>
