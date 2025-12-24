@@ -155,27 +155,51 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const atLast = currentIndex === allDates.length - 1 && subIndex === lastSub;
 
   const handlePrev = () => {
-    if (atFirst) return; // 더 이상 못 가면 멈춤
+    if (!allDates.length) return;
+
     if (subIndex > 0) {
       setSubIndex((i) => i - 1);
       return;
     }
+
     if (currentIndex > 0) {
       const prevDate = allDates[currentIndex - 1];
       const prevList = diariesByDate[prevDate] ?? [];
       setCurrentIndex((i) => i - 1);
       setSubIndex(Math.max(0, prevList.length - 1));
+      return;
     }
+
+    const prevYM = addMonths(viewYM, -1);
+    setViewYM(prevYM);
   };
 
   const handleNext = () => {
-    if (atLast) return; // 더 이상 못 가면 멈춤
+    if (!allDates.length) return;
+
     if (subIndex < currList.length - 1) {
       setSubIndex((i) => i + 1);
       return;
     }
+
     if (currentIndex < allDates.length - 1) {
       setCurrentIndex((i) => i + 1);
+      setSubIndex(0);
+      return;
+    }
+
+    const nextYM = addMonths(viewYM, +1);
+
+    if (groupsCache.current.has(nextYM)) {
+      const nextGroups = groupsCache.current.get(nextYM)!;
+      if (nextGroups.length > 0) {
+        setViewYM(nextYM);
+        setCurrentIndex(0);
+        setSubIndex(0);
+      }
+    } else {
+      setViewYM(nextYM);
+      setCurrentIndex(0);
       setSubIndex(0);
     }
   };
@@ -308,12 +332,15 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
               else if (idx === 2) cls = pageStyles.right;
 
               let diary: DiaryData | null = null;
-              if (i === currentIndex) {
-                // 현재 날짜: 여러 개 중 subIndex로 선택
-                diary = diariesByDate[allDates[i]]?.[subIndex] ?? null;
-              } else {
-                // 이전/다음 날짜: 대표 일기(첫 번째)
-                diary = diariesByDate[allDates[i]]?.[0] ?? null;
+              const dateKey =
+                i >= 0 && i < allDates.length ? allDates[i] : null;
+
+              if (dateKey) {
+                if (i === currentIndex) {
+                  diary = diariesByDate[dateKey]?.[subIndex] ?? null;
+                } else {
+                  diary = diariesByDate[dateKey]?.[0] ?? null;
+                }
               }
 
               return (
