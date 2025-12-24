@@ -45,12 +45,22 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   };
 
+  const renderGroups = useMemo(() => {
+    const prevYM = addMonths(viewYM, -1);
+    const nextYM = addMonths(viewYM, +1);
+
+    const prev = groupsCache.current.get(prevYM) ?? [];
+    const curr = groupsCache.current.get(viewYM) ?? groups; // 현재 월은 groups 상태를 우선
+    const next = groupsCache.current.get(nextYM) ?? [];
+
+    return [...prev, ...curr, ...next];
+  }, [viewYM, groups]);
+
   const allDates = useMemo(() => {
-    // groups = [{ date:"YYYY-MM-DD", diaries:[...] }, ... ]
-    return [...groups]
+    return [...renderGroups]
       .map((g) => g.date.slice(0, 10))
       .sort((a, b) => a.localeCompare(b));
-  }, [groups]);
+  }, [renderGroups]);
 
   // DateSelector에 공급할 아이템(여러 월의 일자 포함)
   const dateItems = pickerItems;
@@ -77,7 +87,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
 
   const diariesByDate = useMemo(() => {
     const m: Record<string, DiaryData[]> = {};
-    for (const g of groups) {
+    for (const g of renderGroups) {
       const k = g.date.slice(0, 10);
       m[k] = [...(g.diaries ?? [])].sort((a, b) => {
         const ta = (a as any).created_at ?? "";
@@ -87,7 +97,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       });
     }
     return m;
-  }, [groups]);
+  }, [renderGroups]);
 
   const flatDiaries = useMemo(() => {
     const dates = [...allDates].sort((a, b) => a.localeCompare(b));
@@ -156,6 +166,30 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
         setLoading(false);
       }
     })();
+  }, [viewYM]);
+
+  useEffect(() => {
+    const prevYM = addMonths(viewYM, -1);
+    const nextYM = addMonths(viewYM, +1);
+
+    const ensure = async (ym: string) => {
+      if (groupsCache.current.has(ym)) return;
+      try {
+        const [y, m] = ym.split("-").map(Number);
+        const data = await fetchDailyGroups(y, m);
+        groupsCache.current.set(ym, data);
+        if (data.length > 0) {
+          setAvailableMonths((prev) => {
+            const s = new Set(prev);
+            s.add(ym);
+            return Array.from(s).sort();
+          });
+        }
+      } catch {}
+    };
+
+    ensure(prevYM);
+    ensure(nextYM);
   }, [viewYM]);
 
   useEffect(() => {
@@ -288,7 +322,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       {/* HomeHeader 에 props 로 상태·핸들러 내려주기 */}
       <HomeHeader
         viewType="polaroid"
-        currentDate={viewDate}
+        currentDate={viewDate || ""}
         onPrev={handlePrev}
         onNext={handleNext}
         onOpenModal={() => setIsSheetOpen(true)}
