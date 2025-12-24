@@ -89,11 +89,19 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     return m;
   }, [groups]);
 
-  const [subIndex, setSubIndex] = useState(0);
-  const viewDate = allDates[currentIndex] || allDates[0] || "";
+  const flatDiaries = useMemo(() => {
+    const dates = [...allDates].sort((a, b) => a.localeCompare(b));
+    const out: DiaryData[] = [];
+    for (const d of dates) {
+      out.push(...(diariesByDate[d] ?? []));
+    }
+    return out;
+  }, [allDates, diariesByDate]);
+
+  const [cursor, setCursor] = useState(0);
+  const currentDiary: DiaryData | null = flatDiaries[cursor] ?? null;
+  const viewDate = currentDiary?.date ?? "";
   const [tempDate, setTempDate] = useState<string>(viewDate);
-  const currList = diariesByDate[viewDate] ?? [];
-  const currentDiary: DiaryData | null = currList[subIndex] ?? null;
 
   useEffect(() => {
     if (isSheetOpen && !prevOpen.current) {
@@ -103,14 +111,15 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   }, [isSheetOpen, viewDate]);
 
   useEffect(() => {
-    const idx = allDates.indexOf(tempDate);
-    if (idx !== -1 && idx !== currentIndex) {
-      setCurrentIndex(idx);
-      setSubIndex(0);
-    }
-  }, [tempDate, allDates]);
+    if (!tempDate) return;
+    const idx = flatDiaries.findIndex((d) => d.date === tempDate);
 
-  const indices = [currentIndex - 1, currentIndex, currentIndex + 1];
+    if (idx !== -1) {
+      setCursor(idx);
+    }
+  }, [tempDate, flatDiaries]);
+
+  const indices = [cursor - 1, cursor, cursor + 1];
   // 선택된 월(viewYM)의 일별 목록 로드
   useEffect(() => {
     (async () => {
@@ -120,7 +129,6 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
         const data = await fetchDailyGroups(y, m);
         const sorted = [...data].sort((a, b) => a.date.localeCompare(b.date));
         setGroups(sorted);
-        setCurrentIndex(sorted.length ? sorted.length - 1 : 0); // 최신 날짜로 포커스
 
         // 캐시 및 사용 가능한 월 목록 업데이트
         groupsCache.current.set(viewYM, sorted);
@@ -143,65 +151,48 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
         setPickerItems(items.map((d) => ({ date: d })));
       } catch (error) {
         setGroups([]);
-        setCurrentIndex(0);
+        setCursor(0);
       } finally {
         setLoading(false);
       }
     })();
   }, [viewYM]);
 
-  const lastSub = Math.max(0, currList.length - 1);
-  const atFirst = currentIndex === 0 && subIndex === 0;
-  const atLast = currentIndex === allDates.length - 1 && subIndex === lastSub;
+  useEffect(() => {
+    if (flatDiaries.length > 0) {
+      setCursor(flatDiaries.length - 1); // 최신(마지막)
+    } else {
+      setCursor(0);
+    }
+  }, [flatDiaries.length, viewYM]);
+
+  const atFirst = cursor <= 0;
+  const atLast = cursor >= flatDiaries.length - 1;
 
   const handlePrev = () => {
-    if (!allDates.length) return;
+    if (flatDiaries.length === 0) return;
 
-    if (subIndex > 0) {
-      setSubIndex((i) => i - 1);
+    if (cursor > 0) {
+      setCursor((c) => c - 1);
       return;
     }
 
-    if (currentIndex > 0) {
-      const prevDate = allDates[currentIndex - 1];
-      const prevList = diariesByDate[prevDate] ?? [];
-      setCurrentIndex((i) => i - 1);
-      setSubIndex(Math.max(0, prevList.length - 1));
-      return;
-    }
-
+    // (선택) 월 경계 넘어가기
     const prevYM = addMonths(viewYM, -1);
     setViewYM(prevYM);
   };
 
   const handleNext = () => {
-    if (!allDates.length) return;
+    if (flatDiaries.length === 0) return;
 
-    if (subIndex < currList.length - 1) {
-      setSubIndex((i) => i + 1);
+    if (cursor < flatDiaries.length - 1) {
+      setCursor((c) => c + 1);
       return;
     }
 
-    if (currentIndex < allDates.length - 1) {
-      setCurrentIndex((i) => i + 1);
-      setSubIndex(0);
-      return;
-    }
-
+    // (선택) 월 경계 넘어가기
     const nextYM = addMonths(viewYM, +1);
-
-    if (groupsCache.current.has(nextYM)) {
-      const nextGroups = groupsCache.current.get(nextYM)!;
-      if (nextGroups.length > 0) {
-        setViewYM(nextYM);
-        setCurrentIndex(0);
-        setSubIndex(0);
-      }
-    } else {
-      setViewYM(nextYM);
-      setCurrentIndex(0);
-      setSubIndex(0);
-    }
+    setViewYM(nextYM);
   };
 
   const handleChange = (newDate: string) => {
@@ -223,14 +214,6 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     touchStartX.current = null;
     touchEndX.current = null;
   };
-
-  useEffect(() => {
-    const idx = allDates.indexOf(tempDate);
-    if (idx !== -1 && idx !== currentIndex) {
-      setCurrentIndex(idx);
-      setSubIndex(0);
-    }
-  }, [tempDate, allDates]);
 
   // 모달이 열릴 때 주변 월(예: -6~+6개월) 프로빙하여 기록 있는 월/일을 피커에 반영
   useEffect(() => {
@@ -331,26 +314,13 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
               else if (idx === 1) cls = pageStyles.center;
               else if (idx === 2) cls = pageStyles.right;
 
-              let diary: DiaryData | null = null;
-              const dateKey =
-                i >= 0 && i < allDates.length ? allDates[i] : null;
-
-              if (dateKey) {
-                if (i === currentIndex) {
-                  diary = diariesByDate[dateKey]?.[subIndex] ?? null;
-                } else {
-                  diary = diariesByDate[dateKey]?.[0] ?? null;
-                }
-              }
+              const diary: DiaryData | null =
+                i >= 0 && i < flatDiaries.length ? flatDiaries[i] : null;
 
               return (
-                <div key={i} className={cls}>
+                <div key={`${idx}-${diary?.id ?? "empty"}`} className={cls}>
                   {diary ? (
-                    <PolaroidFrame
-                      key={diary.id}
-                      diaryData={diary}
-                      diaryId={diary.id}
-                    />
+                    <PolaroidFrame diaryData={diary} diaryId={diary.id} />
                   ) : (
                     <div className={pageStyles.emptySlot} />
                   )}
