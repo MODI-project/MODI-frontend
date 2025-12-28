@@ -50,7 +50,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     const nextYM = addMonths(viewYM, +1);
 
     const prev = groupsCache.current.get(prevYM) ?? [];
-    const curr = groupsCache.current.get(viewYM) ?? groups; // 현재 월은 groups 상태를 우선
+    const curr = groupsCache.current.get(viewYM) ?? [];
     const next = groupsCache.current.get(nextYM) ?? [];
 
     return [...prev, ...curr, ...next];
@@ -107,6 +107,18 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     }
     return out;
   }, [allDates, diariesByDate]);
+
+  const pendingJump = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!pendingJump.current) return;
+    const target = pendingJump.current;
+    const idx = flatDiaries.findIndex((d) => d.date === target);
+    if (idx !== -1) {
+      setCursor(idx);
+      pendingJump.current = null;
+    }
+  }, [flatDiaries]);
 
   const [cursor, setCursor] = useState(0);
   const currentDiary: DiaryData | null = flatDiaries[cursor] ?? null;
@@ -193,40 +205,38 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   }, [viewYM]);
 
   useEffect(() => {
-    if (flatDiaries.length > 0) {
-      setCursor(flatDiaries.length - 1); // 최신(마지막)
-    } else {
-      setCursor(0);
+    if (flatDiaries.length === 0) {
+      if (cursor !== 0) setCursor(0);
+      return;
     }
-  }, [flatDiaries.length, viewYM]);
+    if (cursor > flatDiaries.length - 1) {
+      setCursor(flatDiaries.length - 1);
+    }
+  }, [flatDiaries.length]);
+
+  useEffect(() => {
+    const cd = currentDiary;
+    if (!cd?.date) return;
+
+    const ym = cd.date.slice(0, 7);
+    if (ym !== viewYM) {
+      setViewYM(ym);
+    }
+  }, [cursor, currentDiary?.date, viewYM]);
 
   const atFirst = cursor <= 0;
   const atLast = cursor >= flatDiaries.length - 1;
 
   const handlePrev = () => {
     if (flatDiaries.length === 0) return;
-
-    if (cursor > 0) {
-      setCursor((c) => c - 1);
-      return;
-    }
-
-    // (선택) 월 경계 넘어가기
-    const prevYM = addMonths(viewYM, -1);
-    setViewYM(prevYM);
+    if (cursor <= 0) return;
+    setCursor((c) => c - 1);
   };
 
   const handleNext = () => {
     if (flatDiaries.length === 0) return;
-
-    if (cursor < flatDiaries.length - 1) {
-      setCursor((c) => c + 1);
-      return;
-    }
-
-    // (선택) 월 경계 넘어가기
-    const nextYM = addMonths(viewYM, +1);
-    setViewYM(nextYM);
+    if (cursor >= flatDiaries.length - 1) return;
+    setCursor((c) => c + 1);
   };
 
   const handleChange = (newDate: string) => {
@@ -399,6 +409,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
             onClick={() => {
               // 선택된 날짜의 월로 전환하여 해당 월 데이터를 로드
               const ym = tempDate.slice(0, 7);
+              pendingJump.current = tempDate;
               setViewYM(ym);
               setIsSheetOpen(false);
             }}
