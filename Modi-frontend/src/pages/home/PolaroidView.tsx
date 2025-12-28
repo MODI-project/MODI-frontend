@@ -54,7 +54,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     const next = groupsCache.current.get(nextYM) ?? [];
 
     return [...prev, ...curr, ...next];
-  }, [viewYM, groups]);
+  }, [viewYM]);
 
   const allDates = useMemo(() => {
     return [...renderGroups]
@@ -66,7 +66,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   const dateItems = pickerItems;
   const diaryMap: Record<string, DiaryData> = useMemo(() => {
     const acc: Record<string, DiaryData> = {};
-    for (const g of groups) {
+    for (const g of renderGroups) {
       const dateKey = g.date.slice(0, 10);
       const sorted = [...(g.diaries ?? [])].sort((a, b) => {
         const ta = (a as any).created_at ?? "";
@@ -108,7 +108,13 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     return out;
   }, [allDates, diariesByDate]);
 
+  const [cursor, setCursor] = useState(0);
+  const currentDiary: DiaryData | null = flatDiaries[cursor] ?? null;
+  const viewDate = currentDiary?.date ?? "";
+  const [tempDate, setTempDate] = useState<string>(viewDate);
+
   const pendingJump = useRef<string | null>(null);
+  const pendingStep = useRef<{ anchorDate: string; step: -1 | 1 } | null>(null);
 
   useEffect(() => {
     if (!pendingJump.current) return;
@@ -120,10 +126,31 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     }
   }, [flatDiaries]);
 
-  const [cursor, setCursor] = useState(0);
-  const currentDiary: DiaryData | null = flatDiaries[cursor] ?? null;
-  const viewDate = currentDiary?.date ?? "";
-  const [tempDate, setTempDate] = useState<string>(viewDate);
+  useEffect(() => {
+    if (!pendingStep.current) return;
+
+    const p = pendingStep.current;
+    if (!p) return;
+
+    const idx = flatDiaries.findIndex((d) => d.date === p.anchorDate);
+    if (idx === -1) return; // 아직 로드 전이면 다음 flatDiaries에서 다시 시도
+
+    const nextIdx = idx + p.step;
+    if (nextIdx >= 0 && nextIdx < flatDiaries.length) {
+      setCursor(nextIdx);
+      pendingStep.current = null;
+    }
+  }, [flatDiaries]);
+
+  useEffect(() => {
+    const p = pendingStep.current;
+    if (!p) return;
+
+    const idx = flatDiaries.findIndex((d) => d.date === p.anchorDate);
+    if (idx === -1 && !loading) {
+      pendingStep.current = null;
+    }
+  }, [viewYM, flatDiaries, loading]);
 
   useEffect(() => {
     if (isSheetOpen && !prevOpen.current) {
@@ -133,13 +160,11 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   }, [isSheetOpen, viewDate]);
 
   useEffect(() => {
+    if (!isSheetOpen) return;
     if (!tempDate) return;
     const idx = flatDiaries.findIndex((d) => d.date === tempDate);
-
-    if (idx !== -1) {
-      setCursor(idx);
-    }
-  }, [tempDate, flatDiaries]);
+    if (idx !== -1) setCursor(idx);
+  }, [isSheetOpen, tempDate, flatDiaries]);
 
   const indices = [cursor - 1, cursor, cursor + 1];
   // 선택된 월(viewYM)의 일별 목록 로드
@@ -215,6 +240,8 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   }, [flatDiaries.length]);
 
   useEffect(() => {
+    if (pendingStep.current) return;
+
     const cd = currentDiary;
     if (!cd?.date) return;
 
@@ -229,14 +256,29 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
 
   const handlePrev = () => {
     if (flatDiaries.length === 0) return;
-    if (cursor <= 0) return;
-    setCursor((c) => c - 1);
+    if (cursor > 0) {
+      setCursor((c) => c - 1);
+      return;
+    }
+
+    if (!currentDiary?.date) return;
+    pendingStep.current = { anchorDate: currentDiary.date, step: -1 };
+    const anchorYM = currentDiary.date.slice(0, 7);
+    setViewYM(addMonths(anchorYM, -1));
   };
 
   const handleNext = () => {
     if (flatDiaries.length === 0) return;
-    if (cursor >= flatDiaries.length - 1) return;
-    setCursor((c) => c + 1);
+
+    if (cursor < flatDiaries.length - 1) {
+      setCursor((c) => c + 1);
+      return;
+    }
+
+    if (!currentDiary?.date) return;
+    pendingStep.current = { anchorDate: currentDiary.date, step: +1 };
+    const anchorYM = currentDiary.date.slice(0, 7);
+    setViewYM(addMonths(anchorYM, +1));
   };
 
   const handleChange = (newDate: string) => {
