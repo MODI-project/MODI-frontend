@@ -50,11 +50,11 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
     const nextYM = addMonths(viewYM, +1);
 
     const prev = groupsCache.current.get(prevYM) ?? [];
-    const curr = groupsCache.current.get(viewYM) ?? [];
+    const curr = groupsCache.current.get(viewYM) ?? groups;
     const next = groupsCache.current.get(nextYM) ?? [];
 
     return [...prev, ...curr, ...next];
-  }, [viewYM]);
+  }, [viewYM, groups]);
 
   const allDates = useMemo(() => {
     return [...renderGroups]
@@ -79,7 +79,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
       if (top) acc[dateKey] = top; // 단일 DiaryData 저장
     }
     return acc;
-  }, [groups]);
+  }, [renderGroups]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -170,7 +170,7 @@ export default function PolaroidView({ onSwitchView }: PolaroidViewProps) {
   // 선택된 월(viewYM)의 일별 목록 로드
   useEffect(() => {
     (async () => {
-      setLoading(true);
+      if (!groupsCache.current.has(viewYM)) setLoading(true);
       try {
         const [y, m] = viewYM.split("-").map(Number);
         const data = await fetchDailyGroups(y, m);
