@@ -23,7 +23,7 @@ const DiaryKeywordPage = () => {
       <div className={styles.DiaryKeyword_container}>
         <Header
           left="/icons/back.svg"
-          LeftClick={() => navigate(-1)}
+          LeftClick={() => navigate("/home")}
           middle="기록하기"
           right="/icons/X.svg"
           RightClick={() => setIsPopupOpen(true)}
