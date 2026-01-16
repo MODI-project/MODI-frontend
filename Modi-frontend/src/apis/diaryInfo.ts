@@ -2,7 +2,9 @@ import { DiaryData } from "../components/common/frame/Frame";
 import axios from "axios";
 export type { DiaryData };
 
-const API_BASE_URL = "https://modi-server.store/api";
+// 환경 변수에서 API URL 가져오기 (로컬 개발: http://localhost:8080/api, 프로덕션: https://modi-server.store/api)
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://modi-server.store/api";
 
 // 실제 서버 API 응답 타입
 interface DiariesResponse {

@@ -22,7 +22,10 @@ export default defineConfig(({ command }) => {
           : undefined,
       proxy: {
         "/api": {
-          target: "https://modi-server.store",
+          // 환경 변수에서 프록시 타겟 가져오기 (로컬 개발: http://localhost:8080, 프로덕션: https://modi-server.store)
+          target: process.env.VITE_API_BASE_URL
+            ? process.env.VITE_API_BASE_URL.replace("/api", "")
+            : "https://modi-server.store",
           changeOrigin: true,
           secure: false,
           // CORS 우회를 위해 Origin 헤더 제거
