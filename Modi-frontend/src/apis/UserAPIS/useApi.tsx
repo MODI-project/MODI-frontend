@@ -22,8 +22,12 @@ function useApi() {
     return Promise.reject(error);
   };
 
+  // 환경 변수에서 API URL 가져오기 (로컬 개발: http://localhost:8080/api, 프로덕션: https://modi-server.store/api)
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL || "https://modi-server.store/api";
+
   const api = axios.create({
-    baseURL: "https://modi-server.store/api",
+    baseURL: API_BASE_URL,
     withCredentials: true,
   });
 

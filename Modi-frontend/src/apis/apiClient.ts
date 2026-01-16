@@ -1,7 +1,11 @@
 import axios, { AxiosError } from "axios";
 
+// 환경 변수에서 API URL 가져오기 (로컬 개발: http://localhost:8080/api, 프로덕션: https://modi-server.store/api)
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://modi-server.store/api";
+
 const apiClient = axios.create({
-  baseURL: "https://modi-server.store/api",
+  baseURL: API_BASE_URL,
   withCredentials: true,
   xsrfCookieName: "XSRF-TOKEN", // ✅ 서버 쿠키 이름
   xsrfHeaderName: "X-XSRF-TOKEN",
