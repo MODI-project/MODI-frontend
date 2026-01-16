@@ -23,6 +23,7 @@ import NotificationPage from "./pages/notification/NotificationPage";
 import Setting from "./pages/setting/Setting";
 import MapSearchBar from "./components/map/SearchPlace/MapSearchBar";
 import NotificationGridPage from "./pages/notification/NotificationGridPage";
+import ReminderPopup from "./components/notification/ReminderPopup";
 
 // Route Guard
 import ProtectedRoute from "./components/common/ProtectedRoute";
@@ -150,6 +151,7 @@ function App() {
                     }
                   />
                 </Routes>
+                <ReminderPopup />
               </NotificationManagerProvider>
             </GeolocationProvider>
           </AlertBusProvider>

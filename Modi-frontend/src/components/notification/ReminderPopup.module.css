@@ -1,0 +1,40 @@
+/* 기본 프레임만 제공 - CSS는 사용자가 수정할 예정 */
+.reminder_popup_overlay {
+  /* TODO: 오버레이 스타일 */
+}
+
+.reminder_popup_box {
+  /* TODO: 팝업 박스 스타일 */
+}
+
+.close_button_wrapper {
+  /* TODO: 닫기 버튼 래퍼 스타일 */
+}
+
+.close_button {
+  /* TODO: 닫기 버튼 스타일 */
+}
+
+.character_image_container {
+  /* TODO: 캐릭터 이미지 컨테이너 스타일 */
+}
+
+.character_image {
+  /* TODO: 캐릭터 이미지 스타일 */
+}
+
+.message_container {
+  /* TODO: 메시지 컨테이너 스타일 */
+}
+
+.message_text {
+  /* TODO: 메인 메시지 텍스트 스타일 */
+}
+
+.sub_message_text {
+  /* TODO: 서브 메시지 텍스트 스타일 */
+}
+
+.go_see_button {
+  /* TODO: 보러가기 버튼 스타일 */
+}
