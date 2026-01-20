@@ -1,5 +1,10 @@
 /* 기본 프레임만 제공 - CSS는 사용자가 수정할 예정 */
 .reminder_popup_overlay {
+  position: relative;
+  justify-content: center;
+  width: 296px;
+  height: 351px;
+  background-color: var(--color-modal, #FBF9F3);
   /* TODO: 오버레이 스타일 */
 }
 
@@ -8,6 +13,13 @@
 }
 
 .close_button_wrapper {
+  position: absolute;
+  top: 19px;
+  right: 16px;
+  width: 26px;
+  height: 26px;
+  justify-content: center;
+  align-items: center;
   /* TODO: 닫기 버튼 래퍼 스타일 */
 }
 
@@ -16,6 +28,12 @@
 }
 
 .character_image_container {
+  position: absolute;
+  top: 40px;
+  width: 151px;
+  height: 162px;
+  justify-content: center;
+  align-items: center;
   /* TODO: 캐릭터 이미지 컨테이너 스타일 */
 }
 
@@ -24,10 +42,14 @@
 }
 
 .message_container {
+  position: absolute;
+  bottom: 29px; 
+  justify-content: center;
   /* TODO: 메시지 컨테이너 스타일 */
 }
 
 .message_text {
+  font-family: var(--font-nanum-square, NanumSquareRound);
   /* TODO: 메인 메시지 텍스트 스타일 */
 }
 

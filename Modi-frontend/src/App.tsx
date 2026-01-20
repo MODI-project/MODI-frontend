@@ -150,6 +150,7 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                <Route path="/reminder-popup" element={<ReminderPopup/>} />
                 </Routes>
                 <ReminderPopup />
               </NotificationManagerProvider>
