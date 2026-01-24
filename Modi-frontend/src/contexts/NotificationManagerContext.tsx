@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { useLocation } from "react-router-dom";
 import {
   useAlertBus,
   AlertEventType,
@@ -13,6 +14,7 @@ import {
 } from "./AlertBusContext";
 import { usePopupStore } from "../stores/popupStore";
 import { getRemindersByAddress } from "../apis/ReminderAPIS/remindersByAddress";
+import { getWeeklyReminder } from "../apis/ReminderAPIS/weeklyReminder";
 
 interface NotificationState {
   permission: NotificationPermission;
@@ -40,6 +42,7 @@ export const NotificationManagerProvider: React.FC<
 > = ({ children }) => {
   const { subscribe } = useAlertBus();
   const { showPopup } = usePopupStore();
+  const location = useLocation();
   const [state, setState] = useState<NotificationState>({
     permission: "default",
     isSupported: "Notification" in window,
@@ -225,6 +228,48 @@ export const NotificationManagerProvider: React.FC<
   useEffect(() => {
     checkPermission();
   }, [checkPermission]);
+
+  // /home 진입 시 "새로 생성된 알림(리마인더)"이 있으면 팝업 표시
+  useEffect(() => {
+    if (location.pathname !== "/home") return;
+
+    const maybeShowNewReminderPopup = async () => {
+      try {
+        const reminders = await getWeeklyReminder();
+        if (!reminders || reminders.length === 0) return;
+
+        // created_at 기준 최신 정렬 (API 응답 순서를 확신할 수 없으므로 방어)
+        const sorted = [...reminders].sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        const newest = sorted[0];
+        if (!newest) return;
+
+        const lastShownId = Number(
+          localStorage.getItem("last_shown_reminder_id") || "0"
+        );
+        if (Number.isFinite(lastShownId) && newest.id <= lastShownId) return;
+
+        const lastVisitDate = new Date(newest.lastVisit || newest.created_at);
+        const today = new Date();
+        const diffTime = Math.abs(today.getTime() - lastVisitDate.getTime());
+        const daysAgo = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        showPopup({
+          dong: newest.address,
+          daysAgo,
+          emotion: newest.emotion || "excited",
+        });
+
+        localStorage.setItem("last_shown_reminder_id", String(newest.id));
+      } catch (error) {
+        console.error("[/home reminder popup] failed:", error);
+      }
+    };
+
+    void maybeShowNewReminderPopup();
+  }, [location.pathname, showPopup]);
 
   const value: NotificationManagerContextType = {
     ...state,

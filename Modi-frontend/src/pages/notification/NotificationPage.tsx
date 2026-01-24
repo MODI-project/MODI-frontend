@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Header from "../../components/common/Header";
 import styles from "./NotificationPage.module.css";
 import NotificationItem from "../../components/notification/NotificationItem";
 import { useNavigate } from "react-router-dom";
-import { getWeeklyReminder } from "../../apis/ReminderAPIS/weeklyReminder";
+import { getWeeklyReminderPage } from "../../apis/ReminderAPIS/weeklyReminder";
 import { WeeklyReminderResponse } from "../../types/Reminder";
 import { useCharacter } from "../../contexts/CharacterContext";
 
@@ -14,48 +14,24 @@ const NotificationPage = () => {
     []
   );
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+
+  const scrollRootRef = useRef<HTMLDivElement | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
+    const fetchFirstPage = async () => {
       try {
-        // 60초 TTL 캐시 사용 (세션 한정)
-        const CACHE_KEY = "weekly_reminders_cache";
-        const cachedRaw = sessionStorage.getItem(CACHE_KEY);
-        const cached = cachedRaw ? JSON.parse(cachedRaw) : null;
-        const now = Date.now();
+        setNotifications([]);
+        setNextCursor(null);
+        setHasMore(true);
 
-        let weeklyData: WeeklyReminderResponse[];
-        if (
-          cached &&
-          now - cached.ts < 60 * 1000 &&
-          Array.isArray(cached.data)
-        ) {
-          weeklyData = cached.data as WeeklyReminderResponse[];
-        } else {
-          weeklyData = await getWeeklyReminder();
-          sessionStorage.setItem(
-            CACHE_KEY,
-            JSON.stringify({ ts: now, data: weeklyData })
-          );
-        }
-
-        // 1) created_at 내림차순 정렬 고정
-        const sorted = [...weeklyData].sort((a, b) => {
-          const at = new Date(a.created_at).getTime();
-          const bt = new Date(b.created_at).getTime();
-          return bt - at;
-        });
-
-        // 2) address 기준으로 가장 최신 1개만 유지
-        const seen = new Set<string>();
-        const uniqueByAddress = sorted.filter((item) => {
-          if (!item.address) return true;
-          if (seen.has(item.address)) return false;
-          seen.add(item.address);
-          return true;
-        });
-
-        setNotifications(uniqueByAddress);
+        const res = await getWeeklyReminderPage({ limit: 20 });
+        setNotifications(res.items);
+        setNextCursor(res.nextCursor);
+        setHasMore(Boolean(res.nextCursor));
       } catch (error) {
         console.error("알림 데이터 로드 실패:", error);
       } finally {
@@ -63,8 +39,51 @@ const NotificationPage = () => {
       }
     };
 
-    fetchNotifications();
+    setLoading(true);
+    void fetchFirstPage();
   }, []);
+
+  const loadMore = useCallback(async () => {
+    if (!hasMore) return;
+    if (loadingMore) return;
+    if (!nextCursor) return;
+
+    setLoadingMore(true);
+    try {
+      const res = await getWeeklyReminderPage({ limit: 20, cursor: nextCursor });
+      setNotifications((prev) => [...prev, ...(res.items || [])]);
+      setNextCursor(res.nextCursor);
+      setHasMore(Boolean(res.nextCursor));
+    } catch (error) {
+      console.error("알림 추가 로드 실패:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [hasMore, loadingMore, nextCursor]);
+
+  // 스크롤 끝에 도달하면 다음 페이지 로드 (cursor 기반)
+  useEffect(() => {
+    const root = scrollRootRef.current;
+    const sentinel = sentinelRef.current;
+    if (!root || !sentinel) return;
+    if (!hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          void loadMore();
+        }
+      },
+      {
+        root,
+        rootMargin: "160px",
+        threshold: 0.01,
+      }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
 
   // 오늘과 지난 알림을 분류하는 함수 (최근 일주일치로 제한)
   const categorizeNotifications = () => {
@@ -129,7 +148,7 @@ const NotificationPage = () => {
             navigate(-1);
           }}
         />
-        <div className={styles.notification_container}>
+        <div className={styles.notification_container} ref={scrollRootRef}>
           {/* 주간 알림 */}
           {todayNotifications.length > 0 && (
             <div className={styles.today_notification}>
@@ -186,6 +205,15 @@ const NotificationPage = () => {
               <p className={styles.no_notification_text}>알림이 없습니다.</p>
             </div>
           )}
+
+          {loadingMore && (
+            <div style={{ textAlign: "center", padding: "16px 0" }}>
+              불러오는 중...
+            </div>
+          )}
+
+          {/* 바닥 감지용 센티널 */}
+          <div ref={sentinelRef} style={{ height: 1 }} />
         </div>
       </div>
     </div>

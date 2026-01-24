@@ -30,6 +30,9 @@
   flex-direction: column;
   align-items: center;
   gap: 40px;
+  max-height: calc(100vh - 143px);
+  overflow-y: auto;
+  padding-bottom: 24px;
 }
 
 .today_notification {
