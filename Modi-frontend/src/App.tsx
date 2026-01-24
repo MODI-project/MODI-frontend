@@ -1,5 +1,5 @@
 import "./App.css";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { CharacterProvider } from "./contexts/CharacterContext";
 import { DiaryDraftProvider } from "./contexts/DiaryDraftContext";
 import { FrameTemplateProvider } from "./contexts/FrameTemplate";
@@ -29,6 +29,9 @@ import ReminderPopup from "./components/notification/ReminderPopup";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
 function App() {
+  const location = useLocation();
+  const isReminderPopupPreviewRoute = location.pathname === "/reminder-popup";
+
   return (
     <CharacterProvider>
       <DiaryDraftProvider>
@@ -150,9 +153,9 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-                <Route path="/reminder-popup" element={<ReminderPopup/>} />
+                  <Route path="/reminder-popup" element={<ReminderPopup preview />} />
                 </Routes>
-                <ReminderPopup />
+                {!isReminderPopupPreviewRoute && <ReminderPopup />}
               </NotificationManagerProvider>
             </GeolocationProvider>
           </AlertBusProvider>
