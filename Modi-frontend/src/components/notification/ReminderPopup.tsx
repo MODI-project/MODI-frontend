@@ -1,16 +1,36 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePopupStore } from "../../stores/popupStore";
 import { useCharacter } from "../../contexts/CharacterContext";
 import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 import styles from "./ReminderPopup.module.css";
 
-const ReminderPopup = () => {
-  const { currentPopup, isVisible, hidePopup } = usePopupStore();
+type ReminderPopupProps = {
+  /**
+   * 라우트(`/reminder-popup`) 등에서 UI 확인용.
+   * 스토어 값이 비어있으면 더미 데이터를 주입해 렌더합니다.
+   */
+  preview?: boolean;
+};
+
+const ReminderPopup = ({ preview = false }: ReminderPopupProps) => {
+  const { currentPopup, isVisible, hidePopup, showPopup } = usePopupStore();
   const { character: characterFromContext } = useCharacter();
   const { fetchUserInfo } = useLoadUserInfo();
   const navigate = useNavigate();
   const [character, setCharacter] = useState<string>("momo");
+
+  // 프리뷰 모드에서는 스토어가 비어있으면 더미 팝업을 띄워 UI를 확인할 수 있게 합니다.
+  useEffect(() => {
+    if (!preview) return;
+    if (isVisible && currentPopup) return;
+
+    showPopup({
+      dong: "서울 강남구 경희대",
+      daysAgo: 37,
+      emotion: "기쁨",
+    });
+  }, [preview, isVisible, currentPopup, showPopup]);
 
   // 사용자 캐릭터 정보 로드
   useEffect(() => {
@@ -37,23 +57,9 @@ const ReminderPopup = () => {
     return null;
   }
 
-  // emotion에 따른 캐릭터 이미지 경로 생성
-  const getEmotionImagePath = (emotion: string) => {
-    const emotionMap: { [key: string]: string } = {
-      기쁨: `${character}-happy.svg`,
-      슬픔: `${character}-sad.svg`,
-      화남: `${character}-angry.svg`,
-      평온: `${character}-normal.svg`,
-      설렘: `${character}-excited.svg`,
-      지루함: `${character}-bored.svg`,
-      걱정: `${character}-nervous.svg`,
-      놀람: `${character}-surprised.svg`,
-    };
-
-    return `/emotion_tag/${character}/${
-      emotionMap[emotion] || `${character}-happy.svg`
-    }`;
-  };
+  // 사용자 캐릭터에 따른 리마인더 이미지 경로
+  const getReminderImagePath = (char: string) =>
+    `/images/reminder/reminder-${char}.svg`;
 
   // 주소에서 마지막 단어만 추출
   const getLastWordFromAddress = (address: string) => {
@@ -78,21 +84,22 @@ const ReminderPopup = () => {
   };
 
   const lastWord = getLastWordFromAddress(currentPopup.dong);
-  const characterImagePath = getEmotionImagePath(currentPopup.emotion);
+  const characterImagePath = getReminderImagePath(character);
 
   return (
     <div className={styles.reminder_popup_overlay}>
-      <div className={styles.reminder_popup_box}>
-        {/* X 버튼 */}
-        <div className={styles.close_button_wrapper} onClick={handleClose}>
+      {/* X 버튼 */}
+      <div className={styles.close_button_wrapper} onClick={handleClose}>
           <img className={styles.close_button} src="/icons/X.svg" alt="close" />
         </div>
+      <div className={styles.reminder_popup_box}>
+        
 
         {/* 캐릭터 이미지 */}
         <div className={styles.character_image_container}>
           <img
             src={characterImagePath}
-            alt={currentPopup.emotion}
+            alt={`${character} 리마인더`}
             className={styles.character_image}
           />
         </div>
