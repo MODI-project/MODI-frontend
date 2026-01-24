@@ -5,32 +5,12 @@ import { useCharacter } from "../../contexts/CharacterContext";
 import useLoadUserInfo, { MeResponse } from "../../apis/UserAPIS/loadUserInfo";
 import styles from "./ReminderPopup.module.css";
 
-type ReminderPopupProps = {
-  /**
-   * 라우트(`/reminder-popup`) 등에서 UI 확인용.
-   * 스토어 값이 비어있으면 더미 데이터를 주입해 렌더합니다.
-   */
-  preview?: boolean;
-};
-
-const ReminderPopup = ({ preview = false }: ReminderPopupProps) => {
-  const { currentPopup, isVisible, hidePopup, showPopup } = usePopupStore();
+const ReminderPopup = () => {
+  const { currentPopup, isVisible, hidePopup } = usePopupStore();
   const { character: characterFromContext } = useCharacter();
   const { fetchUserInfo } = useLoadUserInfo();
   const navigate = useNavigate();
   const [character, setCharacter] = useState<string>("momo");
-
-  // 프리뷰 모드에서는 스토어가 비어있으면 더미 팝업을 띄워 UI를 확인할 수 있게 합니다.
-  useEffect(() => {
-    if (!preview) return;
-    if (isVisible && currentPopup) return;
-
-    showPopup({
-      dong: "서울 강남구 경희대",
-      daysAgo: 37,
-      emotion: "기쁨",
-    });
-  }, [preview, isVisible, currentPopup, showPopup]);
 
   // 사용자 캐릭터 정보 로드
   useEffect(() => {
@@ -89,9 +69,14 @@ const ReminderPopup = ({ preview = false }: ReminderPopupProps) => {
   return (
     <div className={styles.reminder_popup_overlay}>
       {/* X 버튼 */}
-      <div className={styles.close_button_wrapper} onClick={handleClose}>
-          <img className={styles.close_button} src="/icons/X.svg" alt="close" />
-        </div>
+      <button
+          type="button"
+          className={styles.close_button_wrapper}
+          onClick={handleClose}
+          aria-label="닫기"
+        >
+          <img className={styles.close_button} src="/icons/X.svg" alt="" />
+        </button>
       <div className={styles.reminder_popup_box}>
         
 
